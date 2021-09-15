@@ -1,0 +1,45 @@
+[{
+    "code": "google_webmasters",
+    "name": "Meta tag for Google Webmasters",
+    "information": ""
+}, {
+    "code": "google_analytics",
+    "name": "Script from Google Analytics",
+    "information": ""
+}, {
+    "code": "map_init_latitude",
+    "name": "Initial latitude",
+    "information": "-16.489689"
+}, {
+    "code": "map_init_longitude",
+    "name": "Initial longitude",
+    "information": "-68.119293"
+}, {
+    "code": "map_init_zoom",
+    "name": "Initial zoom",
+    "information": "16"
+}, {
+    "code": "link_facebook",
+    "name": "Facebook",
+    "information": "http://www.facebook.com"
+}, {
+    "code": "link_twitter",
+    "name": "Twitter",
+    "information": "http://www.twitter.com"
+}, {
+    "code": "link_youtube",
+    "name": "YouTube",
+    "information": "http://www.youtube.com"
+}, {
+    "code": "link_linkedin",
+    "name": "LinkedIn",
+    "information": "http://www.linkedin.com"
+}, {
+    "code": "link_vimeo",
+    "name": "Vimeo",
+    "information": "http://www.vimeo.com"
+}, {
+    "code": "link_instagram",
+    "name": "Instagram",
+    "information": "http://www.instagram.com"
+}]

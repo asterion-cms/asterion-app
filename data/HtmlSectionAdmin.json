@@ -1,0 +1,17 @@
+[{
+    "code": "intro",
+    "title_en": "Intro",
+    "title_fr": "Intro",
+    "title_es": "Intro",
+    "section_en": "<p>This is the administration area of your website.<br />Here you will be able to update the content or to manage the sections of your site.<br />According to the permissions you have, you should see three sections in the menu. The first one has the actual contents of your website; the second one is dedicated to the administrators, emails and parameters; the last section is dedicated for the developers.</p>",
+    "section_fr": "<p>Il s'agit de la zone d'administration de votre site Web.<br />Ici, vous pourrez mettre à jour le contenu ou gérer les sections de votre site.<br />Selon les autorisations dont vous disposez, vous devriez voir trois sections dans le menu. Le premier contient le contenu réel de votre site Web; le second est dédié aux administrateurs, aux emails et aux paramètres; la dernière section est dédiée aux développeurs.</p>",
+    "section_es": "<p>Esta es el área de administración de su sitio web.<br />Aquí podrá actualizar el contenido o administrar las secciones de su sitio.<br />Según los permisos que tenga, debería ver tres secciones en el menú. El primero tiene el contenido real de su sitio web; el segundo está dedicado a los administradores, correos electrónicos y parámetros; la última sección está dedicada a los desarrolladores.</p>"
+}, {
+    "code": "footer",
+    "title_en": "Footer",
+    "title_fr": "Pied de page",
+    "title_es": "Pie de página",
+    "section_en": "<p>Asterion - <a href=\"mailto:info@asterion-cms.com\">info@asterion-cms.com</a></p>",
+    "section_fr": "<p>Asterion - <a href=\"mailto:info@asterion-cms.com\">info@asterion-cms.com</a></p>",
+    "section_es": "<p>Asterion - <a href=\"mailto:info@asterion-cms.com\">info@asterion-cms.com</a></p>"
+}]

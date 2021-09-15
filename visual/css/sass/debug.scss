@@ -1,0 +1,92 @@
+@import "_variables.scss";
+@import "_mixins.scss";
+
+.debug {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 99999;
+    .debug_menu {
+        position: absolute;
+        top: -40px;
+        height: 40px;
+        line-height: 40px;
+        right: 0;
+        padding: 0 10px;
+        background: $black;
+        color: $white;
+        font-weight: bold;
+        cursor: pointer;
+        border-top: 2px solid lighten($black, 50%);
+        border-left: 2px solid lighten($black, 50%);
+        @include animate();
+        &:hover {
+            background: lighten($black, 50%);
+        }
+    }
+    .debug_information {
+        padding: 10px;
+        background: $black;
+        color: $white;
+        border-top: 2px solid lighten($black, 50%);
+        font-weight: bold;
+        @include clearer();
+        .debug_information_title {
+            color: lighten($black, 80%);
+            font-size: $fontSizeTiny;
+            width: 80px;
+            float: left;
+            margin: 0 10px 0 0;
+        }
+        &.debug_information_average {
+            background: lighten($black, 40%);
+        }
+        strong {
+            font-weight: normal;
+            font-size: $fontSizeTiny;
+        }
+        .debug_information_item {
+            display: inline-block;
+            margin: 0 20px 0 0;
+            &:last-child {
+                margin: 0;
+            }
+        }
+    }
+    .debug_queries {
+        background: $white;
+        border-top: 2px solid lighten($black, 50%);
+        font-size: $fontSizeSmall;
+        color: rgba($black, 0.6);
+        font-family: $fontFamilyMonospace;
+        overflow: auto;
+        max-height: 300px;
+        .debug_query {
+            padding: 10px;
+            border-bottom: 1px solid rgba($black, 0.1);
+            @include clearer();
+            &.debug_query_content {
+                background: rgba($black, 0.1);
+            }
+            &:last-child {
+                border-bottom: 0;
+            }
+            .debug_query_index {
+                width: calc(10% - 10px);
+                padding: 0 10px 0 0;
+                float: left;
+            }
+            .debug_query_raw {
+                width: 70%;
+                float: left;
+            }
+            .debug_query_microtime {
+                width: calc(20% - 10px);
+                padding: 0 0 0 10px;
+                float: left;
+                text-align: right;
+            }
+        }
+    }
+}

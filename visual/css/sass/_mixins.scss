@@ -1,0 +1,77 @@
+@mixin borderRadius($radius) {
+    -webkit-border-radius: $radius;
+    -moz-border-radius: $radius;
+    -ms-border-radius: $radius;
+    border-radius: $radius;
+}
+
+@mixin simpleShadow() {
+    moz-box-shadow: 0px 0px 10px #DDD;
+    -webkit-box-shadow: 0px 0px 10px #DDD;
+    box-shadow: 0px 0px 10px #DDD;
+}
+
+@mixin darkShadow() {
+    moz-box-shadow: 0px 0px 5px #CCC;
+    -webkit-box-shadow: 0px 0px 5px #CCC;
+    box-shadow: 0px 0px 5px #CCC;
+}
+
+@mixin hideText() {
+    text-indent: -5000px;
+    text-align: left;
+    overflow: hidden;
+}
+
+@mixin textEllipsis() {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@mixin animate() {
+    -webkit-transition: 0.5s ease;
+    -moz-transition: 0.5s ease;
+    -ms-transition: 0.5s ease;
+    transition: 0.5s ease;
+}
+
+@mixin rotate($degrees) {
+    transform: rotate($degrees);
+    -webkit-transform: rotate($degrees);
+    -moz-transform: rotate($degrees);
+    -o-transform: rotate($degrees);
+    -ms-transform: rotate($degrees);
+}
+
+@mixin borderBox() {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+@mixin clearer() {
+    &:after {
+        content: "";
+        clear: both;
+        display: table;
+    }
+}
+
+@mixin mobile {
+  @media only screen and (max-width: $sizeMobile) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media only screen and (max-width: $sizeTablet) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media only screen and (max-width: $sizeDesktop) {
+    @content;
+  }
+}

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+* @structure LogAdmin
+*
+* @author Leano Martinet <info@asterion-cms.com>
+* @package Asterion\App\Admin
+* @version 4.0.0
+-->
+<object>
+    <name>LogAdmin</name>
+    <table>log_admin</table>
+    <info>
+        <sql>
+            <primary>id</primary>
+            <created>true</created>
+        </sql>
+        <form>
+            <title>logs</title>
+            <information>logs_information</information>
+            <label>#log</label>
+            <hiddenAdminMenu>true</hiddenAdminMenu>
+        </form>
+    </info>
+    <attributes>
+        <attribute>
+            <name>id</name>
+            <type>id_autoincrement</type>
+        </attribute>
+        <attribute>
+            <name>id_user_admin</name>
+            <type>linkid_autoincrement</type>
+            <refObject>UserAdmin</refObject>
+        </attribute>
+        <attribute>
+            <name>ip</name>
+            <label>ip</label>
+            <type>ip</type>
+        </attribute>
+        <attribute>
+            <name>type</name>
+            <label>type</label>
+            <type>text</type>
+        </attribute>
+        <attribute>
+            <name>log</name>
+            <label>log</label>
+            <type>textarea</type>
+        </attribute>
+    </attributes>
+</object>

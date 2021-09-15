@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+* @structure UserAdmin
+*
+* @author Leano Martinet <info@asterion-cms.com>
+* @package Asterion\App\Admin
+* @version 4.0.0
+-->
+<object>
+    <name>UserAdmin</name>
+    <table>user_admin</table>
+    <info>
+        <sql>
+            <primary>id</primary>
+            <created>true</created>
+            <modified>true</modified>
+        </sql>
+        <form>
+            <title>administrators</title>
+            <information>administrators_information</information>
+            <icon>users</icon>
+            <label>#name</label>
+            <orderBy>name</orderBy>
+            <templateItemAdmin>
+                #active
+                #image
+                <div class="item_information">
+                    <p class="accent"><strong>#name</strong></p>
+                    <p class="tiny">_type : <span class="accent">#id_user_admin_type</span></p>
+                    <p class="tiny">_email : <span class="accent">#email</span></p>
+                </div>
+            </templateItemAdmin>
+        </form>
+    </info>
+    <attributes>
+        <attribute>
+            <name>id</name>
+            <type>id_autoincrement</type>
+        </attribute>
+        <attribute>
+            <name>id_user_admin_type</name>
+            <label>administrator_type</label>
+            <type>select</type>
+            <refObject>UserAdminType</refObject>
+        </attribute>
+        <attribute>
+            <name>image</name>
+            <label>image</label>
+            <type>file_drag</type>
+            <layout>image</layout>
+            <maxDimensions>true</maxDimensions>
+        </attribute>
+        <attribute>
+            <name>name</name>
+            <label>name</label>
+            <required>not_empty</required>
+            <type>text_long</type>
+        </attribute>
+        <attribute>
+            <name>email</name>
+            <label>email</label>
+            <required>unique_email</required>
+            <type>text_email</type>
+        </attribute>
+        <attribute>
+            <name>new_email</name>
+            <label>new_email</label>
+            <type>text_email</type>
+        </attribute>
+        <attribute>
+            <name>new_email_code</name>
+            <label>new_email_code</label>
+            <type>text</type>
+        </attribute>
+        <attribute>
+            <name>password</name>
+            <label>password</label>
+            <type>password</type>
+        </attribute>
+        <attribute>
+            <name>password_salt</name>
+            <type>hidden</type>
+        </attribute>
+        <attribute>
+            <name>password_temporary</name>
+            <type>hidden</type>
+        </attribute>
+        <attribute>
+            <name>last_login_date</name>
+            <label>last_login_date</label>
+            <type>date_text</type>
+        </attribute>
+        <attribute>
+            <name>active</name>
+            <label>active</label>
+            <type>checkbox</type>
+        </attribute>
+    </attributes>
+    <indexes>
+        <index>
+            <name>email</name>
+            <fields>email</fields>
+        </index>
+        <index>
+            <name>id_user_admin_type</name>
+            <fields>id_user_admin_type</fields>
+        </index>
+    </indexes>
+</object>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+* @structure Parameter
+*
+* @author Leano Martinet <info@asterion-cms.com>
+* @package Asterion\App\Helpers
+* @version 4.0.0
+-->
+<object>
+    <name>Parameter</name>
+    <table>parameter</table>
+    <info>
+        <sql>
+            <primary>id</primary>
+        </sql>
+        <form>
+            <title>parameters</title>
+            <information>parameters_information</information>
+            <icon>cog</icon>
+            <orderBy>code</orderBy>
+            <label>#information</label>
+            <layout>modal</layout>
+        </form>
+    </info>
+    <attributes>
+        <attribute>
+            <name>id</name>
+            <type>id_autoincrement</type>
+        </attribute>
+        <attribute>
+            <label>code</label>
+            <name>code</name>
+            <type>text_code</type>
+            <required>unique</required>
+        </attribute>
+        <attribute>
+            <name>name</name>
+            <label>name</label>
+            <type>text</type>
+            <required>not_empty</required>
+        </attribute>
+        <attribute>
+            <label>image</label>
+            <name>image</name>
+            <type>file_drag</type>
+            <layout>image</layout>
+        </attribute>
+        <attribute>
+            <label>file</label>
+            <name>file</name>
+            <type>file_drag</type>
+        </attribute>
+        <attribute>
+            <label>information</label>
+            <name>information</name>
+            <type>textarea_code</type>
+            <required></required>
+        </attribute>
+    </attributes>
+    <indexes>
+        <index>
+            <name>code</name>
+            <type></type>
+            <fields>code</fields>
+        </index>
+    </indexes>
+</object>
