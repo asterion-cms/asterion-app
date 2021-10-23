@@ -98,11 +98,9 @@ class Language extends Db_Object
     {
         $translations = (new Translation)->readList(['order' => 'code']);
         $result = [];
-        $keys = Translation::translationsKeys('app');
+        $keys = Translation::translationsKeys();
         foreach ($translations as $translation) {
-            if (in_array($translation->get('code'), $keys)) {
-                $result[$translation->get('code')] = $translation->get('translation_' . $this->id());
-            }
+            $result[$translation->get('code')] = $translation->get('translation_' . $this->id());
         }
         return $result;
     }

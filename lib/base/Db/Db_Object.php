@@ -690,14 +690,14 @@ class Db_Object extends Db_Sql
     /**
      * Gets the HTML image that the attribute points using the AMP version.
      */
-    public function getImageAmp($attributeName, $version = '', $layout = 'responsive')
+    public function getImageAmp($attributeName, $version = '', $layout = 'responsive', $attributes = '')
     {
         $imageUrl = $this->getImageUrl($attributeName, $version);
         if ($imageUrl != '') {
             $imageFile = str_replace(ASTERION_BASE_URL, ASTERION_BASE_FILE, $imageUrl);
             if (is_file($imageFile)) {
                 $imageSize = getimagesize($imageFile);
-                return '<amp-img src="' . $imageUrl . '" alt="' . $this->getBasicInfo() . '" width="' . $imageSize[0] . '" height="' . $imageSize[1] . '" layout="' . $layout . '"/>';
+                return '<amp-img ' . $attributes . ' src="' . $imageUrl . '" alt="' . $this->getBasicInfo() . '" width="' . $imageSize[0] . '" height="' . $imageSize[1] . '" layout="' . $layout . '"/>';
             }
         }
     }
@@ -940,7 +940,8 @@ class Db_Object extends Db_Sql
         return $error;
     }
 
-    public function validateReCaptchaV3() {
+    public function validateReCaptchaV3()
+    {
         $name = 'g-recaptcha-response';
         if (!isset($this->values[$name]) || trim($this->values[$name]) == '') {
             $this->errors[$name] = __('not_empty');
@@ -953,7 +954,7 @@ class Db_Object extends Db_Sql
             $response = curl_exec($ch);
             curl_close($ch);
             $jsonResponse = json_decode($response, true);
-            if(!isset($jsonResponse['success']) || $jsonResponse['success'] != '1' || $jsonResponse['score'] < 0.5) {
+            if (!isset($jsonResponse['success']) || $jsonResponse['success'] != '1' || $jsonResponse['score'] < 0.5) {
                 $errors[$name] = __('error_recaptcha');
             }
         }

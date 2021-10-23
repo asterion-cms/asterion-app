@@ -273,6 +273,7 @@ function activateNestedForms() {
         event.stopImmediatePropagation();
         var container = $(this).parents('.nested_form_field');
         addFormField(container);
+        activateDatePicker();
     });
     // Action to add multiple images to the form.
     $(document).on('click', '.nested_form_field_add_multiple', function(event) {
@@ -465,11 +466,13 @@ function activateAutocomplete() {
  **/
 function activateDatePicker() {
     $('.date_text input').each(function(index, ele) {
-        var dateFormatView = 'yy-mm-dd';
-        $(ele).datepicker({
-            'firstDay': 1,
-            'dateFormat': dateFormatView
-        });
+        if ($(ele).parents('.nested_form_field_empty').length == 0) {
+            var dateFormatView = 'yy-mm-dd';
+            $(ele).datepicker({
+                'firstDay': 1,
+                'dateFormat': dateFormatView
+            });
+        }
     });
 }
 /**

@@ -32,10 +32,12 @@
  *       select
  *       select_varchar
  *       select_link
+ *       time
  *       date
  *       date_complete
  *       date_hour
  *       date_text
+ *       datetime_local
  *       checkbox
  *       radio
  *       point
@@ -129,6 +131,9 @@ class Db_ObjectType
                 return '`' . $name . '` VARCHAR(255) NULL COLLATE utf8_unicode_ci';
                 break;
             case 'date':
+                return '`' . $name . '` DATETIME';
+                break;
+            case 'datetime':
                 return '`' . $name . '` DATETIME';
                 break;
             case 'point':

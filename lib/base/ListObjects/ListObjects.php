@@ -53,7 +53,13 @@ class ListObjects
                 $result = Db::returnSingle($this->queryCount);
                 $this->countTotal = $result['numberItems'];
             } else {
-                $this->countTotal = $this->object->countResults($this->options);
+                if (isset($this->options['fields']) && is_array($this->options['fields'])) {
+                    $optionsCount = $this->options;
+                    $optionsCount['fields'] = 'DISTINCT ' . (new $this->options['fields'][0])->tableName . '.' . (new $this->options['fields'][0])->primary;
+                    $this->countTotal = $this->object->countResults($optionsCount, $this->values);
+                } else {
+                    $this->countTotal = $this->object->countResults($this->options, $this->values);
+                }
             }
         }
         return $this->countTotal;

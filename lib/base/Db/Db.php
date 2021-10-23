@@ -97,7 +97,7 @@ class Db
     /**
      * Return a list of columns
      */
-    public static function returnAllColumn($query, $exception = true)
+    public static function returnAllColumn($query, $values = [], $exception = true)
     {
         try {
             $query = str_replace('\"', '"', $query);

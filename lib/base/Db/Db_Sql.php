@@ -30,10 +30,11 @@ class Db_Sql
      */
     public function countResults($options = [], $values = [])
     {
+        $fields = (isset($options['fields'])) ? $options['fields'] : '*';
         $table = (isset($options['table'])) ? $options['table'] : $this->tableName;
         $where = (isset($options['where']) && $options['where'] != '') ? $options['where'] : '1=1';
         $join = (isset($options['join'])) ? $this->formatJoin($options['join']) : '';
-        $query = 'SELECT COUNT(*) AS count_items
+        $query = 'SELECT COUNT(' . $fields . ') AS count_items
                         FROM ' . $table . '
                         ' . $join . '
                         WHERE ' . $where;
@@ -47,7 +48,7 @@ class Db_Sql
     public function readValues($id, $options = [])
     {
         $table = (isset($options['table'])) ? $options['table'] : $this->tableName;
-        $fields = (isset($options['fields'])) ? $options['fields'] : $this->tableName . '.*';
+        $fields = $this->formatFields($options);
         $join = (isset($options['join'])) ? $this->formatJoin($options['join']) : '';
         $query = 'SELECT ' . $fields . $this->fieldPoints() . '
                     FROM ' . $table . '
@@ -72,7 +73,7 @@ class Db_Sql
     {
         $table = (isset($options['table'])) ? $options['table'] : $this->tableName;
         $values = (isset($options['values'])) ? $options['values'] : $values;
-        $fields = (isset($options['fields'])) ? $options['fields'] : $this->tableName . '.*';
+        $fields = $this->formatFields($options);
         $where = (isset($options['where']) && $options['where'] != '') ? $options['where'] : '1=1';
         $order = (isset($options['order']) && $options['order'] != '') ? ' ORDER BY ' . $options['order'] : '';
         $limit = (isset($options['limit']) && $options['limit'] != '') ? ' LIMIT ' . $options['limit'] . ',1' : ' LIMIT 1';
@@ -94,7 +95,7 @@ class Db_Sql
     {
         $table = (isset($options['table'])) ? $options['table'] : $this->tableName;
         $values = (isset($options['values'])) ? $options['values'] : $values;
-        $fields = (isset($options['fields'])) ? $options['fields'] : $this->tableName . '.*';
+        $fields = $this->formatFields($options);
         $where = (isset($options['where']) && $options['where'] != '') ? $options['where'] : '1=1';
         $order = (isset($options['order']) && $options['order'] != '') ? ' ORDER BY ' . $options['order'] : '';
         $limit = (isset($options['limit']) && $options['limit'] != '') ? ' LIMIT ' . $options['limit'] : '';
@@ -105,16 +106,12 @@ class Db_Sql
                     WHERE ' . $where . '
                     ' . $order . '
                     ' . $limit;
-        $result = Db::returnAll($query, $values);
+        $results = Db::returnAll($query, $values);
         $list = [];
         $completeList = (isset($options['completeList'])) ? $options['completeList'] : true;
-        foreach ($result as $item) {
-            $itemComplete = new $this->className($item);
-            if ($completeList) {
-                $list[] = $itemComplete;
-            } else {
-                $list[] = $itemComplete->values;
-            }
+        $results = (isset($options['fields']) && is_array($options['fields'])) ? $this->formatResultsFields($results, $options) : $results;
+        foreach ($results as $result) {
+            $list[] = ($completeList) ? new $this->className($result) : $result;
         }
         return $list;
     }
@@ -125,10 +122,65 @@ class Db_Sql
     public function readListQuery($query, $values = [])
     {
         $query = str_replace('##', ASTERION_DB_PREFIX, $query);
-        $result = Db::returnAll($query, $values);
+        $results = Db::returnAll($query, $values);
         $list = [];
-        foreach ($result as $name) {
-            $list[] = new $this->className($name);
+        $completeList = (isset($options['completeList'])) ? $options['completeList'] : true;
+        foreach ($results as $result) {
+            $list[] = ($completeList) ? new $this->className($result) : $result;
+        }
+        return $list;
+    }
+
+    /**
+     * Formats the fields for a query.
+     */
+    public function formatFields($options)
+    {
+        $fields = $this->tableName . '.*';
+        if (isset($options['fields'])) {
+            if (is_array($options['fields'])) {
+                $fieldsItems = [];
+                foreach ($options['fields'] as $fieldObject) {
+                    $fieldsItems[] = (new $fieldObject)->aliasAttributes();
+                }
+                $fields = implode(', ', $fieldsItems);
+            } else {
+                $fields = $options['fields'];
+            }
+        }
+        return $fields;
+    }
+
+    /**
+     * Formats the results for a query that has multiple objects as fields.
+     */
+    public function formatResultsFields($results, $options)
+    {
+        $list = [];
+        $mainObject = $options['fields'][0];
+        $mainPrefix = (new $mainObject)->snakeName . '__';
+        foreach ($results as $result) {
+            $mainObjectValues = [];
+            foreach ($result as $resultKey => $resultItem) {
+                if (strpos($resultKey, $mainPrefix) === 0) {
+                    $mainObjectValues[str_replace($mainPrefix, '', $resultKey)] = $resultItem;
+                }
+            }
+            $primaryKey = $mainObjectValues[(new $mainObject)->primary];
+            $list[$primaryKey] = (isset($list[$primaryKey])) ? $list[$primaryKey] : $mainObjectValues;
+            foreach ($options['fields'] as $object) {
+                $prefix = (new $object)->snakeName . '__';
+                if ($prefix != $mainPrefix) {
+                    $prefixObjectValues = [];
+                    foreach ($result as $resultKey => $resultItem) {
+                        if (strpos($resultKey, $prefix) === 0) {
+                            $prefixObjectValues[str_replace($prefix, '', $resultKey)] = $resultItem;
+                        }
+                    }
+                    $prefixKey = $prefixObjectValues[(new $object)->primary];
+                    $list[$primaryKey][$object][$prefixKey] = new $object($prefixObjectValues);
+                }
+            }
         }
         return $list;
     }
@@ -154,19 +206,28 @@ class Db_Sql
      */
     public function formatJoinOption($join)
     {
-        if (is_array($join)) {
-            if (isset($join['object'])) {
-                $joinObject = new $join['object'];
-                $completeJoin = 'JOIN ' . $joinObject->tableName . ' ON ' . $joinObject->tableName . '.id=' . $this->tableName . '.' . $this->findLinkAttributeName($join['object']);
-                $completeJoin .= (isset($join['joinAnd'])) ? ' AND ' . $join['joinAnd'] : '';
-                return $completeJoin;
+        $completeJoin = '';
+        if (is_array($join) && isset($join['object'])) {
+            $joinObject = new $join['object'];
+            $mode = (isset($join['mode'])) ? $join['mode'] . ' ' : '';
+            if (isset($join['joinedObject'])) {
+                $joinedObject = (isset($join['joinedObject'])) ? new $join['joinedObject'] : $this;
+                $joinObjectField = $joinObject->findLinkAttributeName($joinedObject->className);
+                $joinObjectField = ($joinObjectField != '') ? $joinObjectField : 'id';
+                $completeJoin = $mode . 'JOIN ' . $joinObject->tableName . ' ON ' . $joinObject->tableName . '.' . $joinObject->primary . '=' . $joinedObject->tableName . '.' . $joinObjectField;
+            } else {
+                $joinObjectField = $joinObject->findLinkAttributeName($this->className);
+                $joinObjectField = ($joinObjectField != '') ? $joinObjectField : 'id';
+                $completeJoin = $mode . 'JOIN ' . $joinObject->tableName . ' ON ' . $joinObject->tableName . '.' . $joinObjectField . '=' . $this->tableName . '.' . $this->primary;
             }
         } else {
             $joinObject = new $join;
             $joinObjectField = $joinObject->findLinkAttributeName($this->className);
             $joinObjectField = ($joinObjectField != '') ? $joinObjectField : 'id';
-            return 'JOIN ' . $joinObject->tableName . ' ON ' . $joinObject->tableName . '.' . $joinObjectField . '=' . $this->tableName . '.' . $this->primary;
+            $completeJoin = 'JOIN ' . $joinObject->tableName . ' ON ' . $joinObject->tableName . '.' . $joinObjectField . '=' . $this->tableName . '.' . $this->primary;
         }
+        $completeJoin .= ($completeJoin != '' && isset($join['joinAnd'])) ? ' AND ' . $join['joinAnd'] : '';
+        return $completeJoin;
     }
 
     /**
@@ -677,10 +738,18 @@ class Db_Sql
                     if (isset($values[$name])) {
                         $valueDate = $values[$name];
                         $valueDateInfo = explode('-', $valueDate);
+                        $valueDate = '0000-00-00';
                         if (isset($valueDateInfo[2])) {
                             $valueDate = intval($valueDateInfo[2]) . '-' . intval($valueDateInfo[1]) . '-' . intval($valueDateInfo[0]);
-                        } else {
-                            $valueDate = '0000-00-00';
+                        }
+                        $query .= '`' . $name . '`="' . $valueDate . '", ';
+                    }
+                    break;
+                case 'datetime_local':
+                    if (isset($values[$name])) {
+                        $valueDate = '0000-00-00 00:00:00';
+                        if (strlen($values[$name]) == 16) {
+                            $valueDate = substr($values[$name], 0, 10) . ' ' . substr($values[$name], 11, 5) . ':00';
                         }
                         $query .= '`' . $name . '`="' . $valueDate . '", ';
                     }
@@ -879,7 +948,6 @@ class Db_Sql
         if (isset($attribute[0])) {
             return $this->tableName . '.' . $attributeName;
         }
-
     }
 
     /**
@@ -891,7 +959,31 @@ class Db_Sql
         if (is_object($attribute)) {
             return ((string) $attribute->linkAttribute != '') ? (string) $attribute->linkAttribute : (string) $attribute->name;
         }
+    }
 
+    /**
+     * Creates a string with the alias of all the attributes.
+     */
+    public function aliasAttributes()
+    {
+        $alias = [];
+        if ($this->hasOrd()) {
+            $alias[] = ($this->tableName) . '.ord AS ' . $this->snakeName . '__ord';
+        }
+        if ($this->hasCreated()) {
+            $alias[] = ($this->tableName) . '.created AS ' . $this->snakeName . '__created';
+        }
+        if ($this->hasModified()) {
+            $alias[] = ($this->tableName) . '.modified AS ' . $this->snakeName . '__modified';
+        }
+        foreach ($this->getAttributes() as $attribute) {
+            $name = (string) $attribute->name;
+            $type = (string) $attribute->type;
+            if (Db_ObjectType::baseType($type) != 'multiple') {
+                $alias[] = ($this->tableName) . '.' . $name . ' AS ' . $this->snakeName . '__' . $name;
+            }
+        }
+        return implode(', ', $alias);
     }
 
 }
