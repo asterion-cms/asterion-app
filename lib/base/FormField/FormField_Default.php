@@ -59,6 +59,7 @@ class FormField_Default extends FormField_Base
         $required = (isset($options['required']) && $options['required']) ? 'required' : '';
         $pattern = (isset($options['pattern']) && $options['pattern'] != '') ? 'pattern="' . $options['pattern'] . '"' : '';
         $title = (isset($options['title']) && $options['title'] != '') ? 'title="' . $options['title'] . '"' : '';
+        $step = (isset($options['step']) && $options['step'] != '') ? 'step="' . $options['step'] . '"' : '';
         $layout = (isset($options['layout'])) ? $options['layout'] : '';
         $autocomplete = (isset($options['autocomplete'])) ? 'autocomplete="' . $options['autocomplete'] . '" ' : '';
         switch ($layout) {
@@ -81,7 +82,7 @@ class FormField_Default extends FormField_Base
                             ' . $label . '
                             ' . $error . '
                             ' . $messageBefore . '
-                            <input ' . $typeField . ' ' . $name . ' ' . $size . ' ' . $value . ' ' . $id . ' ' . $disabled . ' ' . $placeholder . ' ' . $required . ' ' . $pattern . ' ' . $title . ' ' . $autocomplete . '/>
+                            <input ' . $typeField . ' ' . $name . ' ' . $size . ' ' . $value . ' ' . $id . ' ' . $disabled . ' ' . $placeholder . ' ' . $required . ' ' . $pattern . ' ' . $title . ' ' . $autocomplete . ' ' . $step . '/>
                             ' . $messageAfter . '
                             ' . $messagePublishDate . '
                         </div>
@@ -94,14 +95,14 @@ class FormField_Default extends FormField_Base
                             ' . $label . '
                             ' . $error . '
                             ' . $messageBefore . '
-                            <input class="color" ' . $typeField . ' ' . $name . ' ' . $size . ' ' . $value . ' ' . $id . ' ' . $disabled . ' ' . $placeholder . ' ' . $required . ' ' . $pattern . ' ' . $title . ' ' . $autocomplete . '/>
+                            <input class="color" ' . $typeField . ' ' . $name . ' ' . $size . ' ' . $value . ' ' . $id . ' ' . $disabled . ' ' . $placeholder . ' ' . $required . ' ' . $pattern . ' ' . $title . ' ' . $autocomplete . ' ' . $step . '/>
                             ' . $messageAfter . '
                         </div>
                     </div>';
                 break;
             case 'simple':
                 return '
-                    <input ' . $typeField . ' ' . $name . ' ' . $size . ' ' . $value . ' ' . $id . ' ' . $disabled . ' ' . $placeholder . '' . $required . ' ' . $pattern . ' ' . $title . ' ' . $autocomplete . ' class="' . $class . '"/>';
+                    <input ' . $typeField . ' ' . $name . ' ' . $size . ' ' . $value . ' ' . $id . ' ' . $disabled . ' ' . $placeholder . '' . $required . ' ' . $pattern . ' ' . $title . ' ' . $autocomplete . ' ' . $step . ' class="' . $class . '"/>';
                 break;
             case 'label':
                 $labelField = ($this->object->label($options['name']) == '') ? '' : '
@@ -116,7 +117,7 @@ class FormField_Default extends FormField_Base
                     </div>';
                 return '
                     ' . $labelField . '
-                    <input ' . $typeField . ' ' . $name . ' ' . $size . ' ' . $value . ' ' . $id . ' ' . $disabled . ' ' . $placeholder . '' . $required . ' ' . $pattern . ' ' . $title . ' ' . $autocomplete . ' class="' . $class . '"/>';
+                    <input ' . $typeField . ' ' . $name . ' ' . $size . ' ' . $value . ' ' . $id . ' ' . $disabled . ' ' . $placeholder . '' . $required . ' ' . $pattern . ' ' . $title . ' ' . $autocomplete . ' ' . $step . ' class="' . $class . '"/>';
                 break;
         }
     }

@@ -12,6 +12,22 @@ class Date
 {
 
     /**
+     * Return an array with the names of the days.
+     */
+    public static function arrayDays()
+    {
+        return [
+            1 => __('monday'),
+            2 => __('tuesday'),
+            3 => __('wednesday'),
+            4 => __('thursday'),
+            5 => __('friday'),
+            6 => __('saturday'),
+            7 => __('sunday'),
+        ];
+    }
+
+    /**
      * Return an array with the names of the months.
      */
     public static function arrayMonths()
@@ -28,7 +44,7 @@ class Date
             9 => __('september'),
             10 => __('october'),
             11 => __('november'),
-            12 => __('december')
+            12 => __('december'),
         ];
     }
 
@@ -220,7 +236,7 @@ class Date
         if ($date != '') {
             $dateArray = Date::sqlArray($date);
             $html = Text::dateNumber($dateArray['day']) . '-' . Text::dateNumber($dateArray['month']) . '-' . $dateArray['year'];
-            $html .= ($withHour == 1) ? ' ' . $dateArray['hour'] . ':' . $dateArray['minutes'] : '';
+            $html .= ($withHour == 1) ? ' ' . str_pad($dateArray['hour'], 2, "0", STR_PAD_LEFT) . ':' . str_pad($dateArray['minutes'], 2, "0", STR_PAD_LEFT) : '';
             return $html;
         }
     }
@@ -232,7 +248,7 @@ class Date
     {
         if ($date != '') {
             $dateArray = Date::sqlArray($date);
-            return $dateArray['hour'] . ':' . $dateArray['minutes'];
+            return str_pad($dateArray['hour'], 2, "0", STR_PAD_LEFT) . ':' . str_pad($dateArray['minutes'], 2, "0", STR_PAD_LEFT);
         }
     }
 
@@ -251,7 +267,7 @@ class Date
     {
         if (is_array($date)) {
             $html = $date['day'] . ' ' . Date::textMonth($date['month']) . ', ' . $date['year'];
-            $html .= ($withHour == 1) ? ' | ' . $dateArray['hour'] . ':' . $dateArray['minutes'] : '';
+            $html .= ($withHour == 1) ? ' | ' . str_pad($dateArray['hour'], 2, "0", STR_PAD_LEFT) . ':' . str_pad($dateArray['minutes'], 2, "0", STR_PAD_LEFT) : '';
             return $html;
         }
     }
@@ -271,7 +287,8 @@ class Date
     /**
      * Convert a timestamp to a readable SQL date text.
      */
-    public static function timestampSql($timestamp) {
+    public static function timestampSql($timestamp)
+    {
         $date = new DateTime("@$timestamp");
         return $date->format('Y-m-d H:i:s');
     }
@@ -279,7 +296,8 @@ class Date
     /**
      * Convert a timestamp to a readable text.
      */
-    public static function timestampText($timestamp) {
+    public static function timestampText($timestamp)
+    {
         return Date::sqlText(Date::timestampSql($timestamp), true);
     }
 
@@ -311,7 +329,7 @@ class Date
             'difference' => $difference,
             'days' => abs(intval($difference / (3600 * 24))),
             'hours' => abs(intval($difference / 3600)),
-            'minutes' => abs(intval($difference / 60))
+            'minutes' => abs(intval($difference / 60)),
         ];
     }
 

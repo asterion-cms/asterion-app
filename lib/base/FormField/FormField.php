@@ -18,7 +18,8 @@ class FormField
     {
         $objectName = 'FormField_' . snakeToCamel($type);
         $fileName = ASTERION_FRAMEWORK_FILE . 'base/FormField/' . $objectName . '.php';
-        if (is_file($fileName)) {
+        $fileNameCustom = ASTERION_BASE_FILE . 'lib/FormField/' . $objectName . '.php';
+        if (is_file($fileName) || is_file($fileNameCustom)) {
             $field = new $objectName($options);
             return $field->show();
         } else {

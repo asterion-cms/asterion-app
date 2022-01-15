@@ -15,9 +15,7 @@ class User_Controller_Interface extends Controller
     {
         $userClass = new $this->userClassName();
         $userLoginClassName = $userClass->userLoginClassName;
-        $this->head = '
-            <script src="https://www.google.com/recaptcha/api.js"></script>
-            <script>function onSubmitRecaptchaV3(token) { document.getElementById("recaptchav3_form").submit(); }</script>';
+        $this->head = Recaptcha::head();
         switch ($this->action) {
             default:
                 return parent::getContent();
@@ -25,14 +23,18 @@ class User_Controller_Interface extends Controller
             case 'login':
                 $login = $userLoginClassName::getInstance();
                 $this->title_page = __('login');
+                $this->head = User::head();
+                $urlConnected = (Session::get('urlConnected')!='') ? Session::get('urlConnected') : $userClass->urlConnected;
                 if ($login->isConnected()) {
-                    header('Location: ' . $userClass->urlConnected);
+                    Session::delete('urlConnected');
+                    header('Location: ' . $urlConnected);
                     exit();
                 }
                 if (count($this->values) > 0) {
-                    $login->checklogin($this->values);
+                    $login->checkLogin($this->values);
                     if ($login->isConnected()) {
-                        header('Location: ' . $userClass->urlConnected);
+                        Session::delete('urlConnected');
+                        header('Location: ' . $urlConnected);
                         exit();
                     } else {
                         $form = new $userClass->userFormClassName();
@@ -44,6 +46,46 @@ class User_Controller_Interface extends Controller
                     $this->content = $form->login();
                 }
                 return $this->ui->render();
+                break;
+            case 'login_facebook':
+                $login = $userLoginClassName::getInstance();
+                $this->title_page = __('login');
+                $urlConnected = (Session::get('urlConnected')!='') ? Session::get('urlConnected') : $userClass->urlConnected;
+                if ($login->isConnected()) {
+                    Session::delete('urlConnected');
+                    header('Location: ' . $urlConnected);
+                } else {
+                    $login = $userLoginClassName::getInstance();
+                    $authcode = (isset($this->parameters['authcode'])) ? $this->parameters['authcode'] : '';
+                    $login->checkLoginFacebook($authcode);
+                    if ($login->isConnected()) {
+                        Session::delete('urlConnected');
+                        header('Location: ' . $urlConnected);
+                    } else {
+                        header('Location: ' . $userClass->urlLogin);
+                    }
+                }
+                exit();
+                break;
+            case 'login_google':
+                $login = $userLoginClassName::getInstance();
+                $this->title_page = __('login');
+                $urlConnected = (Session::get('urlConnected')!='') ? Session::get('urlConnected') : $userClass->urlConnected;
+                if ($login->isConnected()) {
+                    Session::delete('urlConnected');
+                    header('Location: ' . $urlConnected);
+                } else {
+                    $login = $userLoginClassName::getInstance();
+                    $credential = (isset($this->parameters['credential'])) ? $this->parameters['credential'] : '';
+                    $login->checkLoginGoogle($credential);
+                    if ($login->isConnected()) {
+                        Session::delete('urlConnected');
+                        header('Location: ' . $urlConnected);
+                    } else {
+                        header('Location: ' . $userClass->urlLogin);
+                    }
+                }
+                exit();
                 break;
             case 'register':
                 $login = $userLoginClassName::getInstance();
@@ -64,12 +106,13 @@ class User_Controller_Interface extends Controller
                 break;
             case 'activate':
                 $this->title_page = __('activate_user');
-                $action = $userClass->activate($this->id);
+                $code = (isset($this->parameters['code'])) ? $this->parameters['code'] : '';
+                $action = $userClass->activate($code);
                 if ($action['status'] == StatusCode::OK) {
                     Session::flashInfo(__('user_activation_success'));
                     header('Location: ' . $userClass->urlConnected);
                 } else {
-                    Session::flashWarning(__('user_activation_error'));
+                    Session::flashError(__('user_activation_error'));
                     header('Location: ' . $userClass->urlHome);
                 }
                 exit();
@@ -171,7 +214,7 @@ class User_Controller_Interface extends Controller
                     if ($forgot['status'] == StatusCode::OK) {
                         Session::flashInfo(str_replace('#EMAIL', $user->get('email'), __('forgot_email_sent')));
                     } else {
-                        Session::flashWarning(__('forgot_email_error'));
+                        Session::flashError(__('forgot_email_error'));
                     }
                     header('Location: ' . url(camelToSnake($user->className) . '/modify_view/' . $this->id, true));
                     exit();

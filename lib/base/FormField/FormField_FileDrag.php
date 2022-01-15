@@ -35,6 +35,10 @@ class FormField_FileDrag extends FormField_Base
         $type = (isset($options['typeField'])) ? $options['typeField'] : 'image';
         $name = (isset($options['name'])) ? $options['name'] : '';
         $id = (isset($options['id'])) ? $options['id'] : rand(0, 9999);
+        $nameSimple = (isset($options['nameSimple'])) ? $options['nameSimple'] : '';
+        $nameFile = ($options['hasNameMultiple']) ? str_replace('[' . $nameSimple . ']', '[' . $nameSimple . '_file]', $name) : $name . '_file';
+        $nameFileName = ($options['hasNameMultiple']) ? str_replace('[' . $nameSimple . ']', '[' . $nameSimple . '_filename]', $name) : $name . '_filename';
+        $nameUploaded = ($options['hasNameMultiple']) ? str_replace('[' . $nameSimple . ']', '[' . $nameSimple . '_uploaded]', $name) : $name . '_uploaded';
         $valueFile = (isset($options['value'])) ? $options['value'] : '';
         $labelLanguage = (isset($options['labelLanguage']) && $options['labelLanguage'] != '') ? ' <span>(' . $options['labelLanguage'] . ')</span>' : '';
         $label = (isset($options['label']) && $options['label'] != '') ? '<label>' . __($options['label']) . $labelLanguage . ' <em>' . __('maximum_size') . ': ' . ini_get('post_max_size') . '</em></label>' : '';
@@ -45,6 +49,7 @@ class FormField_FileDrag extends FormField_Base
         $class .= (isset($options['nameSimple'])) ? ' form_field_' . Text::simpleUrl($options['nameSimple'], '_') : '';
         $classError = (isset($options['error']) && $options['error'] != '') ? 'error' : '';
         $required = (isset($options['required']) && $options['required']) ? 'required' : '';
+        $accept = (isset($options['accept']) && $options['accept'] != '') ? $options['accept'] : '';
         $layout = (isset($options['layout'])) ? $options['layout'] : '';
         $maxDimensions = (isset($options['maxDimensions'])) ? $options['maxDimensions'] : false;
         $loader = '
@@ -62,11 +67,11 @@ class FormField_FileDrag extends FormField_Base
                     <div class="drag_field_wrapper_input">
                         <div class="drag_field_input">
                             ' . FormField::show('hidden', ['name' => $name, 'id' => $id, 'class' => 'filevalue']) . '
-                            ' . FormField::show('hidden', ['name' => $name . '_filename', 'id' => $id . '_filename', 'class' => 'filename']) . '
-                            ' . FormField::show('hidden', ['name' => $name . '_uploaded', 'id' => $id . '_uploaded', 'class' => 'filename_uploaded']) . '
+                            ' . FormField::show('hidden', ['name' => $nameFileName, 'id' => $id . '_filename', 'class' => 'filename']) . '
+                            ' . FormField::show('hidden', ['name' => $nameUploaded, 'id' => $id . '_uploaded', 'class' => 'filename_uploaded']) . '
                         </div>
                         <div class="drag_field_file">
-                            ' . FormField::show('file', ['name' => $name . '_file', 'id' => $id . '_file', 'layout' => 'simple', 'class' => 'filename_input', 'accept' => 'image/png, image/jpeg']) . '
+                            ' . FormField::show('file', ['name' => $nameFile, 'id' => $id . '_file', 'layout' => 'simple', 'class' => 'filename_input', 'accept' => 'image/png, image/jpeg']) . '
                         </div>
                         <div class="drag_field_image"><img src=""/></div>
                         <div class="drag_field_drag">
@@ -92,11 +97,11 @@ class FormField_FileDrag extends FormField_Base
                         <div class="drag_field_wrapper_input">
                             <div class="drag_field_input">
                                 ' . FormField::show('hidden', ['name' => $name, 'id' => $id, 'class' => 'filevalue']) . '
-                                ' . FormField::show('hidden', ['name' => $name . '_filename', 'id' => $id . '_filename', 'class' => 'filename']) . '
-                                ' . FormField::show('hidden', ['name' => $name . '_uploaded', 'id' => $id . '_uploaded', 'class' => 'filename_uploaded']) . '
+                                ' . FormField::show('hidden', ['name' => $nameFileName, 'id' => $id . '_filename', 'class' => 'filename']) . '
+                                ' . FormField::show('hidden', ['name' => $nameUploaded, 'id' => $id . '_uploaded', 'class' => 'filename_uploaded']) . '
                             </div>
                             <div class="drag_field_file">
-                                ' . FormField::show('file', ['name' => $name . '_file', 'id' => $id . '_file', 'layout' => 'simple', 'class' => 'filename_input']) . '
+                                ' . FormField::show('file', ['name' => $nameFile, 'id' => $id . '_file', 'layout' => 'simple', 'class' => 'filename_input', 'accept' => $accept]) . '
                             </div>
                             <div class="drag_field_drag">
                                 <div class="drag_field_drag_message">

@@ -784,33 +784,34 @@ function activateMaps() {
  * Reload the list in the administration page.
  **/
 function reloadListAdmin() {
-    if ($('.list_items').length > 0) {
-        var eleContainer = $('.list_items').first();
-        var url = $('.list_items').data('url');
-        eleContainer.css({
-            'opacity': '0.2',
-            'pointer-events': 'none'
-        });
-        $.ajax(url, {
-            contentType: "application/json"
-        }).done(function(response) {
-            eleContainer.css({
-                'opacity': '1',
-                'pointer-events': 'auto'
+    if ($('.reload_list_items').length > 0) {
+        $('.reload_list_items').each(function(index, ele){
+            var url = $(ele).data('url');
+            $(ele).css({
+                'opacity': '0.2',
+                'pointer-events': 'none'
             });
-            if (response && response.message_error) {
-                alert(response.message_error);
-            }
-            if (response.status && response.html) {
-                eleContainer.html(response.html);
-            }
-        }).fail(function(event) {
-            eleContainer.css({
-                'opacity': '1',
-                'pointer-events': 'auto'
+            $.ajax(url, {
+                contentType: "application/json"
+            }).done(function(response) {
+                $(ele).css({
+                    'opacity': '1',
+                    'pointer-events': 'auto'
+                });
+                if (response && response.message_error) {
+                    alert(response.message_error);
+                }
+                if (response.status && response.html) {
+                    $(ele).html(response.html);
+                }
+            }).fail(function(event) {
+                $(ele).css({
+                    'opacity': '1',
+                    'pointer-events': 'auto'
+                });
+                alert('Error');
             });
-            alert('Error');
-        });
+        })
     }
 }
 /**

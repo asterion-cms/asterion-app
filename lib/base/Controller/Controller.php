@@ -174,6 +174,7 @@ abstract class Controller
                  */
                 $this->checkLoginAdmin();
                 $object = new $this->objectType($this->values);
+                $this->object->checkBeforeInsert();
                 $persist = $object->persist();
                 if ($persist['status'] == StatusCode::OK) {
                     header('Location: ' . url($this->type . '/insert_check/' . $persist['object']->id(), true));
@@ -193,6 +194,7 @@ abstract class Controller
                 $response = ['status' => StatusCode::NOK, 'message_error' => __('insert_error')];
                 if ($this->checkLoginAdmin()) {
                     $object = new $this->objectType($this->values);
+                    $this->object->checkBeforeInsert();
                     $persist = $object->persist();
                     if ($persist['status'] == StatusCode::OK) {
                         $response = ['status' => StatusCode::OK];
@@ -249,6 +251,7 @@ abstract class Controller
                     return $this->ui->render();
                 } else {
                     $this->object->setValues($this->values);
+                    $this->object->checkBeforeModify();
                     $persist = $this->object->persist();
                     if ($persist['status'] == StatusCode::OK) {
                         header('Location: ' . url($this->type . '/modify_view_check/' . $persist['object']->id(), true));
@@ -274,6 +277,7 @@ abstract class Controller
                         $response = ['status' => StatusCode::NOK, 'message_error' => __('item_does_not_exist')];
                     } else {
                         $this->object->setValues($this->values);
+                        $this->object->checkBeforeModify();
                         $persist = $this->object->persist();
                         if ($persist['status'] == StatusCode::OK) {
                             $response = ['status' => StatusCode::OK];
@@ -571,7 +575,7 @@ abstract class Controller
         $list = new ListObjects($this->objectType, $options);
         $multipleChoice = (count((array) $this->object->info->info->form->multipleActions->action) > 0);
         return '
-            <div class="list_items list_items' . $this->type . ' ' . $sortable_listClass . '"
+            <div class="list_items reload_list_items list_items' . $this->type . ' ' . $sortable_listClass . '"
                 data-url="' . url($this->type . '/list_items', true) . '"
                 data-urlsort="' . url($this->type . '/sort_items/', true) . '">
                 ' . $list->showListPager(['function' => 'Admin', 'message' => '<div class="message">' . __('no_items') . '</div>'], ['user_admin_type' => $this->login->get('type'), 'multipleChoice' => $multipleChoice]) . '
@@ -658,7 +662,7 @@ abstract class Controller
     public function multipleActionsControl()
     {
         $multipleActions = $this->object->info->info->form->multipleActions->action;
-        if (count($multipleActions) > 0) {
+        if (isset($multipleActions) && count($multipleActions) > 0) {
             $multipleActionsOptions = '';
             foreach ($multipleActions as $multipleAction) {
                 $multipleActionLabel = (string) $multipleAction;

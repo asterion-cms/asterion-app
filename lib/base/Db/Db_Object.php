@@ -499,12 +499,12 @@ class Db_Object extends Db_Sql
             $refObject = new $refObjectName;
             return ($admin) ? $refObject->basicInfoAdminArray() : $refObject->basicInfoArray();
         } else {
-            $values = (isset($info->values)) ? (array) $info->values : [];
             $result = [];
-            if (isset($values['value']) && is_array($values['value'])) {
-                foreach ($values['value'] as $key => $value) {
-                    $result[] = __($value);
-                }
+            $i = 0;
+            foreach ($info->values->value as $itemIns) {
+                $id = (isset($itemIns['id'])) ? (string) $itemIns['id'] : $i;
+                $result[$id] = __((string) $itemIns);
+                $i++;
             }
             return $result;
         }
@@ -946,10 +946,11 @@ class Db_Object extends Db_Sql
         if (!isset($this->values[$name]) || trim($this->values[$name]) == '') {
             $this->errors[$name] = __('not_empty');
         } else {
+            $secret = (defined('ASTERION_RECAPTCHAV3_SITE_SECRET') && ASTERION_RECAPTCHAV3_SITE_SECRET != '') ? ASTERION_RECAPTCHAV3_SITE_SECRET : Parameter::code('recaptchav3_site_secret');
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, 'https://www.google.com/recaptcha/api/siteverify');
             curl_setopt($ch, CURLOPT_POST, 1);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query(['secret' => Parameter::code('recaptchav3_site_secret'), 'response' => $this->values[$name]]));
+            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query(['secret' => $secret, 'response' => $this->values[$name]]));
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             $response = curl_exec($ch);
             curl_close($ch);

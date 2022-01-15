@@ -13,7 +13,7 @@ abstract class Singleton
 
     private static $instances = [];
 
-    final private function __construct()
+    final function __construct()
     {
         $class = get_called_class();
         if (array_key_exists($class, self::$instances) && ASTERION_DEBUG) {
@@ -21,7 +21,7 @@ abstract class Singleton
         }
         $this->initialize();
     }
-    final private function __clone()
+    final function __clone()
     {}
 
     abstract protected function initialize();

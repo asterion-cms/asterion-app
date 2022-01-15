@@ -20,6 +20,7 @@ class UserAdmin extends User_Interface
         parent::__construct($values);
 
         $this->urlLogin = url('user_admin/login', true);
+        $this->urlLoginFacebook = url('user_admin/login_facebook', true);
         $this->urlRegister = url('user_admin/register', true);
         $this->urlActivate = url('user_admin/activate', true);
         $this->urlForgot = url('user_admin/forgot', true);

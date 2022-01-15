@@ -231,6 +231,18 @@ class Db_Sql
     }
 
     /**
+     * Override function to perform actions before inserting an object.
+     */
+    public function checkBeforeInsert()
+    {}
+
+    /**
+     * Override function to perform actions before updating an object.
+     */
+    public function checkBeforeModify()
+    {}
+
+    /**
      * Insert or update the object in the database.
      */
     public function persist($persistMultiple = true)
@@ -282,6 +294,26 @@ class Db_Sql
                 WHERE ' . $this->primary . ' = :' . $this->primary;
         Db::execute($query, [$attribute => $value, $this->primary => $this->id()]);
         $this->set($attribute, $value);
+        return ['status' => StatusCode::OK, 'object' => $this];
+    }
+
+    /**
+     * Modify a list of single attributes.
+     */
+    public function persistSimpleArray($values)
+    {
+        $set = [];
+        foreach ($values as $attribute => $value) {
+            $set[] = $attribute . ' = :' . $attribute;
+        }
+        $values[$this->primary] = $this->id();
+        $query = 'UPDATE ' . $this->tableName . '
+                SET ' . implode(', ', $set) . '
+                WHERE ' . $this->primary . ' = :' . $this->primary;
+        Db::execute($query, $values);
+        foreach ($values as $attribute => $value) {
+            $this->set($attribute, $value);
+        }
         return ['status' => StatusCode::OK, 'object' => $this];
     }
 

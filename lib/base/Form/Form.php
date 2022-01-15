@@ -117,19 +117,6 @@ class Form
             default:
                 return FormField::show($type, $options);
                 break;
-            case 'select':
-                switch ($type) {
-                    default:
-                        return FormField::show('select', $options);
-                        break;
-                    case 'select_link':
-                        return FormField::show('selectLink', $options);
-                        break;
-                    case 'select_link-simple':
-                        return FormField::show('selectLinkSimple', $options);
-                        break;
-                }
-                break;
             case 'id':
             case 'linkid':
             case 'hidden':
@@ -241,11 +228,12 @@ class Form
                         foreach ($this->object->get($name) as $item) {
                             $autocompleteItems[] = $item->getBasicInfoAutocomplete();
                         }
+                        $options['value'] = implode(', ', $autocompleteItems);
                         return '
                             <div class="autocomplete_item autocomplete_item-' . $name . '"
                                 data-url="' . url($autoCompleteObjectInstance->snakeName . '/autocomplete/' . $autoCompleteAttribute, true) . '">
                                 <div class="autocompleteItemIns">
-                                    ' . FormField::show('text', ['name' => $name, 'label' => $label, 'size' => '60', 'value' => implode(', ', $autocompleteItems)]) . '
+                                    ' . FormField::show('text', $options) . '
                                 </div>
                             </div>';
                         break;
@@ -298,11 +286,12 @@ class Form
         $submit = (isset($options['submit'])) ? $options['submit'] : __('send');
         $submitName = (isset($options['submitName'])) ? $options['submitName'] : 'submit';
         $id = (isset($options['id'])) ? 'id="' . $options['id'] . '"' : '';
-        $id = ($recaptchav3) ? 'id="recaptchav3_form"' : $id;
+        $class .= ($recaptchav3) ? ' recaptchav3_form ' : '';
         if ($recaptchav3) {
+            $sitekey = (defined('ASTERION_RECAPTCHAV3_SITE_KEY') && ASTERION_RECAPTCHAV3_SITE_KEY != '') ? ASTERION_RECAPTCHAV3_SITE_KEY : Parameter::code('recaptchav3_site_key');
             $submitButton = '
                 <div class="form_submit_wrapper">
-                    <button class="g-recaptcha button form_submit" data-sitekey="' . Parameter::code('recaptchav3_site_key') . '" data-callback="onSubmitRecaptchaV3" data-action="submit">' . $submit . '</button>
+                    <button class="g-recaptcha button form_submit" data-sitekey="' . $sitekey . '" data-callback="onSubmitRecaptchaV3" data-action="submit">' . $submit . '</button>
                 </div>';
         } else if ($submit == 'ajax') {
             $submitButton = '

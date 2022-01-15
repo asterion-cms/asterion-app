@@ -46,6 +46,26 @@ class User_Form_Interface extends Form
         return '
             <div class="simple_form">
                 <h1>' . __('login') . '</h1>
+                ' . (($this->object->hasLoginFacebook() || $this->object->hasLoginGoogle()) ? '
+                    <div class="button_login_extras">
+                        ' . (($this->object->hasLoginFacebook()) ? '
+                                <div class="facebook_info"
+                                    data-appid="' . Parameter::code('facebook_app_id') . '"
+                                    data-urllogin="' . $this->object->urlLoginFacebook . '"></div>
+                                <div class="button_login_extra button_login_extra_facebook">
+                                    <div class="button_login_extra_ins">' . __('facebook_login') . '</div>
+                                </div>
+                            ' : '') . '
+                        ' . (($this->object->hasLoginGoogle()) ? '
+                                <div class="google_info"
+                                    data-clientid="' . Parameter::code('google_client_id') . '"
+                                    data-urllogin="' . $this->object->urlLoginGoogle . '"></div>
+                                <div class="button_login_extra button_login_extra_google">
+                                    <div class="button_login_extra_ins">' . __('google_login') . '</div>
+                                </div>
+                            ' : '') . '
+                    </div>
+                ' : '') . '
                 <p>' . __('login_message') . '</p>
                 ' . $this->loginForm($options) . '
                 <div class="simple_form_actions">
@@ -180,9 +200,9 @@ class User_Form_Interface extends Form
         $this->errors['new_password'] = isset($this->errors['new_password']) ? $this->errors['new_password'] : '';
         $this->errors['new_password_confirmation'] = isset($this->errors['new_password_confirmation']) ? $this->errors['new_password_confirmation'] : '';
         $fields = '
-            ' . FormField::show('password', ['label' => __('old_password'), 'name' => 'old_password', 'error' => $this->errors['old_password'], 'value' => '']) . '
-            ' . FormField::show('password', ['label' => __('new_password'), 'name' => 'new_password', 'error' => $this->errors['new_password'], 'value' => '']) . '
-            ' . FormField::show('password', ['label' => __('new_password_confirmation'), 'name' => 'new_password_confirmation', 'error' => $this->errors['new_password_confirmation'], 'value' => '']);
+            ' . FormField::show('password', ['label' => __('old_password'), 'name' => 'old_password', 'error' => $this->errors['old_password'], 'value' => '', 'required' => true]) . '
+            ' . FormField::show('password', ['label' => __('new_password'), 'name' => 'new_password', 'error' => $this->errors['new_password'], 'value' => '', 'required' => true]) . '
+            ' . FormField::show('password', ['label' => __('new_password_confirmation'), 'name' => 'new_password_confirmation', 'error' => $this->errors['new_password_confirmation'], 'value' => '', 'required' => true]);
         return Form::createForm($fields, $options);
     }
 

@@ -16,6 +16,13 @@ class User_Interface extends Db_Object
         parent::__construct($values);
     }
 
+    public function checkBeforeModify()
+    {
+        unset($this->values['password']);
+        unset($this->values['password_salt']);
+        unset($this->values['password_temporary']);
+    }
+
     public function urlDeleteImagePublic($valueFile = '')
     {
         return $this->urlDeleteImage;
@@ -283,7 +290,7 @@ class User_Interface extends Db_Object
     {
         $userClass = new $this->userClassName;
         $hash = hash('sha256', $this->id() . $this->get('email'));
-        $activationLink = $userClass->urlActivate . '/' . $hash;
+        $activationLink = $userClass->urlActivate . '?code=' . $hash;
         HtmlMail::send($this->get('email'), 'user_registration', ['USER_NAME' => $this->get('name'), 'EMAIL' => $this->get('email'), 'ACTIVATION_LINK' => $activationLink]);
         HtmlMail::send(Parameter::code('email'), 'user_registration_admin', ['USER_NAME' => $this->get('name'), 'EMAIL' => $this->get('email'), 'ACTIVATION_LINK' => $activationLink]);
     }
@@ -491,6 +498,31 @@ class User_Interface extends Db_Object
     public function validateProfile()
     {
         return $this->validateAttributes(['name']);
+    }
+
+    public function hasLoginFacebook()
+    {
+        return (isset($this->loginFacebook) && $this->loginFacebook);
+    }
+
+    public function hasLoginGoogle()
+    {
+        return (isset($this->loginGoogle) && $this->loginGoogle);
+    }
+
+    public static function head()
+    {
+        return '
+            <script>
+                (function(d, s, id){
+                 var js, fjs = d.getElementsByTagName(s)[0];
+                 if (d.getElementById(id)) {return;}
+                 js = d.createElement(s); js.id = id;
+                 js.src = "https://connect.facebook.net/en_US/sdk.js";
+                 fjs.parentNode.insertBefore(js, fjs);
+                }(document, \'script\', \'facebook-jssdk\'));
+            </script>
+            <script src="https://accounts.google.com/gsi/client" async defer></script>';
     }
 
 }

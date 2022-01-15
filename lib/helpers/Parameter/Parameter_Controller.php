@@ -68,40 +68,9 @@ class Parameter_Controller extends Controller
         }
 
         return '
-            <div class="list_items list_items" data-url="' . url($this->type . '/list_items', true) . '">
+            <div class="list_items list_items reload_list_items" data-url="' . url($this->type . '/list_items', true) . '">
                 ' . $html . '
             </div>';
-
-        dumpExit($types);
-
-        $infoParameterOrder = [];
-        foreach ($parametersTypes as $paramType) {
-            $infoParameterOrder[$paramType] = [];
-        }
-
-        foreach ($items as $item) {
-            $type = explode('_', $item->get('code'));
-            if (in_array($type[0], $parametersTypes)) {
-                $infoParameterOrder[$type[0]][] = $item;
-            } else {
-                $infoParameterOrder['misc'][] = $item;
-            }
-        }
-        foreach ($infoParameterOrder as $infoParamTitle => $infoParamOrder) {
-            if (count($infoParamOrder) > 0) {
-                $htmlItems = '';
-                foreach ($infoParamOrder as $infoParamOrderItem) {
-                    $htmlItems .= $infoParamOrderItem->showUi('Admin');
-                }
-                $html .= '<div class="line_admin_block">
-                                <div class="line_admin_title">' . __($infoParamTitle) . '</div>
-                                <div class="line_adminItems">
-                                    ' . $htmlItems . '
-                                </div>
-                            </div>';
-            }
-        }
-        return '<div class="line_admin_blockWrapper">' . $html . '</div>';
     }
 
 }

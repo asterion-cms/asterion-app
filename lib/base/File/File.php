@@ -20,6 +20,7 @@ class File
             $mainFolder = ASTERION_STOCK_FILE . $objectName . 'Files';
             File::createDirectory($mainFolder);
             $fileDestination = $mainFolder . '/' . $fileName;
+            $dataFile = str_replace(ASTERION_BASE_URL, ASTERION_BASE_FILE, $dataFile);
             if ($dataFile != '' && copy($dataFile, $fileDestination)) {
                 @chmod($fileDestination, 0777);
                 return true;
@@ -75,6 +76,7 @@ class File
             File::createDirectory($directory);
             $newFilename = $directory . substr(md5(rand()), 0, 5) . '_' . $values['filename'];
             if (copy($values['file'], $newFilename)) {
+                @chmod($newFilename, 0777);
                 $response = ['status' => StatusCode::OK, 'file' => str_replace(ASTERION_BASE_FILE, ASTERION_BASE_URL, $newFilename), 'filename' => $values['filename']];
             }
         }

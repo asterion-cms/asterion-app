@@ -22,8 +22,8 @@ class Parameter extends Db_Object
             $result = Db::returnAll($query);
             foreach ($result as $item) {
                 $information = Text::decodeText($item['information']);
-                $information = ($item['image']!='') ? Db_Object::getImageUrlFromStock('Parameter', $item['image'], 'huge') : $information;
-                $information = ($item['file']!='') ? $item['file'] : $information;
+                $information = ($item['image'] != '') ? Db_Object::getImageUrlFromStock('Parameter', $item['image'], 'huge') : $information;
+                $information = ($item['file'] != '') ? $item['file'] : $information;
                 $items[$item['code']] = $information;
             }
             $GLOBALS['parameters'] = $items;
@@ -48,6 +48,32 @@ class Parameter extends Db_Object
         } else {
             return (isset($GLOBALS['parameters'][$code])) ? $GLOBALS['parameters'][$code] : '';
         }
+    }
+
+    /**
+     * Load an object using its code
+     */
+    public static function load($code)
+    {
+        return (new Parameter)->readFirst(array('where' => 'code="' . $code . '"'));
+    }
+
+    /**
+     * Load an image url using its code
+     */
+    public static function getImageUrlFromCode($code, $format='web')
+    {
+        $parameter = Parameter::load($code);
+        return ($parameter->id()!='') ? $parameter->getImageUrl('image', $format) : '';;
+    }
+
+    /**
+     * Load a file url using its code
+     */
+    public static function getFileUrlFromCode($code)
+    {
+        $parameter = Parameter::load($code);
+        return ($parameter->id()!='') ? $parameter->getFileUrl('file') : '';;
     }
 
     /**
