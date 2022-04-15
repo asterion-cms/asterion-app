@@ -20,7 +20,10 @@ class Recaptcha
         	<script src="https://www.google.com/recaptcha/api.js"></script>
             <script>function onSubmitRecaptchaV3(token) {
                 for (var i=0; i < document.getElementsByClassName("recaptchav3_form").length; i++) {
-                    document.getElementsByClassName("recaptchav3_form")[i].submit();
+                    var form = document.getElementsByClassName("recaptchav3_form")[i];
+                    if (form.reportValidity() !== false) {
+                        form.submit();
+                    }
                 }
             }</script>';
     }

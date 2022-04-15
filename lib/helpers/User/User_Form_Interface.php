@@ -61,7 +61,9 @@ class User_Form_Interface extends Form
                                     data-clientid="' . Parameter::code('google_client_id') . '"
                                     data-urllogin="' . $this->object->urlLoginGoogle . '"></div>
                                 <div class="button_login_extra button_login_extra_google">
-                                    <div class="button_login_extra_ins">' . __('google_login') . '</div>
+                                    <div class="button_login_extra_ins">
+                                        <div id="button_login_extra_google"></div>
+                                    </div>
                                 </div>
                             ' : '') . '
                     </div>

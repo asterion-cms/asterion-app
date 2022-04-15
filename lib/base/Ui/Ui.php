@@ -255,6 +255,15 @@ class Ui
                             $labelAttribute = $this->object->getFileLink($attribute);
                         }
                         break;
+                    case 'multiple_object':
+                        if ((string) $info->mode == 'count') {
+                            $refObject = (string) $info->refObject;
+                            $linkAttribute = (string) $info->linkAttribute;
+                            $refObjectInstance = new $refObject();
+                            $count = $refObjectInstance->countResults(['where' => $linkAttribute . '=:id'], ['id' => $this->object->id()]);
+                            $labelAttribute = str_replace('#RESULTS', '<strong>' . $count . '</strong>', __('list_total'));
+                        }
+                        break;
                 }
                 $html = str_replace('#' . $attribute, $labelAttribute, $html);
             }

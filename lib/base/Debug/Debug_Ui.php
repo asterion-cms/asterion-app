@@ -24,7 +24,7 @@ class Debug_Ui
         $totalTime = $debugContentMicrotime + $debugInitializationMicrotime;
         $totalTimeQueries = 0;
         $index = 0;
-        foreach ($debugQueries as $query) {
+        foreach (array_reverse($debugQueries) as $query) {
             $totalTimeQueries += $query['microtime'];
             $debugQueriesHtml .= '<div class="debug_query ' . (($debugContentMicrotimeStart < $query['microtime_start']) ? 'debug_query_content' : '') . '">
                                     <div class="debug_query_index">' . $index . '</div>

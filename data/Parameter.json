@@ -42,4 +42,24 @@
     "code": "link_instagram",
     "name": "Instagram",
     "information": "http://www.instagram.com"
+}, {
+    "code": "mailer_host",
+    "name": "Host",
+    "information": ""
+}, {
+    "code": "mailer_username",
+    "name": "Username",
+    "information": ""
+}, {
+    "code": "mailer_password",
+    "name": "Password",
+    "information": ""
+}, {
+    "code": "mailer_email",
+    "name": "Email",
+    "information": ""
+}, {
+    "code": "mailer_label",
+    "name": "Label",
+    "information": ""
 }]

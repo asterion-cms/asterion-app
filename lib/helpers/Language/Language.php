@@ -21,7 +21,8 @@ class Language extends Db_Object
         $languageUrl = (isset($_GET['language'])) ? $_GET['language'] : '';
         $language = (isset($languages[$languageUrl])) ? $languages[$languageUrl] : reset($languages);
         Session::set('language', $language);
-        if (ASTERION_DB_USE == true) {
+        $GLOBALS['translations'] = [];
+        if (ASTERION_DB_USE == true && (ASTERION_LANGUAGE_LOAD_TRANSLATIONS == true || Url::isAdministration())) {
             $GLOBALS['translations'] = Translation::load($language['id']);
         }
     }
@@ -46,10 +47,10 @@ class Language extends Db_Object
             $GLOBALS['languages'] = [
                 constant('ASTERION_LANGUAGE_ID') => [
                     'id' => constant('ASTERION_LANGUAGE_ID'),
-                    'name' => constant('ASTERION_LANGUAGE_NAME')
-                ]
+                    'name' => constant('ASTERION_LANGUAGE_NAME'),
+                ],
             ];
-        } else if (ASTERION_DB_USE == true) {
+        } else if (ASTERION_DB_USE == true && (ASTERION_LANGUAGE_LOAD_TRANSLATIONS == true || Url::isAdministration())) {
             $query = 'SELECT * FROM ' . (new Language())->tableName . ' ORDER BY ord';
             $languages = [];
             foreach (Db::returnAll($query, [], false) as $item) {
@@ -96,8 +97,8 @@ class Language extends Db_Object
      */
     public function getTranslations()
     {
-        $translations = (new Translation)->readList(['order' => 'code']);
         $result = [];
+        $translations = (new Translation)->readList(['order' => 'code']);
         $keys = Translation::translationsKeys();
         foreach ($translations as $translation) {
             $result[$translation->get('code')] = $translation->get('translation_' . $this->id());

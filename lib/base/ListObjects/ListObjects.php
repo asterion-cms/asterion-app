@@ -51,7 +51,7 @@ class ListObjects
         if (!isset($this->countTotal)) {
             if ($this->queryCount != '') {
                 $result = Db::returnSingle($this->queryCount);
-                $this->countTotal = $result['numberItems'];
+                $this->countTotal = $result['count_results'];
             } else {
                 if (isset($this->options['fields']) && is_array($this->options['fields'])) {
                     $optionsCount = $this->options;
@@ -148,7 +148,7 @@ class ListObjects
                         $listFrom = 0;
                         $listTo = $delta;
                         $listStart = false;
-                        $listEnd = true;
+                        $listEnd = ($totalPages > $delta + 1) ? true : false;
                     } else {
                         if ($page + $midDelta >= $totalPages - 1) {
                             //The last pages of the list
@@ -237,10 +237,9 @@ class ListObjects
     public function metaNavigation()
     {
         $page = $this->page();
-        $totalPages = $this->totalPages();
-        $meta = ($page < $totalPages) ? '<link rel="next" href="' . Url::urlPage($page + 1) . '"/>' : '';
-        $meta .= ($page > 1) ? '<link rel="prev" href="' . Url::urlPage($page - 1) . '"/>' : '';
-        return $meta;
+        return '
+            ' . (($page < $this->totalPages()) ? '<link rel="next" href="' . Url::urlPage($page + 1) . '"/>' : '') . '
+            ' . (($page > 1) ? '<link rel="prev" href="' . Url::urlPage($page - 1) . '"/>' : '');
     }
 
 }

@@ -20,38 +20,36 @@ class Init
     public static function initSite()
     {
         Url::init();
-        if (ASTERION_DEBUG) {
-            if (ASTERION_DB_USE && ASTERION_DEBUG_SCHEMA) {
-                if ($_GET['type'] == 'installation') {
-                    return true;
+        if (ASTERION_DEBUG && ASTERION_DB_USE && ASTERION_DEBUG_SCHEMA) {
+            if ($_GET['type'] == 'installation') {
+                return true;
+            }
+            if (!Db_Connection::testConnection()) {
+                header('Location: ' . url('installation', true));
+                exit();
+            }
+            $errorsDatabase = Init::errorsDatabase();
+            if (count($errorsDatabase) > 0) {
+                header('Location: ' . url('installation/database', true));
+                exit();
+            }
+            if (count(Language::languages()) == 0) {
+                header('Location: ' . url('installation/languages', true));
+                exit();
+            }
+            Parameter::saveInitialValues();
+            $objectNames = File::scanDirectoryObjects();
+            foreach ($objectNames as $objectName) {
+                $options = ($objectName == 'UserAdmin') ? ['EMAIL' => ASTERION_EMAIL] : [];
+                Init::saveInitialValues($objectName, $options);
+                if (method_exists($objectName, 'init')) {
+                    $object = new $objectName();
+                    $object->init();
                 }
-                if (!Db_Connection::testConnection()) {
-                    header('Location: ' . url('installation', true));
-                    exit();
-                }
-                $errorsDatabase = Init::errorsDatabase();
-                if (count($errorsDatabase) > 0) {
-                    header('Location: ' . url('installation/database', true));
-                    exit();
-                }
-                if (count(Language::languages()) == 0) {
-                    header('Location: ' . url('installation/languages', true));
-                    exit();
-                }
-                Parameter::saveInitialValues();
-                $objectNames = File::scanDirectoryObjects();
-                foreach ($objectNames as $objectName) {
-                    $options = ($objectName == 'UserAdmin') ? ['EMAIL' => ASTERION_EMAIL] : [];
-                    Init::saveInitialValues($objectName, $options);
-                    if (method_exists($objectName, 'init')) {
-                        $object = new $objectName();
-                        $object->init();
-                    }
-                }
-                if ((new Translation)->countResults() == 0) {
-                    foreach (Language::languages() as $language) {
-                        Translation::resetAdminTranslations($language['id']);
-                    }
+            }
+            if ((new Translation)->countResults() == 0) {
+                foreach (Language::languages() as $language) {
+                    Translation::resetAdminTranslations($language['id']);
                 }
             }
         }

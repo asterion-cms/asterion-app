@@ -417,9 +417,7 @@ class Db_Object extends Db_Sql
      */
     public function urlUploadTempImage()
     {
-        return (Url::isAdministration()) ?
-        url($this->snakeName . '/upload_temp_image', true) :
-        $this->urlUploadTempImagePublic();
+        return (Url::isAdministration()) ? url($this->snakeName . '/upload_temp_image', true) : $this->urlUploadTempImagePublic();
     }
 
     /**
@@ -435,9 +433,7 @@ class Db_Object extends Db_Sql
      */
     public function urlUploadTempFile()
     {
-        return (Url::isAdministration()) ?
-        url($this->snakeName . '/upload_temp_file', true) :
-        $this->urlUploadTempFilePublic();
+        return (Url::isAdministration()) ? url($this->snakeName . '/upload_temp_file', true) : $this->urlUploadTempFilePublic();
     }
 
     /**

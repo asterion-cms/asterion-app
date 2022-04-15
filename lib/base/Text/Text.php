@@ -332,4 +332,13 @@ class Text
         return substr(md5(rand() * rand()), 0, 10);
     }
 
+    /**
+     * Function to clean HTML code inserted by the user.
+     * Used to prevent scripts and injections.
+     */
+    public static function cleanHtml($html)
+    {
+        return preg_replace("/<([a-z][a-z0-9]*)[^>]*?(\/?)>/i", '<$1$2>', strip_tags($html, '<p><ul><ol><li><u><em><strong>'));
+    }
+
 }

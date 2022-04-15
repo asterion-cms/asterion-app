@@ -23,7 +23,6 @@ class Cache
                 $ui = new $uiClassName($object);
                 $reflection = new ReflectionClass($uiClassName);
                 $classMethods = get_class_methods($uiClassName);
-                $items = $object->readList();
                 $cacheUrl = Parameter::code('cache-url');
                 foreach ($classMethods as $classMethod) {
                     $method = new ReflectionMethod($uiClassName, $classMethod);
@@ -34,6 +33,7 @@ class Cache
                             File::createDirectory(ASTERION_BASE_FILE . 'cache', false);
                             File::createDirectory(ASTERION_BASE_FILE . 'cache/' . $className, false);
                             if (!$method->isStatic()) {
+                                $items = $object->readList();
                                 foreach ($items as $item) {
                                     $itemUi = new $uiClassName($item);
                                     $file = ASTERION_BASE_FILE . 'cache/' . $className . '/' . $classMethod . '_' . $item->id() . '.htm';

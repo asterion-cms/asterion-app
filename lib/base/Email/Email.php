@@ -24,13 +24,13 @@ class Email
             $mail = new PHPMailer(true);
             $mail->isSMTP();
             $mail->CharSet = 'utf-8';
-            $mail->Host = ASTERION_MAIL_HOST;
+            $mail->Host = Parameter::code('mailer_host');
             $mail->SMTPAuth = true;
-            $mail->Username = ASTERION_MAIL_USERNAME;
-            $mail->Password = ASTERION_MAIL_PASSWORD;
+            $mail->Username = Parameter::code('mailer_username');
+            $mail->Password = Parameter::code('mailer_password');
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
             $mail->Port = 587;
-            $mail->setFrom(Parameter::code('email'), Parameter::code('meta_title_page'));
+            $mail->setFrom(Parameter::code('mailer_email'), Parameter::code('mailer_label'));
             $mail->addReplyTo($replyToEmail, $replyToName);
             $mail->addAddress($mailTo);
             $mail->isHTML(true);
@@ -39,7 +39,11 @@ class Email
             $mail->AltBody = strip_tags($htmlMail);
             $mail->send();
             $status = StatusCode::OK;
-        } catch (Exception $e) {}
+        } catch (Exception $e) {
+            if (ASTERION_DEBUG) {
+                dumpExit($e);
+            }
+        }
         return ['status' => $status];
     }
 

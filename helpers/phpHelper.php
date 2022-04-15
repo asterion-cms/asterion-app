@@ -219,3 +219,12 @@ function dumpExit($variable)
     dump($variable);
     exit();
 }
+
+/**
+ * Function to dump a variable and stop the application
+ */
+function dd($variable)
+{
+    dump($variable);
+    exit();
+}

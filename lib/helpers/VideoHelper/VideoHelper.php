@@ -11,6 +11,13 @@ class VideoHelper
             return ($id != '') ? '
 	        	<iframe width="' . $width . '" height="' . $height . '" src="https://www.youtube.com/embed/' . $id . '?controls=0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>' : '';
         }
+        if (strpos($link, 'vimeo.com/showcase') !== false) {
+            sscanf(parse_url($link, PHP_URL_PATH), '/showcase/%d', $info);
+            $id = intval($info);
+            return ($id != '') ? '
+                <iframe src="https://vimeo.com/showcase/' . $id . '/embed" width="' . $width . '" height="' . $height . '" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>' : '';
+
+        }
         if (strpos($link, 'vimeo') !== false) {
             sscanf(parse_url($link, PHP_URL_PATH), '/%d', $info);
             $id = intval($info);

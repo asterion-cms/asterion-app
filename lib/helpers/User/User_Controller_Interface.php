@@ -23,7 +23,7 @@ class User_Controller_Interface extends Controller
             case 'login':
                 $login = $userLoginClassName::getInstance();
                 $this->title_page = __('login');
-                $this->head = User::head();
+                $this->head .= User_Interface::head();
                 $urlConnected = (Session::get('urlConnected')!='') ? Session::get('urlConnected') : $userClass->urlConnected;
                 if ($login->isConnected()) {
                     Session::delete('urlConnected');

@@ -569,9 +569,9 @@ abstract class Controller
             $options['order'] = $orderInfoItem . ' ' . $ordObjectType;
         }
         $options['results'] = (int) $this->object->info->info->form->pager;
-        $options['where'] = ($search != '' && $searchValue != '') ? str_replace('#SEARCH', $searchValue, $search) : '';
-        $options['query'] = ($searchQuery != '' && $searchValue != '') ? str_replace('#SEARCH', $searchValue, $searchQuery) : '';
-        $options['queryCount'] = ($searchQueryCount != '' && $searchValue != '') ? str_replace('#SEARCH', $searchValue, $searchQueryCount) : '';
+        $options['where'] = ($search != '' && $searchValue != '') ? str_replace('#TABLE', $this->object->tableName, str_replace('#SEARCH', $searchValue, $search)) : '';
+        $options['query'] = ($searchQuery != '' && $searchValue != '') ? str_replace('#TABLE', $this->object->tableName, str_replace('#SEARCH', $searchValue, $searchQuery)) : '';
+        $options['queryCount'] = ($searchQueryCount != '' && $searchValue != '') ? str_replace('#TABLE', $this->object->tableName, str_replace('#SEARCH', $searchValue, $searchQueryCount)) : '';
         $list = new ListObjects($this->objectType, $options);
         $multipleChoice = (count((array) $this->object->info->info->form->multipleActions->action) > 0);
         return '
@@ -727,10 +727,18 @@ abstract class Controller
                 $items = Ui::menuAdminInside($this->type . '/insert_view', 'plus', 'add');
             }
         }
-        if (in_array($this->action, ['insert_view', 'insert_view_ajax', 'insert_check', 'modify_view', 'modify_view_ajax', 'modify_view_check'])) {
+        if (in_array($this->action, $this->menuInsideItemsListElements())) {
             $items .= Ui::menuAdminInside($this->type . '/list_items', 'list', 'view_list');
         }
         return $items;
+    }
+
+    /**
+     * Return the array of actions that show the "list elements" icon.
+     */
+    public function menuInsideItemsListElements()
+    {
+        return ['insert_view', 'insert_view_ajax', 'insert_check', 'modify_view', 'modify_view_ajax', 'modify_view_check'];
     }
 
     /**

@@ -24,6 +24,10 @@ class Parameter_Controller extends Controller
                 'title' => __('emails'),
                 'description' => __('emails_parameters_description'),
             ],
+            'mailer' => [
+                'title' => __('mailer'),
+                'description' => __('mailer_parameters_description'),
+            ],
             'link' => [
                 'title' => __('links'),
                 'description' => __('links_parameters_description'),

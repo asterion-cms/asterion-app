@@ -1,4 +1,4 @@
-<?php $version = (ASTERION_DEBUG) ? rand() : date('mY');?>
+<?php $version = (ASTERION_DEBUG) ? rand() : date('dmY');?>
 <!DOCTYPE html>
 <html lang="<?php echo Language::active(); ?>">
 <head>

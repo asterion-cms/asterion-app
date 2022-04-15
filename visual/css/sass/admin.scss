@@ -2875,12 +2875,13 @@
 }
 
 .logs {
-    font-size: $fontSizeSmall;
+    font-size: $fontSizeTiny;
     font-family: $fontFamilyMonospace;
     color: rgba($black, 0.5);
     .log_detail {
         max-height: 150px;
         overflow: auto;
+        word-break: break-all;
     }
 }
 

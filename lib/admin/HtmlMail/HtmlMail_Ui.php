@@ -21,11 +21,7 @@ class HtmlMail_Ui extends Ui
     public function renderMail($options = [])
     {
         $values = (isset($options['values']) && is_array($options['values'])) ? $options['values'] : [];
-        if (isset($options['template'])) {
-            $template = HtmlMailTemplate::code($options['template']);
-        } else {
-            $template = HtmlMailTemplate::code('basic');
-        }
+        $template = (isset($options['template'])) ? HtmlMailTemplate::code($options['template']) : HtmlMailTemplate::code('basic');
         $content = $this->object->get('email');
         foreach ($values as $key => $value) {
             $content = str_replace('#' . $key, $value, $content);
