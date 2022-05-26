@@ -53,8 +53,7 @@ class Cache
                     }
                 }
             }
-        } catch (Exception $e) {
-        }
+        } catch (Exception $e) {}
     }
 
     /**
@@ -65,7 +64,7 @@ class Cache
         $filenames = array_merge(rglob(ASTERION_BASE_FILE . 'lib/*_Ui.php'), rglob(ASTERION_APP_FILE . 'lib/*_Ui.php'));
         foreach ($filenames as $filename) {
             $className = str_replace('_Ui.php', '', basename($filename));
-            if ($className != 'Navigation' && $className != 'NavigationAdmin') {
+            if ($className != 'Navigation' && $className != 'NavigationAdmin' && $className != 'Installation') {
                 Cache::cacheObject($className);
             }
         }

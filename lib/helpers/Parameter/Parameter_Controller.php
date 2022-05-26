@@ -50,7 +50,7 @@ class Parameter_Controller extends Controller
                         $types[$key]['items'][] = $parameter;
                     }
                 } else {
-                    if (!in_array($parameterType, ['meta', 'email', 'link', 'map'])) {
+                    if (!in_array($parameterType, ['meta', 'email', 'mailer', 'link', 'map'])) {
                         $types[$key]['items'][] = $parameter;
                     }
                 }
