@@ -37,8 +37,9 @@ abstract class Controller
      */
     public function getTitle()
     {
-        $titlePage = Parameter::code('meta_title_page');
-        return (isset($this->title_page) && $this->title_page != '') ? $this->title_page . (($titlePage != '' && !isset($this->hide_title_page_appendix)) ? ' - ' . $titlePage : '') : $titlePage;
+        $title_page = Parameter::code('meta_title_page');
+        $title_page = (isset($this->title_page) && $this->title_page != '') ? $this->title_page . (($title_page != '' && !isset($this->hide_title_page_appendix)) ? ' - ' . $title_page : '') : $title_page;
+        return str_replace('"', '', $title_page);
     }
 
     /**
