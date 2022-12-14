@@ -27,7 +27,7 @@ class Url
         $url = strtolower($url);
         $url = str_replace(' ', '', $url);
         $url = trim($url);
-        if ($url != '' || strpos($url, '.') <= 0) {
+        if ($url != '' && strpos($url, '.') !== false) {
             if (substr($url, 0, 8) == 'https://' || substr($url, 0, 7) == 'http://') {
                 return $url;
             } else {
