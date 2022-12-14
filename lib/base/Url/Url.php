@@ -27,7 +27,7 @@ class Url
         $url = strtolower($url);
         $url = str_replace(' ', '', $url);
         $url = trim($url);
-        if ($url!='') {
+        if ($url != '' || strpos($url, '.') <= 0) {
             if (substr($url, 0, 8) == 'https://' || substr($url, 0, 7) == 'http://') {
                 return $url;
             } else {
@@ -93,7 +93,7 @@ class Url
             //Check if there are routes
             $routes = Url::routerControllers();
             if (isset($routes[$_GET['action']])) {
-                $_GET['type'] =  $routes[$_GET['action']];
+                $_GET['type'] = $routes[$_GET['action']];
                 $_GET['action'] = (isset($info[2]) && $info[2] != '') ? $info[2] : 'intro';
                 $_GET['id'] = (isset($info[3])) ? $info[3] : '';
                 $_GET['extraId'] = (isset($info[4])) ? $info[3] : '';
