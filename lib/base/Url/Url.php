@@ -29,9 +29,10 @@ class Url
         $url = trim($url);
         if ($url!='') {
             if (substr($url, 0, 8) != 'https://' && substr($url, 0, 7) != 'http://') {
+                $url = urlencode($url);
                 $url = (substr($url, 0, 3) == 'www') ? 'http://' . $url : 'http://www.' . $url;
             }
-            return urlencode($url);
+            return $url;
         }
     }
 
