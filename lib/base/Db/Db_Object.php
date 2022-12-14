@@ -317,11 +317,19 @@ class Db_Object extends Db_Sql
     }
 
     /**
+     * Gets the administration url list.
+     */
+    public function urlListAdmin()
+    {
+        return url($this->snakeName . '/list_items/', true);
+    }
+
+    /**
      * Gets the url to modify an object in an admin level.
      */
     public function urlAdmin()
     {
-        return url($this->className . '/modify_view/' . $this->id(), true);
+        return url($this->snakeName . '/modify_view/' . $this->id(), true);
     }
 
     /**
@@ -379,7 +387,7 @@ class Db_Object extends Db_Sql
     /**
      * Return the url to delete an image, in an admin context.
      */
-    public function urlDeleteImage($valueFile)
+    public function urlDeleteImage($valueFile = '')
     {
         return (Url::isAdministration()) ?
         url($this->snakeName . '/delete_image/' . $this->id() . '/' . $valueFile, true) :
@@ -397,7 +405,7 @@ class Db_Object extends Db_Sql
     /**
      * Return the url to delete a file, in an admin context.
      */
-    public function urlDeleteFile($valueFile)
+    public function urlDeleteFile($valueFile = '')
     {
         return (Url::isAdministration()) ?
         url($this->snakeName . '/delete_file/' . $this->id() . '/' . $valueFile, true) :
@@ -407,7 +415,7 @@ class Db_Object extends Db_Sql
     /**
      * Return the url to delete a file in an public context. Function to override when needed.
      */
-    public function urlDeleteFilePublic($valueFile)
+    public function urlDeleteFilePublic($valueFile = '')
     {
         return '';
     }
@@ -677,7 +685,7 @@ class Db_Object extends Db_Sql
     {
         $imageUrl = $this->getImageUrl($attributeName, $version);
         if ($imageUrl != '') {
-            return '<img src="' . $imageUrl . '" alt="' . $this->getBasicInfo() . '"/>';
+            return '<img src="' . $imageUrl . '" alt="' . str_replace('"', '', $this->getBasicInfo()) . '"/>';
         } else {
             return $alternative;
         }
@@ -686,14 +694,15 @@ class Db_Object extends Db_Sql
     /**
      * Gets the HTML image that the attribute points using the AMP version.
      */
-    public function getImageAmp($attributeName, $version = '', $layout = 'responsive', $attributes = '')
+    public function getImageAmp($attributeName, $version = '', $layout = 'responsive', $attributes = '', $alternative = '')
     {
         $imageUrl = $this->getImageUrl($attributeName, $version);
+        $imageUrl = ($imageUrl != '') ? $imageUrl : $alternative;
         if ($imageUrl != '') {
             $imageFile = str_replace(ASTERION_BASE_URL, ASTERION_BASE_FILE, $imageUrl);
             if (is_file($imageFile)) {
                 $imageSize = getimagesize($imageFile);
-                return '<amp-img ' . $attributes . ' src="' . $imageUrl . '" alt="' . $this->getBasicInfo() . '" width="' . $imageSize[0] . '" height="' . $imageSize[1] . '" layout="' . $layout . '"/>';
+                return '<amp-img ' . $attributes . ' src="' . $imageUrl . '" alt="' . str_replace('"', '', $this->getBasicInfo()) . '" width="' . $imageSize[0] . '" height="' . $imageSize[1] . '" layout="' . $layout . '"/>';
             }
         }
     }
@@ -740,6 +749,17 @@ class Db_Object extends Db_Sql
         $file = ASTERION_STOCK_FILE . $className . '/' . $imageName . '/' . $imageName . $version . '.jpg';
         if (is_file($file)) {
             return str_replace(ASTERION_STOCK_FILE, ASTERION_STOCK_URL, $file);
+        }
+    }
+
+    /**
+     * Function to save an image.
+     */
+    public function saveImage($dataImage, $fieldName)
+    {
+        $fileName = Text::simpleUrlFileBase($this->id() . '_' . $fieldName);
+        if (Image_File::saveImageObject($dataImage, $this->className, $fileName)) {
+            $this->persistSimple($fieldName, $fileName);
         }
     }
 

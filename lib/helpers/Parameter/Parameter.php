@@ -51,6 +51,14 @@ class Parameter extends Db_Object
     }
 
     /**
+     * Check if a parameter exists.
+     */
+    public static function codeExists($code)
+    {
+        return (isset($GLOBALS['parameters']) && (array_key_exists($code . '_' . Language::active(), $GLOBALS['parameters']) || array_key_exists($code, $GLOBALS['parameters']))) ? true : false;
+    }
+
+    /**
      * Load an object using its code
      */
     public static function load($code)
@@ -61,10 +69,12 @@ class Parameter extends Db_Object
     /**
      * Load an image url using its code
      */
-    public static function getImageUrlFromCode($code, $format='web')
+    public static function getImageUrlFromCode($code, $format = 'web')
     {
-        $parameter = Parameter::load($code);
-        return ($parameter->id()!='') ? $parameter->getImageUrl('image', $format) : '';;
+        if (Parameter::codeExists($code)) {
+            $parameter = Parameter::load($code);
+            return ($parameter->id() != '') ? $parameter->getImageUrl('image', $format) : '';
+        }
     }
 
     /**
@@ -72,8 +82,10 @@ class Parameter extends Db_Object
      */
     public static function getFileUrlFromCode($code)
     {
-        $parameter = Parameter::load($code);
-        return ($parameter->id()!='') ? $parameter->getFileUrl('file') : '';;
+        if (Parameter::codeExists($code)) {
+            $parameter = Parameter::load($code);
+            return ($parameter->id() != '') ? $parameter->getFileUrl('file') : '';
+        }
     }
 
     /**

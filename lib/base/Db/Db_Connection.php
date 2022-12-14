@@ -22,13 +22,13 @@ class Db_Connection extends Singleton
         try {
             $pdoDsn = 'mysql:host=' . ASTERION_DB_SERVER . ';port=' . ASTERION_DB_PORT . ';dbname=' . ASTERION_DB_NAME;
             $this->pdo = new PDO($pdoDsn, ASTERION_DB_USER, ASTERION_DB_PASSWORD, [PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"]);
+            $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $this->pdo->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
         } catch (PDOException $error) {
             if (ASTERION_DEBUG) {
                 throw new Exception('<pre>' . $error->getMessage() . '</pre>');
             }
         }
-        $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $this->pdo->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
     }
 
     /**

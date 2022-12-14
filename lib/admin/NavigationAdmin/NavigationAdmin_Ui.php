@@ -160,19 +160,19 @@ class NavigationAdmin_Ui extends Ui
                         <div class="menu_side_block_title">' . __('development') . '</div>
                         <div class="menu_side_block_items">
                             <div class="menu_side_item menu_side_item_admin">
-                                <a href="' . url('language/list_items', true) . '">
+                                <a href="' . (new Language)->urlListAdmin() . '">
                                     <i class="fa fa-language"></i>
                                     <span>' . __('languages') . '</span>
                                 </a>
                             </div>
                             <div class="menu_side_item menu_side_item_admin">
-                                <a href="' . url('translation/list_items', true) . '">
+                                <a href="' . (new Translation)->urlListAdmin() . '">
                                     <i class="fa fa-comment-alt"></i>
                                     <span>' . __('translations') . '</span>
                                 </a>
                             </div>
                             <div class="menu_side_item menu_side_item_admin">
-                                <a href="' . url('permission/list_items', true) . '">
+                                <a href="' . (new Permission)->urlListAdmin() . '">
                                     <i class="fa fa-users"></i>
                                     <span>' . __('permissions') . '</span>
                                 </a>
@@ -190,7 +190,7 @@ class NavigationAdmin_Ui extends Ui
                                 </a>
                             </div>
                             <div class="menu_side_item menu_side_item_admin">
-                                <a href="' . url('log_admin/list_items', true) . '">
+                                <a href="' . (new LogAdmin)->urlListAdmin() . '">
                                     <i class="fa fa-laptop"></i>
                                     <span>' . __('logs') . '</span>
                                 </a>
@@ -239,11 +239,12 @@ class NavigationAdmin_Ui extends Ui
             usort($menuItemGroup, function ($a, $b) {return strcmp($a['title'], $b['title']);});
             $htmlGroup = '';
             foreach ($menuItemGroup as $menuItem) {
-                $permission = (new Permission)->readFirst(['where' => 'object_name="' . $menuItem['name'] . '" AND id_user_admin_type="' . $this->user_admin_type->id() . '"']);
+                $menuObject = new $menuItem['name'];
+                $permission = (new Permission)->readFirst(['where' => 'object_name="' . $menuObject->className . '" AND id_user_admin_type="' . $this->user_admin_type->id() . '"']);
                 if ($this->user_admin_type->get('manages_permissions') == '1' || $permission->get('permission_list_items') == '1') {
                     $htmlGroup .= '
                         <div class="menu_side_item menu_side_item-' . $menuItem['name'] . ' ' . $class . '">
-                            <a href="' . url(camelToSnake($menuItem['name']) . '/list_items', true) . '">
+                            <a href="' . $menuObject->urlListAdmin() . '">
                                 <i class="fa fa-' . $menuItem['icon'] . '"></i>
                                 <span>' . __($menuItem['title']) . '</span>
                             </a>

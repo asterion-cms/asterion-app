@@ -202,6 +202,18 @@ function multiexplode($delimiters, $string)
 }
 
 /**
+ * String replace on nth ocurrence
+ */
+function str_replace_n($search, $replace, $subject, $nth)
+{
+    $found = preg_match_all('/' . preg_quote($search) . '/', $subject, $matches, PREG_OFFSET_CAPTURE);
+    if (false !== $found && $found > $nth) {
+        return substr_replace($subject, $replace, $matches[0][$nth][1], strlen($search));
+    }
+    return $subject;
+}
+
+/**
  * Function to dump a variable
  */
 function dump($variable)

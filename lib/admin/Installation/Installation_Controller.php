@@ -19,6 +19,7 @@ class Installation_Controller extends Controller
         $ui = new NavigationAdmin_Ui($this);
         $this->mode = 'admin';
         $this->layout_page = 'clear';
+        $this->meta_image = '';
         if (!ASTERION_DEBUG) {
             header('Location: ' . url(''));
             exit();

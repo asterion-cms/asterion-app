@@ -17,6 +17,9 @@ class FormField_FileDrag extends FormField_Base
     {
         parent::__construct($options);
         $this->options['maxDimensions'] = (isset($options['maxDimensions'])) ? $options['maxDimensions'] : (($this->item && (string) $this->item->maxDimensions == 'true') ? true : false);
+        $this->options['crop'] = (isset($options['crop'])) ? $options['crop'] : (($this->item && (string) $this->item->crop == 'true') ? true : false);
+        $this->options['cropWidth'] = (isset($options['cropWidth'])) ? $options['cropWidth'] : (($this->item && (string) $this->item->cropWidth != '') ? (string) $this->item->cropWidth : '16');
+        $this->options['cropHeight'] = (isset($options['cropHeight'])) ? $options['cropHeight'] : (($this->item && (string) $this->item->cropHeight != '') ? (string) $this->item->cropHeight : '9');
     }
 
     /**
@@ -52,17 +55,30 @@ class FormField_FileDrag extends FormField_Base
         $accept = (isset($options['accept']) && $options['accept'] != '') ? $options['accept'] : '';
         $layout = (isset($options['layout'])) ? $options['layout'] : '';
         $maxDimensions = (isset($options['maxDimensions'])) ? $options['maxDimensions'] : false;
+        $crop = (isset($options['crop'])) ? $options['crop'] : false;
+        $cropWidth = (isset($options['cropWidth'])) ? $options['cropWidth'] : '16';
+        $cropHeight = (isset($options['cropHeight'])) ? $options['cropHeight'] : '9';
         $loader = '
             <div class="drag_field_loader">
                 <div class="drag_field_loader_message" data-messageloading="' . __('file_loading') . '" data-messagesaving="' . __('file_saving') . '" data-messagesavedas="' . __('file_saved_as') . '"></div>
                 <div class="drag_field_loader_bar_wrapper">
                     <div class="drag_field_loader_bar"></div>
                 </div>
+                ' . (($crop) ? '
+                <div class="drag_field_crop" data-width="' . $cropWidth . '" data-height="' . $cropHeight . '">
+                    <i class="fa fa-crop"></i>
+                    <span>' . __('crop') . '</span>
+                </div>
+                ' : '') . '
             </div>';
         if ($layout == 'image') {
             $renderField = $this->renderImage($valueFile);
             $field = '
-                <div class="drag_field_wrapper ' . (($renderField != '') ? 'drag_field_wrapper_has_image' : '') . '" data-maxdimensions="' . $maxDimensions . '" data-maxwidth="' . ASTERION_WIDTH_HUGE . '" data-maxheight="' . ASTERION_HEIGHT_MAX_HUGE . '">
+                <div class="drag_field_wrapper ' . (($renderField != '') ? 'drag_field_wrapper_has_image' : '') . ' ' . (($crop) ? 'drag_field_image_crop' : '') . '"
+                    data-maxdimensions="' . $maxDimensions . '"
+                    data-maxwidth="' . ASTERION_WIDTH_HUGE . '"
+                    data-maxheight="' . ASTERION_HEIGHT_MAX_HUGE . '"
+                    data-cropbuttonlabel="' . __('crop_image') . '">
                     <div class="drag_field_wrapper_image">' . $renderField . '</div>
                     <div class="drag_field_wrapper_input">
                         <div class="drag_field_input">
@@ -84,7 +100,7 @@ class FormField_FileDrag extends FormField_Base
                         ' . $loader . '
                     </div>
                 </div>';
-            $urlUploadTemp = $this->object->urlUploadTempImage();
+            $urlUploadTemp = ($this->object) ? $this->object->urlUploadTempImage() : '';
         } else {
             $field = '
                 <div class="drag_field_wrapper_all">
@@ -113,7 +129,7 @@ class FormField_FileDrag extends FormField_Base
                         ' . $loader . '
                     </div>
                 </div>';
-            $urlUploadTemp = $this->object->urlUploadTempFile();
+            $urlUploadTemp = ($this->object) ? $this->object->urlUploadTempFile() : '';
         }
         return '<div class="' . $type . ' form_field ' . $class . ' ' . $required . ' ' . $classError . '" data-urluploadtemp="' . $urlUploadTemp . '">
                     <div class="form_field_ins">
@@ -128,42 +144,46 @@ class FormField_FileDrag extends FormField_Base
 
     public function renderImage($valueFile)
     {
-        $file = ASTERION_STOCK_FILE . $this->object->className . '/' . $valueFile . '/' . $valueFile . '_thumb.jpg';
-        $file = (!is_file($file)) ? ASTERION_STOCK_FILE . $this->object->className . '/' . $valueFile . '/' . $valueFile . '_small.jpg' : $file;
-        $file = (!is_file($file)) ? ASTERION_STOCK_FILE . $this->object->className . '/' . $valueFile . '/' . $valueFile . '_web.jpg' : $file;
-        if (is_file($file)) {
-            $objectUiClassname = $this->object->className . '_Ui';
-            $objectUi = new $objectUiClassname($this->object);
-            return '<div class="form_fields_image">
-                        <div class="form_fields_image_ins">
-                            <div class="form_fields_image_delete" data-confirm="' . __('are_you_sure_delete') . '" data-url="' . $objectUi->object->urlDeleteImage($valueFile) . '">
-                                <i class="fa fa-times"></i>
+        if ($this->object) {
+            $file = ASTERION_STOCK_FILE . $this->object->className . '/' . $valueFile . '/' . $valueFile . '_thumb.jpg';
+            $file = (!is_file($file)) ? ASTERION_STOCK_FILE . $this->object->className . '/' . $valueFile . '/' . $valueFile . '_small.jpg' : $file;
+            $file = (!is_file($file)) ? ASTERION_STOCK_FILE . $this->object->className . '/' . $valueFile . '/' . $valueFile . '_web.jpg' : $file;
+            if (is_file($file)) {
+                $objectUiClassname = $this->object->className . '_Ui';
+                $objectUi = new $objectUiClassname($this->object);
+                return '<div class="form_fields_image">
+                            <div class="form_fields_image_ins">
+                                <div class="form_fields_image_delete" data-confirm="' . __('are_you_sure_delete') . '" data-url="' . $objectUi->object->urlDeleteImage($valueFile) . '">
+                                    <i class="fa fa-times"></i>
+                                </div>
+                                <img src="' . str_replace(ASTERION_STOCK_FILE, ASTERION_STOCK_URL, $file) . '?v=' . substr(md5(rand() * rand()), 0, 5) . '" alt=""/>
                             </div>
-                            <img src="' . str_replace(ASTERION_STOCK_FILE, ASTERION_STOCK_URL, $file) . '?v=' . substr(md5(rand() * rand()), 0, 5) . '" alt=""/>
-                        </div>
-                    </div>';
+                        </div>';
+            }
         }
     }
 
     public function renderFile($valueFile)
     {
-        $file = ASTERION_STOCK_FILE . (isset($this->object->className) ? $this->object->className : 'Asterion') . 'Files/' . $valueFile;
-        if (is_file($file)) {
-            $objectUiClassname = $this->object->className . '_Ui';
-            $objectUi = new $objectUiClassname($this->object);
-            return '
-                <div class="form_fields_file">
-                    <div class="form_fields_file_ins">
-                        <a href="' . str_replace(ASTERION_STOCK_FILE, ASTERION_STOCK_URL, $file) . '" target="_blank">
-                            <i class="fa fa-file"></i>
-                            <span>' . __('view_file') . ' ' . substr($valueFile, 0, 30) . '</span>
-                        </a>
-                        <span class="form_fields_file_delete" data-confirm="' . __('are_you_sure_delete') . '" data-url="' . $objectUi->object->urlDeleteFile($valueFile) . '">
-                            <i class="fa fa-times"></i>
-                            <span>' . __('delete_file') . '</span>
-                        </span>
-                    </div>
-                </div>';
+        if ($this->object) {
+            $file = ASTERION_STOCK_FILE . (isset($this->object->className) ? $this->object->className : 'Asterion') . 'Files/' . $valueFile;
+            if (is_file($file)) {
+                $objectUiClassname = $this->object->className . '_Ui';
+                $objectUi = new $objectUiClassname($this->object);
+                return '
+                    <div class="form_fields_file">
+                        <div class="form_fields_file_ins">
+                            <a href="' . str_replace(ASTERION_STOCK_FILE, ASTERION_STOCK_URL, $file) . '" target="_blank">
+                                <i class="fa fa-file"></i>
+                                <span>' . __('view_file') . ' ' . substr($valueFile, 0, 30) . '</span>
+                            </a>
+                            <span class="form_fields_file_delete" data-confirm="' . __('are_you_sure_delete') . '" data-url="' . $objectUi->object->urlDeleteFile($valueFile) . '">
+                                <i class="fa fa-times"></i>
+                                <span>' . __('delete_file') . '</span>
+                            </span>
+                        </div>
+                    </div>';
+            }
         }
     }
 

@@ -75,9 +75,9 @@ class Date
     /**
      * Return the text label of a month.
      */
-    public static function textMonth($month)
+    public static function textMonth($month, $arrayMonths = [])
     {
-        $months = Date::arrayMonths();
+        $months = (count($arrayMonths) > 0) ? $arrayMonths : Date::arrayMonths();
         return $months[__(intval($month))];
     }
 
@@ -203,12 +203,12 @@ class Date
     /**
      * Convert a SQL formatted date into a label text, hour is optional.
      */
-    public static function sqlText($date, $withHour = false)
+    public static function sqlText($date, $withHour = false, $arrayMonths = [])
     {
         if ($date != '') {
             $dateArray = Date::sqlArray($date);
             if ($dateArray['day'] != '') {
-                $html = $dateArray['day'] . ' ' . Date::textMonth($dateArray['month']) . ', ' . $dateArray['year'];
+                $html = $dateArray['day'] . ' ' . Date::textMonth($dateArray['month'], $arrayMonths) . ', ' . $dateArray['year'];
                 $html .= ($withHour) ? ' ' . str_pad($dateArray['hour'], 2, "0", STR_PAD_LEFT) . ':' . str_pad($dateArray['minutes'], 2, "0", STR_PAD_LEFT) : '';
                 return $html;
             }

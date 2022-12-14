@@ -38,7 +38,7 @@ abstract class Controller
     public function getTitle()
     {
         $titlePage = Parameter::code('meta_title_page');
-        return (isset($this->title_page) && $this->title_page != '') ? $this->title_page . (($titlePage != '') ? ' - ' . $titlePage : '') : $titlePage;
+        return (isset($this->title_page) && $this->title_page != '') ? $this->title_page . (($titlePage != '' && !isset($this->hide_title_page_appendix)) ? ' - ' . $titlePage : '') : $titlePage;
     }
 
     /**
@@ -74,13 +74,14 @@ abstract class Controller
      */
     public function getMetaImage()
     {
-        $image = (isset($this->meta_image) && $this->meta_image != '') ? $this->meta_image : Parameter::code('meta_image');
+        $image = (isset($this->meta_image) && $this->meta_image != '') ? $this->meta_image : Parameter::getImageUrlFromCode('meta_image');
         $imageFile = str_replace(ASTERION_BASE_URL, ASTERION_BASE_FILE, $image);
         if (is_file($imageFile)) {
             $imageSize = getimagesize($imageFile);
-            return '<meta property="og:image" content="' . $image . '" />
-                    <meta property="og:image:width" content="' . $imageSize[0] . '" />
-                    <meta property="og:image:height" content="' . $imageSize[1] . '" />';
+            return '
+                <meta property="og:image" content="' . $image . '" />
+                <meta property="og:image:width" content="' . $imageSize[0] . '" />
+                <meta property="og:image:height" content="' . $imageSize[1] . '" />';
         }
     }
 
@@ -220,7 +221,7 @@ abstract class Controller
                     $this->content = $form->createFormModifyAdministrator();
                     return $this->ui->render();
                 }
-                header('Location: ' . url($this->type . '/list_items', true));
+                header('Location: ' . $this->object->urlListAdmin());
                 exit();
                 break;
             case 'modify_view_ajax':
@@ -320,7 +321,7 @@ abstract class Controller
                 if ($this->object->id() != '') {
                     $this->object->delete();
                 }
-                header('Location: ' . url($this->type . '/list_items', true));
+                header('Location: ' . $this->object->urlListAdmin());
                 exit();
                 break;
             case 'delete_item_ajax':
@@ -411,13 +412,12 @@ abstract class Controller
                  * This is the action that changes the order of the list.
                  */
                 $this->checkLoginAdmin();
-                $object = new $this->objectType();
                 $info = explode('_', $this->id);
-                if (isset($info[1]) && $object->attributeExists($info[1])) {
+                if (isset($info[1]) && $this->object->attributeExists($info[1])) {
                     $orderType = ($info[0] == 'asc') ? 'asc' : 'des';
                     Session::set('ord_' . $this->type, $orderType . '_' . $info[1]);
                 }
-                header('Location: ' . url($this->type . '/list_items', true));
+                header('Location: ' . $this->object->urlListAdmin());
                 exit();
                 break;
             case 'multiple_action':
@@ -515,7 +515,7 @@ abstract class Controller
                         $searchString = urlencode(html_entity_decode($this->values['search']));
                         header('Location: ' . url($this->type . '/search/' . $searchString, true));
                     } else {
-                        header('Location: ' . url($this->type . '/list_items', true));
+                        header('Location: ' . $this->object->urlListAdmin());
                     }
                 }
                 break;
@@ -559,9 +559,12 @@ abstract class Controller
         $searchQuery = $this->object->infoSearchQuery();
         $searchQueryCount = $this->object->infoSearchQueryCount();
         $searchValue = urldecode($this->id);
-        $sortable_listClass = ($this->object->hasOrd()) ? 'sortable_list' : '';
+        $searchValue = str_replace('"', "", $searchValue);
+        $searchValue = str_replace("'", "", $searchValue);
+        $sortableListClass = ($this->object->hasOrd()) ? 'sortable_list' : '';
         $ordObject = explode('_', Session::get('ord_' . $this->type));
         $ordObjectType = (isset($ordObject[0]) && $ordObject[0] == 'asc') ? 'ASC' : 'DESC';
+        $values = [];
         $options['order'] = $this->orderField();
         if (isset($ordObject[1])) {
             $orderInfo = $this->object->attributeInfo($ordObject[1]);
@@ -569,16 +572,27 @@ abstract class Controller
             $options['order'] = $orderInfoItem . ' ' . $ordObjectType;
         }
         $options['results'] = (int) $this->object->info->info->form->pager;
+        $options['pagerTop'] = (isset($this->object->info->info->form->pagerTop) && (string) $this->object->info->info->form->pagerTop == 'true') ? true : false;
         $options['where'] = ($search != '' && $searchValue != '') ? str_replace('#TABLE', $this->object->tableName, str_replace('#SEARCH', $searchValue, $search)) : '';
+        if (isset($this->object->info->info->form->showHide)) {
+            $showHideField = (string) $this->object->info->info->form->showHide->field;
+            $showHideLabel = (string) $this->object->info->info->form->showHide->label;
+            $showHideFieldValue = (isset($this->parameters[$showHideField])) ? $this->parameters[$showHideField] : 1;
+            if ($showHideFieldValue != 'null') {
+                $values[$showHideField] = (isset($this->parameters[$showHideField])) ? $this->parameters[$showHideField] : 1;
+                $showFieldWhere = $showHideField . '=:' . $showHideField;
+                $options['where'] = ($options['where'] != '') ? ' AND ' . $showFieldWhere : $showFieldWhere;
+            }
+        }
         $options['query'] = ($searchQuery != '' && $searchValue != '') ? str_replace('#TABLE', $this->object->tableName, str_replace('#SEARCH', $searchValue, $searchQuery)) : '';
         $options['queryCount'] = ($searchQueryCount != '' && $searchValue != '') ? str_replace('#TABLE', $this->object->tableName, str_replace('#SEARCH', $searchValue, $searchQueryCount)) : '';
-        $list = new ListObjects($this->objectType, $options);
+        $list = new ListObjects($this->objectType, $options, $values);
         $multipleChoice = (count((array) $this->object->info->info->form->multipleActions->action) > 0);
         return '
-            <div class="list_items reload_list_items list_items' . $this->type . ' ' . $sortable_listClass . '"
-                data-url="' . url($this->type . '/list_items', true) . '"
+            <div class="list_items reload_list_items list_items' . $this->type . ' ' . $sortableListClass . '"
+                data-url="' . $this->object->urlListAdmin() . '"
                 data-urlsort="' . url($this->type . '/sort_items/', true) . '">
-                ' . $list->showListPager(['function' => 'Admin', 'message' => '<div class="message">' . __('no_items') . '</div>'], ['user_admin_type' => $this->login->get('type'), 'multipleChoice' => $multipleChoice]) . '
+                ' . $list->showListPager(['function' => 'Admin', 'message' => '<div class="message">' . __('no_items') . '</div>', 'pagerTop' => $options['pagerTop']], ['user_admin_type' => $this->login->get('type'), 'multipleChoice' => $multipleChoice]) . '
             </div>';
     }
 
@@ -587,7 +601,7 @@ abstract class Controller
      */
     public function listAdminControlsTop()
     {
-        $controlsTop = $this->multipleActionsControl() . $this->orderControl();
+        $controlsTop = $this->multipleActionsControl() . $this->orderControl() . $this->showHideControl();
         return ($controlsTop != '') ? '<div class="controls_top">' . $controlsTop . '</div>' : '';
     }
 
@@ -601,18 +615,24 @@ abstract class Controller
         $listItems = '';
         $multipleChoice = (count((array) $this->object->info->info->form->multipleActions->action) > 0);
         foreach ($items as $key => $item) {
-            $sortable_listClass = ($this->object->hasOrd()) ? 'sortable_list' : '';
-            $list = new ListObjects($this->objectType, ['where' => $group . '="' . $key . '"',
+            $sortableListClass = ($this->object->hasOrd()) ? 'sortable_list' : '';
+            $list = new ListObjects($this->objectType, [
+                'where' => $group . '="' . $key . '"',
                 'function' => 'Admin',
-                'order' => $this->orderField()]);
-            $listItems .= '<div class="line_admin_block">
-                                <div class="line_admin_title">' . $item . '</div>
-                                <div class="line_adminItems">
-                                    <div class="list_items ' . $sortable_listClass . '" data-url="' . url($this->type . '/sort_items/', true) . '">
-                                        ' . $list->showList(['function' => 'Admin', 'message' => '<div class="message">' . __('no_items') . '</div>'], ['user_admin_type' => $this->login->get('type'), 'multipleChoice' => $multipleChoice]) . '
-                                    </div>
-                                </div>
-                            </div>';
+                'order' => $this->orderField(),
+            ]);
+            $listItems .= '
+                <div class="line_admin_block">
+                    <div class="line_admin_title">' . $item . '</div>
+                    <div class="line_adminItems">
+                        <div class="list_items ' . $sortableListClass . '"
+                            data-urlsort="' . url($this->type . '/sort_items/', true) . '">
+                            <div class="list_content">
+                                ' . $list->showList(['function' => 'Admin', 'message' => '<div class="message">' . __('no_items') . '</div>'], ['user_admin_type' => $this->login->get('type'), 'multipleChoice' => $multipleChoice]) . '
+                            </div>
+                        </div>
+                    </div>
+                </div>';
         }
         return '<div class="line_admin_blockWrapper">' . $listItems . '</div>';
     }
@@ -629,6 +649,7 @@ abstract class Controller
             $orderType = (isset($orderAttribute[1]) && $orderAttribute[1] == 'DESC') ? 'DESC' : 'ASC';
             $orderAttribute = $orderAttribute[0];
             $orderInfo = $this->object->attributeInfo($orderAttribute);
+            $in = (is_object($orderInfo) && (string) $orderInfo->language == "true") ? $orderAttribute . '_' . Language::active() . ' ' . $orderType : $orderAttribute . ' ' . $orderType;
             return (is_object($orderInfo) && (string) $orderInfo->language == "true") ? $orderAttribute . '_' . Language::active() . ' ' . $orderType : $orderAttribute . ' ' . $orderType;
         }
     }
@@ -648,11 +669,44 @@ abstract class Controller
                 $options['asc_' . $infoOrderItem[0]] = __($infoOrderItem[0]);
                 $options['des_' . $infoOrderItem[0]] = __($infoOrderItem[0]) . ' (' . __('reverse') . ')';
             }
-            return '<div class="order_actions" data-url="' . url($this->type . '/sort_list_items/', true) . '">
-                        <div class="order_actions_wrapper">
-                            ' . FormField::show('select', ['label' => __('order_by'), 'name' => 'order_list', 'value' => $options, 'selected' => $selectedItem]) . '
-                        </div>
-                    </div>';
+            return '
+                <div class="order_actions" data-url="' . url($this->type . '/sort_list_items/', true) . '">
+                    <div class="order_actions_wrapper">
+                        ' . FormField::show('select', ['label' => __('order_by'), 'name' => 'order_list', 'value' => $options, 'selected' => $selectedItem]) . '
+                    </div>
+                </div>';
+        }
+    }
+
+    /**
+     * Render the show/hide for certain fields.
+     */
+    public function showHideControl()
+    {
+        if (isset($this->object->info->info->form->showHide)) {
+            $showHideField = (string) $this->object->info->info->form->showHide->field;
+            $showHideLabel = (string) $this->object->info->info->form->showHide->label;
+            $showHideFieldValue = (isset($this->parameters[$showHideField])) ? $this->parameters[$showHideField] : 1;
+            return '
+                <div class="showhide_control">
+                    <div class="showhide_control_ins">
+                        ' . (($showHideFieldValue != '1') ? '
+                            <a class="showhide_control_button_active" href="' . $this->object->urlListAdmin() . '?' . $showHideField . '=1">
+                                ' . __($showHideLabel . '_active') . '
+                            </a>
+                        ' : '') . '
+                        ' . (($showHideFieldValue != '0') ? '
+                            <a class="showhide_control_button_active" href="' . $this->object->urlListAdmin() . '?' . $showHideField . '=0">
+                                ' . __($showHideLabel . '_inactive') . '
+                            </a>
+                        ' : '') . '
+                        ' . (($showHideFieldValue != 'null') ? '
+                            <a class="showhide_control_button_active" href="' . $this->object->urlListAdmin() . '?' . $showHideField . '=null">
+                                ' . __($showHideLabel . '_all') . '
+                            </a>
+                        ' : '') . '
+                    </div>
+                </div>';
         }
     }
 
@@ -698,7 +752,7 @@ abstract class Controller
                 <div class="form_admin_search_wrapper">
                     ' . Form::createForm($fieldsSearch, ['action' => url($this->type . '/search', true), 'submit' => __('search'), 'class' => 'form_admin_search']) . '
                             ' . (($this->id != '') ? '
-                            <a class="form_admin_search_back" href="' . url($this->type . '/list_items', true) . '">' . __('view_all_items') . '</a>
+                            <a class="form_admin_search_back" href="' . $this->object->urlListAdmin() . '">' . __('view_all_items') . '</a>
                             <h2>' . __('results_for') . ': "' . $searchValue . '"' . '</h2>
                             ' : '') . '
                 </div>';

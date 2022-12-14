@@ -262,6 +262,37 @@ class User_Interface extends Db_Object
     }
 
     /**
+     * Delete an account.
+     */
+    public function deleteAccount($values)
+    {
+        $status = StatusCode::NOK;
+        $content = '';
+        $form = new $this->userFormClassName();
+        $form = $form->fromObject($this);
+        $content = $form->deleteAccount();
+        if (count($values) > 0) {
+            $code = (isset($values['code'])) ? $values['code'] : '';
+            if ($code == $this->get('delete_code')) {
+                $delete = $this->delete();
+                if ($delete['status'] == StatusCode::OK) {
+                    $status = StatusCode::OK;
+                    $userLoginClassName = $this->userLoginClassName;
+                    $login = $userLoginClassName::getInstance();
+                    $login->logout();
+                }
+            } else {
+                Session::flashError(__('delete_code_error_message'));
+            }
+        } else {
+            $this->persistSimple('delete_code', rand(111111, 999999));
+            $this->persistSimple('delete_code_date', date('Y-m-d H:i:s'));
+            $this->sendEmailDeleteAccount();
+        }
+        return ['status' => $status, 'content' => $content];
+    }
+
+    /**
      * Upload the profile picture. Used for an ajax call.
      */
     public function uploadProfilePicture($filename, $file)
@@ -331,6 +362,15 @@ class User_Interface extends Db_Object
     }
 
     /**
+     * Send an email when the user wants to delete the account.
+     */
+    public function sendEmailDeleteAccount()
+    {
+        $userClass = new $this->userClassName;
+        HtmlMail::send($this->get('email'), 'user_delete_account', ['USER_NAME' => $this->get('name'), 'USER_EMAIL' => $this->get('email'), 'DELETE_CODE' => $this->get('delete_code')]);
+    }
+
+    /**
      * Check if everything is correct before using the object.
      * In this case we need some emails to exists in the database, if not we register them with default values.
      */
@@ -384,6 +424,12 @@ class User_Interface extends Db_Object
                 'subject' => __('mail_user_automatic_creation_subject'),
                 'description' => __('mail_user_automatic_creation_description'),
                 'mail' => __('mail_user_automatic_creation_content'),
+            ],
+            'user_delete_account' => [
+                'title' => __('mail_user_delete_account_title'),
+                'subject' => __('mail_user_delete_account_subject'),
+                'description' => __('mail_user_delete_account_description'),
+                'mail' => __('mail_user_delete_account_content'),
             ],
         ];
         foreach ($emailCodes as $emailCode => $emailValues) {
@@ -510,19 +556,23 @@ class User_Interface extends Db_Object
         return (isset($this->loginGoogle) && $this->loginGoogle);
     }
 
-    public static function head()
+    public function head()
     {
         return '
-            <script>
-                (function(d, s, id){
-                 var js, fjs = d.getElementsByTagName(s)[0];
-                 if (d.getElementById(id)) {return;}
-                 js = d.createElement(s); js.id = id;
-                 js.src = "https://connect.facebook.net/en_US/sdk.js";
-                 fjs.parentNode.insertBefore(js, fjs);
-                }(document, \'script\', \'facebook-jssdk\'));
-            </script>
-            <script src="https://accounts.google.com/gsi/client" async defer></script>';
+            ' . (((isset($this->loginFacebook)) && $this->loginFacebook) ? '
+                <script>
+                    (function(d, s, id){
+                     var js, fjs = d.getElementsByTagName(s)[0];
+                     if (d.getElementById(id)) {return;}
+                     js = d.createElement(s); js.id = id;
+                     js.src = "https://connect.facebook.net/en_US/sdk.js";
+                     fjs.parentNode.insertBefore(js, fjs);
+                    }(document, \'script\', \'facebook-jssdk\'));
+                </script>
+            ' : '') . '
+            ' . (((isset($this->loginGoogle)) && $this->loginGoogle) ? '
+                <script src="https://accounts.google.com/gsi/client" async defer></script>
+            ' : '');
     }
 
 }

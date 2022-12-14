@@ -105,6 +105,7 @@ class Form
         $name = (string) $item->name;
         $label = (string) $item->label;
         $type = (string) $item->type;
+        $class = (string) $item->class;
         $options = array_merge($options,
             [
                 'item' => $item,
@@ -152,7 +153,6 @@ class Form
                             default:
                                 $this->object->loadMultipleValues();
                                 $refObject = (string) $item->refObject;
-                                $class = (string) $item->class;
                                 $addMultipleImages = (string) $item->addMultipleImages;
                                 $refObjectForm = $refObject . '_Form';
                                 $nestedFormField = '';
@@ -230,7 +230,7 @@ class Form
                         }
                         $options['value'] = implode(', ', $autocompleteItems);
                         return '
-                            <div class="autocomplete_item autocomplete_item-' . $name . '"
+                            <div class="autocomplete_item autocomplete_item_' . $class . ' autocomplete_item_' . $name . '"
                                 data-url="' . url($autoCompleteObjectInstance->snakeName . '/autocomplete/' . $autoCompleteAttribute, true) . '">
                                 <div class="autocompleteItemIns">
                                     ' . FormField::show('text', $options) . '
@@ -253,7 +253,7 @@ class Form
                             $checkboxOptions .= FormField::show('checkbox', ['name' => $name . '[' . $keyCheckbox . ']', 'label' => $labelCheckbox, 'value' => $value]);
                         }
                         return ($checkboxOptions != '') ? '
-                            <div class="form_field multiple_checkboxes multiple_checkboxes-' . $name . '">
+                            <div class="form_field multiple_checkboxes multiple_checkboxes_' . $class . ' multiple_checkboxes_' . $name . '">
                                 ' . (((string) $item->label != '') ? '
                                 <label>' . __((string) $item->label) . '</label>
                                 ' : '') . '
@@ -280,18 +280,20 @@ class Form
     public static function createForm($fields, $options = [])
     {
         $action = (isset($options['action'])) ? $options['action'] : '';
+        $actionXhr = (isset($options['action-xhr'])) ? $options['action-xhr'] : '';
         $method = (isset($options['method'])) ? $options['method'] : 'post';
         $class = (isset($options['class'])) ? $options['class'] : 'form_admin';
         $recaptchav3 = (isset($options['recaptchav3'])) ? $options['recaptchav3'] : false;
+        $recaptchav3Amp = (isset($options['recaptchav3Amp'])) ? $options['recaptchav3Amp'] : false;
         $submit = (isset($options['submit'])) ? $options['submit'] : __('send');
         $submitName = (isset($options['submitName'])) ? $options['submitName'] : 'submit';
         $id = (isset($options['id'])) ? 'id="' . $options['id'] . '"' : '';
         $class .= ($recaptchav3) ? ' recaptchav3_form ' : '';
+        $recaptchaKey = (defined('ASTERION_RECAPTCHAV3_SITE_KEY') && ASTERION_RECAPTCHAV3_SITE_KEY != '') ? ASTERION_RECAPTCHAV3_SITE_KEY : Parameter::code('recaptchav3_site_key');
         if ($recaptchav3) {
-            $sitekey = (defined('ASTERION_RECAPTCHAV3_SITE_KEY') && ASTERION_RECAPTCHAV3_SITE_KEY != '') ? ASTERION_RECAPTCHAV3_SITE_KEY : Parameter::code('recaptchav3_site_key');
             $submitButton = '
                 <div class="form_submit_wrapper">
-                    <button class="g-recaptcha button form_submit" data-sitekey="' . $sitekey . '" data-callback="onSubmitRecaptchaV3" data-action="submit">' . $submit . '</button>
+                    <button class="g-recaptcha button form_submit" data-sitekey="' . $recaptchaKey . '" data-callback="onSubmitRecaptchaV3" data-action="submit">' . $submit . '</button>
                 </div>';
         } else if ($submit == 'ajax') {
             $submitButton = '
@@ -306,10 +308,17 @@ class Form
             $submitButton = '<div class="submit_buttons">' . $submitButton . '</div>';
         } else {
             $submitButton = FormField::show('submit', ['name' => $submitName, 'class' => 'form_submit', 'value' => $submit]);
+            if ($recaptchav3Amp) {
+                $submitButton = '
+                    <amp-recaptcha-input layout="nodisplay" name="g-recaptcha-response" data-sitekey="' . $recaptchaKey . '" data-action="onSubmitRecaptchaV3"></amp-recaptcha-input>
+                    ' . $submitButton;
+            }
         }
         $submitButton = ($submit == 'none') ? '' : $submitButton;
+        $action = ($actionXhr == '') ? 'action="' . $action . '"' : '';
+        $actionXhr = ($actionXhr == '') ? '' : 'action-xhr="' . $actionXhr . '"';
         return '
-            <form ' . $id . ' action="' . $action . '" method="' . $method . '" enctype="multipart/form-data" class="' . $class . '" accept-charset="UTF-8">
+            <form ' . $id . ' ' . $action . ' ' . $actionXhr . ' method="' . $method . '" enctype="multipart/form-data" class="' . $class . '" accept-charset="UTF-8">
                 <fieldset>
                     ' . $fields . '
                     ' . $submitButton . '

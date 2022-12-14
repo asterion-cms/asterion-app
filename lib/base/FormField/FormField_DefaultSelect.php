@@ -54,6 +54,7 @@ class FormField_DefaultSelect extends FormField_Base
         $selected = (isset($options['selected'])) ? $options['selected'] : '';
         $selected = (isset($options['multiple']) && $options['multiple'] == true && isset($options['class']) && $options['class'] == 'select2' && $selected != '') ? json_decode($selected, true) : $selected;
         $disabled = (isset($options['disabled']) && $options['disabled'] != false) ? 'disabled="disabled"' : '';
+        $required = (isset($options['required']) && $options['required']) ? 'required' : '';
         $multipleSelection = (isset($options['multiple_selection']) && $options['multiple_selection'] == true) ? 'multiple="multiple"' : '';
         $size = (isset($options['size'])) ? 'size="' . $options['size'] . '" ' : '';
         $error = (isset($options['error']) && $options['error'] != '') ? '<div class="error_message">' . $options['error'] . '</div>' : '';
@@ -83,12 +84,12 @@ class FormField_DefaultSelect extends FormField_Base
             switch ($layout) {
                 default:
                     return '
-                        <div class="select form_field ' . $class . ' ' . $errorClass . '">
+                        <div class="select form_field ' . $class . ' ' . $errorClass . ' ' . $required . '">
                             <div class="form_field_ins">
                                 ' . $label . '
                                 ' . $error . '
                                 <div class="select_ins">
-                                    <select ' . $name . ' ' . $id . ' ' . $disabled . ' ' . $multipleSelection . ' ' . $size . '>' . $htmlOptions . '</select>
+                                    <select ' . $name . ' ' . $id . ' ' . $disabled . ' ' . $multipleSelection . ' ' . $size . ' ' . $required . '>' . $htmlOptions . '</select>
                                     <input type="hidden" name="select_' . $nameSelect . '" value="true"/>
                                 </div>
                             </div>
@@ -96,7 +97,7 @@ class FormField_DefaultSelect extends FormField_Base
                     break;
                 case 'simple':
                     return '
-                        <select ' . $name . ' ' . $id . ' ' . $disabled . ' ' . $multipleSelection . ' ' . $size . '>' . $htmlOptions . '</select>';
+                        <select ' . $name . ' ' . $id . ' ' . $disabled . ' ' . $multipleSelection . ' ' . $size . ' ' . $required . '>' . $htmlOptions . '</select>';
                     break;
             }
         }

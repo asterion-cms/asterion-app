@@ -11,6 +11,7 @@ $(function() {
     activateParameters();
     activateCK();
     activateMaps();
+    activateCropper();
     activateModal();
 });
 $(window).on('load', function() {
@@ -289,7 +290,7 @@ function activateNestedForms() {
         var container = $(this).parents('.nested_form_field');
         var field = $(this).parents('.nested_form_field_add_multiple_wrapper').first().data('field');
         if ($(this)[0]['files']) {
-            for (var i=0; i < $(this)[0]['files'].length; i++) {
+            for (var i = 0; i < $(this)[0]['files'].length; i++) {
                 var newFormClone = addFormField(container);
                 var containerInside = newFormClone.find('.form_field_' + field).first();
                 loadFileField($(this)[0]['files'][i], containerInside);
@@ -506,6 +507,7 @@ function activateDragField() {
         loadFileField(file, container);
     });
 }
+
 function resizeBase64Img(base64, maxWidth, maxHeight) {
     return new Promise((resolve, reject) => {
         let img = document.createElement("img");
@@ -529,23 +531,25 @@ function resizeBase64Img(base64, maxWidth, maxHeight) {
         }
     });
 }
+
 function loadFileField(file, container) {
     var reader = new FileReader();
     reader.onloadend = function() {
         if (reader.result != '') {
             var containerData = container.find('.drag_field_wrapper');
             if (containerData.data('maxdimensions')) {
-                resizeBase64Img(reader.result, containerData.data('maxwidth'), containerData.data('maxheight')).then((result)=>{
-                    processFileField(result, file, container);
+                resizeBase64Img(reader.result, containerData.data('maxwidth'), containerData.data('maxheight')).then((result) => {
+                    processFileField(result, file.name, container);
                 });
             } else {
-                processFileField(reader.result, file, container);
+                processFileField(reader.result, file.name, container);
             }
         }
     };
     reader.readAsDataURL(file);
 }
-function processFileField(baseString, file, container) {
+
+function processFileField(baseString, filenameSave, container) {
     var fileInput = container.find('input.filevalue').first();
     var fileInputName = container.find('input.filename').first();
     var fileInputUploaded = container.find('input.filename_uploaded').first();
@@ -556,14 +560,14 @@ function processFileField(baseString, file, container) {
     var loaderBar = container.find('.drag_field_loader_bar').first();
     var loaderMessage = container.find('.drag_field_loader_message').first();
     fileInput.val(baseString);
-    fileInputName.val(file.name);
+    fileInputName.val(filenameSave);
     fileInputFile.val('');
     if (imageContainer) {
         imageContainer.attr('src', baseString);
         imageContainer.parents('.drag_field_image').show();
     }
     if (fileContainer) {
-        fileContainer.find('em').html(file.name);
+        fileContainer.find('em').html(filenameSave);
         fileContainer.show();
     }
     // Start uploading the image
@@ -586,6 +590,7 @@ function processFileField(baseString, file, container) {
                     if (percentage == 100) {
                         loaderMessage.html(loaderMessage.data('messagesaving'));
                         loaderBar.addClass('drag_field_loader_bar_loaded');
+                        container.find('.drag_field_image_crop').addClass('drag_field_image_crop_active');
                     }
                 }
             }, false);
@@ -713,10 +718,10 @@ function activateCK() {
                 toolbar: [{
                     name: 'basicstyles',
                     groups: ['basicstyles', 'cleanup', 'list', 'indent', 'blocks', 'align', 'bidi'],
-                    items: ['Bold', 'Italic', 'Underline', '-', 'NumberedList', 'BulletedList', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'Link', 'Unlink', 'Image']
+                    items: ['Bold', 'Italic', 'Underline', '-', 'NumberedList', 'BulletedList', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'Link', 'Unlink', 'Image', '-', 'PasteFromWord']
                 }, '/', {
                     name: 'styles',
-                    items: ['Format', 'Font', 'FontSize', '-', 'TextColor', 'BGColor']
+                    items: ['Source', 'Format', 'Font', 'FontSize', '-', 'TextColor', 'BGColor']
                 }]
             });
         }
@@ -781,11 +786,37 @@ function activateMaps() {
     });
 }
 /**
+ * Activate the cropper for the images.
+ **/
+function activateCropper() {
+    $(document).on('click', '.drag_field_crop', function(event) {
+        var container = $(this).parents('.form_field').first();
+        var containerImage = container.find('.drag_field_image img');
+        var containerFileName = container.find('input.filename').val();
+        var cropWidth = container.find('.drag_field_crop').data('width');
+        var cropHeight = container.find('.drag_field_crop').data('height');
+        var imageSrc = $(this).parents('.drag_field_wrapper').find('img').attr('src');
+        var modal = '<div id="modal"><div id="modal_background"></div><div id="modal_inside" class="crop_image_wrapper"><div class="button button_crop">' + $(this).parents('.drag_field_wrapper').data('cropbuttonlabel') + '</div><div class="crop_image"><img src="' + imageSrc + '"/></div></div></div>';
+        $('#modal').remove();
+        $(modal).appendTo(document.body);
+        const cropper = new Cropper($('#modal img')[0], {
+            aspectRatio: cropWidth / cropHeight
+        });
+        $('#modal .button_crop').click(function(event) {
+            var baseString = cropper.getCroppedCanvas().toDataURL('image/jpeg');
+            $(containerImage).attr('src', baseString);
+            processFileField(baseString, containerFileName, container);
+            $('#modal').remove();
+        });
+    });
+
+}
+/**
  * Reload the list in the administration page.
  **/
 function reloadListAdmin() {
     if ($('.reload_list_items').length > 0) {
-        $('.reload_list_items').each(function(index, ele){
+        $('.reload_list_items').each(function(index, ele) {
             var url = $(ele).data('url');
             $(ele).css({
                 'opacity': '0.2',

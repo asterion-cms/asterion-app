@@ -15,14 +15,14 @@ class Language extends Db_Object
     /**
      * Initialize the translations.
      */
-    public static function init()
+    public static function init($force = false)
     {
         $languages = Language::languages();
         $languageUrl = (isset($_GET['language'])) ? $_GET['language'] : '';
         $language = (isset($languages[$languageUrl])) ? $languages[$languageUrl] : reset($languages);
         Session::set('language', $language);
         $GLOBALS['translations'] = [];
-        if (ASTERION_DB_USE == true && (ASTERION_LANGUAGE_LOAD_TRANSLATIONS == true || Url::isAdministration())) {
+        if (ASTERION_DB_USE == true && (ASTERION_LANGUAGE_LOAD_TRANSLATIONS == true || Url::isAdministration() || $force == true)) {
             $GLOBALS['translations'] = Translation::load($language['id']);
         }
     }

@@ -23,8 +23,8 @@ class User_Controller_Interface extends Controller
             case 'login':
                 $login = $userLoginClassName::getInstance();
                 $this->title_page = __('login');
-                $this->head .= User_Interface::head();
-                $urlConnected = (Session::get('urlConnected')!='') ? Session::get('urlConnected') : $userClass->urlConnected;
+                $this->head .= $login->user()->head();
+                $urlConnected = (Session::get('urlConnected') != '') ? Session::get('urlConnected') : $userClass->urlConnected;
                 if ($login->isConnected()) {
                     Session::delete('urlConnected');
                     header('Location: ' . $urlConnected);
@@ -50,7 +50,7 @@ class User_Controller_Interface extends Controller
             case 'login_facebook':
                 $login = $userLoginClassName::getInstance();
                 $this->title_page = __('login');
-                $urlConnected = (Session::get('urlConnected')!='') ? Session::get('urlConnected') : $userClass->urlConnected;
+                $urlConnected = (Session::get('urlConnected') != '') ? Session::get('urlConnected') : $userClass->urlConnected;
                 if ($login->isConnected()) {
                     Session::delete('urlConnected');
                     header('Location: ' . $urlConnected);
@@ -70,7 +70,7 @@ class User_Controller_Interface extends Controller
             case 'login_google':
                 $login = $userLoginClassName::getInstance();
                 $this->title_page = __('login');
-                $urlConnected = (Session::get('urlConnected')!='') ? Session::get('urlConnected') : $userClass->urlConnected;
+                $urlConnected = (Session::get('urlConnected') != '') ? Session::get('urlConnected') : $userClass->urlConnected;
                 if ($login->isConnected()) {
                     Session::delete('urlConnected');
                     header('Location: ' . $urlConnected);
@@ -90,6 +90,7 @@ class User_Controller_Interface extends Controller
             case 'register':
                 $login = $userLoginClassName::getInstance();
                 $this->title_page = __('register');
+                $this->head .= $login->user()->head();
                 if ($login->isConnected()) {
                     header('Location: ' . url(''));
                     exit();
@@ -228,7 +229,7 @@ class User_Controller_Interface extends Controller
                 $login->checkLoginRedirect();
                 $response = ['status' => StatusCode::NOK];
                 if (isset($this->values['filename']) && isset($this->values['file'])) {
-                    $response = File::uploadTempImage($this->values['filename'], $this->values['file']);
+                    $response = File::uploadTempImage(['filename' => $this->values['filename'], 'file' => $this->values['file']]);
                 }
                 return json_encode($response);
                 break;
@@ -237,6 +238,21 @@ class User_Controller_Interface extends Controller
                 $login = $userLoginClassName::getInstance();
                 $login->checkLoginRedirect();
                 return json_encode($login->user()->deleteProfilePicture());
+                break;
+            case 'delete_account':
+                $login = $userLoginClassName::getInstance();
+                $login->checkLoginSimpleRedirect();
+                $this->title_page = __('delete_account');
+                $action = $login->user()->deleteAccount($this->values);
+                if ($action['status'] == StatusCode::OK) {
+                    Session::flashInfo(__('deleted_account_success'));
+                    header('Location: ' . $userClass->urlHome);
+                    exit();
+                } else {
+                    $this->content = $action['content'];
+                    return $this->ui->render();
+                }
+                exit();
                 break;
         }
     }

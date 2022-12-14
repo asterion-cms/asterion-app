@@ -43,7 +43,8 @@ class FormField_Base
         $this->options['default'] = (isset($options['default'])) ? $options['default'] : (($this->item) ? (string) $this->item->default : '');
         $this->options['accept'] = (isset($options['accept'])) ? $options['accept'] : (($this->item) ? (string) $this->item->accept : '');
         $this->options['typeField'] = (isset($options['typeField'])) ? $options['typeField'] : 'text';
-        $this->options['class'] = (isset($options['class'])) ? $options['class'] : '';
+        $this->options['class'] = (isset($options['class'])) ? $options['class'] : (($this->item) ? (string) $this->item->class : '');
+        $this->options['firstSelect'] = (isset($options['firstSelect'])) ? $options['firstSelect'] : (($this->item) ? (string) $this->item->firstSelect : '');
         $this->options['messageBefore'] = (isset($options['messageBefore'])) ? $options['messageBefore'] : (($this->item) ? (string) $this->item->messageBefore : '');
         $this->options['messageAfter'] = (isset($options['messageAfter'])) ? $options['messageAfter'] : (($this->item) ? (string) $this->item->messageAfter : '');
     }

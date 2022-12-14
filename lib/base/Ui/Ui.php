@@ -219,6 +219,9 @@ class Ui
                             $labelAttribute = $refObject->getBasicInfoAdmin();
                         }
                         break;
+                    case 'text_icon':
+                        $labelAttribute = '<i class="' . $this->object->get($attribute) . '"></i>';
+                        break;
                     case 'textarea_code':
                         $labelAttribute = htmlentities($this->object->get($attribute));
                         break;

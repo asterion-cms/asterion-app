@@ -46,28 +46,7 @@ class User_Form_Interface extends Form
         return '
             <div class="simple_form">
                 <h1>' . __('login') . '</h1>
-                ' . (($this->object->hasLoginFacebook() || $this->object->hasLoginGoogle()) ? '
-                    <div class="button_login_extras">
-                        ' . (($this->object->hasLoginFacebook()) ? '
-                                <div class="facebook_info"
-                                    data-appid="' . Parameter::code('facebook_app_id') . '"
-                                    data-urllogin="' . $this->object->urlLoginFacebook . '"></div>
-                                <div class="button_login_extra button_login_extra_facebook">
-                                    <div class="button_login_extra_ins">' . __('facebook_login') . '</div>
-                                </div>
-                            ' : '') . '
-                        ' . (($this->object->hasLoginGoogle()) ? '
-                                <div class="google_info"
-                                    data-clientid="' . Parameter::code('google_client_id') . '"
-                                    data-urllogin="' . $this->object->urlLoginGoogle . '"></div>
-                                <div class="button_login_extra button_login_extra_google">
-                                    <div class="button_login_extra_ins">
-                                        <div id="button_login_extra_google"></div>
-                                    </div>
-                                </div>
-                            ' : '') . '
-                    </div>
-                ' : '') . '
+                ' . $this->connectSocial() . '
                 <p>' . __('login_message') . '</p>
                 ' . $this->loginForm($options) . '
                 <div class="simple_form_actions">
@@ -100,6 +79,7 @@ class User_Form_Interface extends Form
         return '
             <div class="simple_form">
                 <h1>' . __('register') . '</h1>
+                ' . $this->connectSocial() . '
                 <p>' . __('register_message') . '</p>
                 ' . $this->registerForm($options) . '
             </div>';
@@ -264,6 +244,7 @@ class User_Form_Interface extends Form
             <div class="simple_form">
                 <p>' . __('account_message') . '</p>
                 ' . $this->profileForm($options) . '
+                ' . $this->deleteLink($options) . '
             </div>';
     }
 
@@ -287,6 +268,70 @@ class User_Form_Interface extends Form
             ' . $this->field('image') . '
             ' . $this->field('name');
         return Form::createForm($fields, $options);
+    }
+
+    public function deleteAccountForm($options = [])
+    {
+        $userClass = new $this->userClassName;
+        $defaultOptions = [
+            'action' => $userClass->urlDelete,
+            'class' => 'form_site form_user',
+            'recaptchav3' => true,
+            'submit' => __('send'),
+        ];
+        $options = array_merge($defaultOptions, $options);
+        $fields = FormField::show('text', ['label' => __('code'), 'name' => 'code', 'value' => '']);
+        return Form::createForm($fields, $options);
+    }
+
+    public function deleteAccount($options = [])
+    {
+        return '
+            <div class="simple_form">
+                <p>' . __('delete_account_message_sent') . '</p>
+                ' . $this->deleteAccountForm($options) . '
+            </div>';
+    }
+
+    public function deleteLink($options = [])
+    {
+        if (isset($this->object->urlDelete)) {
+            return '
+                <div class="profile_delete_wrapper">
+                    <p>' . __('delete_account_message') . '</p>
+                    <a href="' . $this->object->urlDelete . '" class="button button_delete">
+                        <i class="fa fa-times"></i>
+                        <span>' . __('delete_account') . '</span>
+                    </a>
+                </div>';
+        }
+    }
+
+    public function connectSocial()
+    {
+        if ($this->object->hasLoginFacebook() || $this->object->hasLoginGoogle()) {
+            return '
+                <div class="button_login_extras">
+                    ' . (($this->object->hasLoginFacebook()) ? '
+                            <div class="facebook_info"
+                                data-appid="' . Parameter::code('facebook_app_id') . '"
+                                data-urllogin="' . $this->object->urlLoginFacebook . '"></div>
+                            <div class="button_login_extra button_login_extra_facebook">
+                                <div class="button_login_extra_ins">' . __('facebook_login') . '</div>
+                            </div>
+                        ' : '') . '
+                    ' . (($this->object->hasLoginGoogle()) ? '
+                            <div class="google_info"
+                                data-clientid="' . Parameter::code('google_client_id') . '"
+                                data-urllogin="' . $this->object->urlLoginGoogle . '"></div>
+                            <div class="button_login_extra button_login_extra_google">
+                                <div class="button_login_extra_ins">
+                                    <div id="button_login_extra_google"></div>
+                                </div>
+                            </div>
+                        ' : '') . '
+                </div>';
+        }
     }
 
 }
