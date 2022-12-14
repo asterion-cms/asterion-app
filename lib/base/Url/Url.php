@@ -25,7 +25,7 @@ class Url
     public static function format($url)
     {
         $url = strtolower($url);
-        $url = replace(' ', '', $url);
+        $url = str_replace(' ', '', $url);
         $url = trim($url);
         if ($url!='') {
             if (substr($url, 0, 8) == 'https://' || substr($url, 0, 7) == 'http://') {
