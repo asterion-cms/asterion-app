@@ -28,15 +28,10 @@ class Url
         $url = str_replace(' ', '', $url);
         $url = trim($url);
         if ($url!='') {
-            if (substr($url, 0, 8) == 'https://' || substr($url, 0, 7) == 'http://') {
-                return $url;
-            } else {
-                if (substr($url, 0, 3) == 'www') {
-                    return 'http://' . $url;
-                } else {
-                    return 'http://www.' . $url;
-                }
+            if (substr($url, 0, 8) != 'https://' && substr($url, 0, 7) != 'http://') {
+                $url = (substr($url, 0, 3) == 'www') ? 'http://' . $url : 'http://www.' . $url;
             }
+            return urlencode($url);
         }
     }
 
