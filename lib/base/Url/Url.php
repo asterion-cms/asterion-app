@@ -26,7 +26,7 @@ class Url
     {
         $url = strtolower($url);
         $url = str_replace(' ', '', $url);
-        $url = preg_replace("/[^A-Za-z0-9_-.?&]/", '', $url);
+        $url = preg_replace("/[^A-Za-z0-9_-\.\?\&]/", '', $url);
         $url = trim($url);
         if ($url!='') {
             if (substr($url, 0, 8) == 'https://' || substr($url, 0, 7) == 'http://') {
