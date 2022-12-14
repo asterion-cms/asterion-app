@@ -56,7 +56,8 @@ abstract class Controller
      */
     public function getMetaDescription()
     {
-        return (isset($this->meta_description) && $this->meta_description != '') ? $this->meta_description : Parameter::code('meta_description');
+        $meta_description = (isset($this->meta_description) && $this->meta_description != '') ? $this->meta_description : Parameter::code('meta_description');
+        return str_replace('"', '', $meta_description);
     }
 
     /**
@@ -65,7 +66,8 @@ abstract class Controller
      */
     public function getMetaKeywords()
     {
-        return (isset($this->meta_keywords)) ? $this->meta_keywords : Parameter::code('meta_keywords');
+        $meta_keywords = (isset($this->meta_keywords)) ? $this->meta_keywords : Parameter::code('meta_keywords');
+        return str_replace('"', '', $meta_keywords);
     }
 
     /**
