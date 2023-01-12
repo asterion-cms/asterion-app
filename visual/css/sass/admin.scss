@@ -1774,6 +1774,58 @@
     }
 }
 
+.nested_form_field_multiple_items_ingredients {
+    .nested_form_field_content {
+        @include clearer();
+        .form_field_ingredient_old {
+            display: none;
+        }
+        .form_field_amount,
+        .form_field_type,
+        .form_field_ingredient {
+            float: left;
+            input,
+            select {
+                width: 100%;
+            }
+        }
+        .form_field_amount {
+            width: 15%;
+            margin: 0 10px 0 0;
+        }
+        .form_field_type {
+            width: 15%;
+            margin: 0 10px 0 0;
+        }
+        .form_field_ingredient {
+            width: 50%;
+            margin: 0;
+        }
+    }
+}
+
+.nested_form_field_multiple_items_preparation {
+    .nested_form_field_content {
+        @include clearer();
+        .form_field_image,
+        .form_field_step {
+            float: left;
+        }
+        .form_field_image {
+            width: 30%;
+            margin: 0 10px 0 0;
+        }
+        .form_field_step {
+            width: 50%;
+            margin: 0;
+            textarea {
+                width: 100%;
+                height: 160px;
+            }
+        }
+    }
+}
+
 // Controls top
 .controls_top {
     padding: 10px 0;

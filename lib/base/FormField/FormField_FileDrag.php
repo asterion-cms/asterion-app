@@ -20,6 +20,7 @@ class FormField_FileDrag extends FormField_Base
         $this->options['crop'] = (isset($options['crop'])) ? $options['crop'] : (($this->item && (string) $this->item->crop == 'true') ? true : false);
         $this->options['cropWidth'] = (isset($options['cropWidth'])) ? $options['cropWidth'] : (($this->item && (string) $this->item->cropWidth != '') ? (string) $this->item->cropWidth : '16');
         $this->options['cropHeight'] = (isset($options['cropHeight'])) ? $options['cropHeight'] : (($this->item && (string) $this->item->cropHeight != '') ? (string) $this->item->cropHeight : '9');
+        $this->options['allowPaste'] = (isset($options['allowPaste'])) ? $options['allowPaste'] : (($this->item && (string) $this->item->allowPaste == 'true') ? true : false);
     }
 
     /**
@@ -58,6 +59,7 @@ class FormField_FileDrag extends FormField_Base
         $crop = (isset($options['crop'])) ? $options['crop'] : false;
         $cropWidth = (isset($options['cropWidth'])) ? $options['cropWidth'] : '16';
         $cropHeight = (isset($options['cropHeight'])) ? $options['cropHeight'] : '9';
+        $allowPaste = (isset($options['allowPaste'])) ? $options['allowPaste'] : false;
         $loader = '
             <div class="drag_field_loader">
                 <div class="drag_field_loader_message" data-messageloading="' . __('file_loading') . '" data-messagesaving="' . __('file_saving') . '" data-messagesavedas="' . __('file_saved_as') . '"></div>
@@ -78,7 +80,8 @@ class FormField_FileDrag extends FormField_Base
                     data-maxdimensions="' . $maxDimensions . '"
                     data-maxwidth="' . ASTERION_WIDTH_HUGE . '"
                     data-maxheight="' . ASTERION_HEIGHT_MAX_HUGE . '"
-                    data-cropbuttonlabel="' . __('crop_image') . '">
+                    data-cropbuttonlabel="' . __('crop_image') . '"
+                    data-allowpaste="'.(($allowPaste) ? 'allow' : '').'">
                     <div class="drag_field_wrapper_image">' . $renderField . '</div>
                     <div class="drag_field_wrapper_input">
                         <div class="drag_field_input">

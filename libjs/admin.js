@@ -13,6 +13,7 @@ $(function() {
     activateMaps();
     activateCropper();
     activateModal();
+    activatePaste();
 });
 $(window).on('load', function() {
     sameHeight();
@@ -845,6 +846,7 @@ function reloadListAdmin() {
         })
     }
 }
+
 /**
  * Activate modal pages.
  **/
@@ -894,6 +896,33 @@ function activateModal() {
         });
     });
 }
+
+/**
+ * Activate modal pages.
+ **/
+function activatePaste() {
+    var container = $('[data-allowpaste="allow"]').first();
+    if (container) {
+        $(window).on('paste', function(event) {
+            var items = (event.clipboardData || event.originalEvent.clipboardData).items;
+            for (index in items) {
+                var item = items[index];
+                if (item.kind === 'file') {
+                    loadFileField(item.getAsFile(), container.parents('.form_field').first());
+                    // var blob = item.getAsFile();
+                    // var reader = new FileReader();
+                    // reader.onload = function(event) {
+                    //     var imageData = event.target.result;
+                    //     if (imageData) {
+                    //         processFileField(imageData, 'tex', container);
+                    //     }
+                    // }
+                    // reader.readAsDataURL(blob);
+                }
+            }
+        });
+    }
+};
 
 function split(val) {
     return val.split(/,\s*/);
