@@ -34,4 +34,10 @@ class UserAdmin extends User_Interface
         $this->urlConnected = url('', true);
     }
 
+    public function managesPermissions()
+    {
+        $userAdminType = (new UserAdminType)->read($this->get('id_user_admin_type'));
+        return ($userAdminType->get('manages_permissions') == '1') ? true : false;
+    }
+
 }

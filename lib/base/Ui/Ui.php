@@ -190,6 +190,8 @@ class Ui
      */
     public function label($canModify = false)
     {
+        $login = UserAdmin_Login::getInstance();
+        $user = $login->user();
         if (isset($this->object->info->info->form->templateItemAdmin)) {
             $html = (string) $this->object->info->info->form->templateItemAdmin->asXML();
             $html = str_replace('<templateItemAdmin>', '', $html);
@@ -207,6 +209,7 @@ class Ui
                 $attribute = str_replace('#', '', $attribute);
                 $info = $this->object->attributeInfo($attribute);
                 $infoType = (isset($info->type)) ? $info->type : '';
+                $managesPermissions = (boolean) $info->managesPermissions;
                 switch ($infoType) {
                     default:
                         $labelAttribute = $this->object->get($attribute);
@@ -235,8 +238,11 @@ class Ui
                         $labelAttribute = $this->object->label($attribute);
                         break;
                     case 'checkbox':
+                        $labelAttribute = '';
                         if ((string) $info->name == 'active') {
-                            $labelAttribute = $this->renderActiveOptions();
+                            if (!$managesPermissions || ($managesPermissions && $user->managesPermissions())) {
+                                $labelAttribute = $this->renderActiveOptions();
+                            }
                         } else {
                             $labelAttribute = ($this->object->get($attribute) == '1') ? __('yes') : __('no');
                         }

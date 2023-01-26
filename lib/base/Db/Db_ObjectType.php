@@ -92,13 +92,13 @@ class Db_ObjectType
             case 'id':
                 switch ($type) {
                     default:
-                        return '`' . $name . '` INT NOT NULL AUTO_INCREMENT, PRIMARY KEY (`'.$name.'`)';
+                        return '`' . $name . '` INT NOT NULL AUTO_INCREMENT, PRIMARY KEY (`' . $name . '`)';
                         break;
                     case 'id_char32':
-                        return '`' . $name . '` CHAR(32) NOT NULL COLLATE utf8_unicode_ci, PRIMARY KEY (`'.$name.'`)';
+                        return '`' . $name . '` CHAR(32) NOT NULL COLLATE utf8_unicode_ci, PRIMARY KEY (`' . $name . '`)';
                         break;
                     case 'id_varchar':
-                        return '`' . $name . '` VARCHAR(255) NOT NULL COLLATE utf8_unicode_ci, PRIMARY KEY (`'.$name.'`)';
+                        return '`' . $name . '` VARCHAR(255) NOT NULL COLLATE utf8_unicode_ci, PRIMARY KEY (`' . $name . '`)';
                         break;
                 }
                 $sql .= 'PRIMARY KEY (`' . $name . '`),';
@@ -154,6 +154,15 @@ class Db_ObjectType
             return $typeInfo[0];
         }
         return $type;
+    }
+
+    /**
+     * Helper function to see if a field is numeric
+     */
+    public static function isNumeric($type)
+    {
+        $numeric = ['text_integer', 'text_double', 'text_number'];
+        return (in_array($type, $numeric));
     }
 
 }

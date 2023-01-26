@@ -18,11 +18,12 @@ class Permission extends Db_Object
     {
         $login = UserAdmin_Login::getInstance();
         if ($login->isConnected()) {
-            $user_admin_type = (new UserAdminType)->read($login->get('id_user_admin_type'));
-            if ($user_admin_type->get('manages_permissions') == '1') {
+            $user = $login->user();
+            if ($user->managesPermissions()) {
                 return true;
             }
-            $permission = (new Permission)->readFirst(['where' => 'object_name="' . $objectName . '" AND id_user_admin_type="' . $user_admin_type->id() . '" AND ' . $permissionCheck . '="1"']);
+            $userAdminType = (new UserAdminType)->read($user->get('id_user_admin_type'));
+            $permission = (new Permission)->readFirst(['where' => 'object_name="' . $objectName . '" AND id_user_admin_type="' . $userAdminType->id() . '" AND ' . $permissionCheck . '="1"']);
             return ($permission->id() != '');
         }
         return false;
@@ -67,23 +68,30 @@ class Permission extends Db_Object
     {
         $login = UserAdmin_Login::getInstance();
         if ($login->isConnected()) {
-            $user_admin_type = (new UserAdminType)->read($login->get('id_user_admin_type'));
-            if ($user_admin_type->get('manages_permissions') == '1') {
-                return ['permission_list_items' => 1,
+            $user = $login->user();
+            if ($user->managesPermissions()) {
+                return [
+                    'permission_list_items' => 1,
                     'permission_insert' => 1,
                     'permission_modify' => 1,
-                    'permission_delete' => 1];
+                    'permission_delete' => 1
+                ];
             }
-            $permission = (new Permission)->readFirst(['where' => 'object_name="' . $objectName . '" AND id_user_admin_type="' . $user_admin_type->id() . '"']);
-            return ['permission_list_items' => $permission->get('permission_list_items'),
+            $userAdminType = (new UserAdminType)->read($user->get('id_user_admin_type'));
+            $permission = (new Permission)->readFirst(['where' => 'object_name="' . $objectName . '" AND id_user_admin_type="' . $userAdminType->id() . '"']);
+            return [
+                'permission_list_items' => $permission->get('permission_list_items'),
                 'permission_insert' => $permission->get('permission_insert'),
                 'permission_modify' => $permission->get('permission_modify'),
-                'permission_delete' => $permission->get('permission_delete')];
+                'permission_delete' => $permission->get('permission_delete')
+            ];
         }
-        return ['permission_list_items' => 0,
+        return [
+            'permission_list_items' => 0,
             'permission_insert' => 0,
             'permission_modify' => 0,
-            'permission_delete' => 0];
+            'permission_delete' => 0
+        ];
     }
 
 }

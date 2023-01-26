@@ -106,6 +106,7 @@ class Form
         $label = (string) $item->label;
         $type = (string) $item->type;
         $class = (string) $item->class;
+        $managesPermissions = (boolean) $item->managesPermissions;
         $options = array_merge($options,
             [
                 'item' => $item,
@@ -114,6 +115,9 @@ class Form
                 'typeField' => $type,
                 'object' => $this->object,
             ]);
+        if ($managesPermissions && isset($options['userManagesPermissions']) && $options['userManagesPermissions'] == false) {
+            return '';
+        }
         switch (Db_ObjectType::baseType($type)) {
             default:
                 return FormField::show($type, $options);
@@ -331,12 +335,15 @@ class Form
      */
     public function createFormInsertAdministrator()
     {
+        $login = UserAdmin_Login::getInstance();
         $layout = (string) $this->object->info->info->form->layout;
-        return $this->createForm($this->createFormFields(), [
+        $fields = $this->createFormFields(['userManagesPermissions' => $login->user()->managesPermissions()]);
+        $options = [
             'action' => url(camelToSnake($this->object->className) . '/' . (($layout == 'modal') ? 'insert_item_ajax' : 'insert_item'), true),
             'submit' => __('save'),
             'class' => 'form_admin form_admin_insert',
-        ]);
+        ];
+        return $this->createForm($fields, $options);
     }
 
     /**
@@ -344,16 +351,18 @@ class Form
      */
     public function createFormModifyAdministrator()
     {
+        $login = UserAdmin_Login::getInstance();
         $layout = (string) $this->object->info->info->form->layout;
-        $submitOptions = [
+        $options = [
             'action' => url(camelToSnake($this->object->className) . '/' . (($layout == 'modal') ? 'modify_item_ajax' : 'modify_item'), true),
             'submit' => __('save'),
             'class' => 'form_admin form_admin_modify',
         ];
+        $fields = $this->createFormFields(['userManagesPermissions' => $login->user()->managesPermissions()]);
         return '
             <div class="form_admin_modify_wrapper">
                 ' . $this->formModifyAdministratorActionsTop() . '
-                ' . $this->createForm($this->createFormFields(), $submitOptions) . '
+                ' . $this->createForm($fields, $options) . '
                 ' . (($this->object->id() != '' && $layout != 'modal') ? '
                 ' . $this->formModifyAdministratorActionsBottom() . '
                 ' : '') . '

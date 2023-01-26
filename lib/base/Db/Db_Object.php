@@ -573,6 +573,14 @@ class Db_Object extends Db_Sql
     }
 
     /**
+     * Get the filter by user value
+     */
+    public function infoFilterByUser()
+    {
+        return (string) $this->info->info->form->filterByUser;
+    }
+
+    /**
      * Gets the value of an attribute.
      */
     public function get($name)

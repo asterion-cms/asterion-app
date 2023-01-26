@@ -138,9 +138,10 @@ class NavigationAdmin_Ui extends Ui
      */
     public function renderMenu()
     {
-        $this->login = UserAdmin_Login::getInstance();
-        $this->user_admin_type = (new UserAdminType)->read($this->login->get('id_user_admin_type'));
-        if ($this->user_admin_type->id() != '') {
+        $login = UserAdmin_Login::getInstance();
+        $user = $login->user();
+        $userAdminType = (new UserAdminType)->read($user->get('id_user_admin_type'));
+        if ($userAdminType->id() != '') {
             $menuItems = '';
             $menuItemsBase = $this->renderMenuObjects(File::scanDirectoryObjectsBase(), 'menu_side_item_base');
             $menuItems .= ($menuItemsBase != '') ? '
@@ -154,7 +155,7 @@ class NavigationAdmin_Ui extends Ui
                     <div class="menu_side_block_title">' . __('application') . '</div>
                     <div class="menu_side_block_items">' . $menuItemsApp . '</div>
                 </div>' : '';
-            if ($this->user_admin_type->get('manages_permissions') == '1') {
+            if ($user->managesPermissions()) {
                 $menuItems .= '
                     <div class="menu_side_block">
                         <div class="menu_side_block_title">' . __('development') . '</div>
@@ -216,6 +217,9 @@ class NavigationAdmin_Ui extends Ui
      */
     public function renderMenuObjects($objectNames, $class)
     {
+        $login = UserAdmin_Login::getInstance();
+        $user = $login->user();
+        $userAdminType = (new UserAdminType)->read($user->get('id_user_admin_type'));
         $html = '';
         $menuItems = [];
         foreach ($objectNames as $objectName) {
@@ -240,8 +244,8 @@ class NavigationAdmin_Ui extends Ui
             $htmlGroup = '';
             foreach ($menuItemGroup as $menuItem) {
                 $menuObject = new $menuItem['name'];
-                $permission = (new Permission)->readFirst(['where' => 'object_name="' . $menuObject->className . '" AND id_user_admin_type="' . $this->user_admin_type->id() . '"']);
-                if ($this->user_admin_type->get('manages_permissions') == '1' || $permission->get('permission_list_items') == '1') {
+                $permission = (new Permission)->readFirst(['where' => 'object_name="' . $menuObject->className . '" AND id_user_admin_type="' . $userAdminType->id() . '"']);
+                if ($user->managesPermissions() || $permission->get('permission_list_items') == '1') {
                     $htmlGroup .= '
                         <div class="menu_side_item menu_side_item-' . $menuItem['name'] . ' ' . $class . '">
                             <a href="' . $menuObject->urlListAdmin() . '">

@@ -219,6 +219,9 @@ abstract class Controller
                 $this->checkLoginAdmin();
                 $this->object = (new $this->objectType)->read($this->id);
                 if ($this->object->id() != '') {
+                    if (!$this->allowFilterByUser($this->object)) {
+                        header('Location: ' . $this->object->urlListAdmin());
+                    }
                     $form = new $this->object->formName($this->object->values);
                     $this->message = ($this->action == 'insert_check' || $this->action == 'modify_view_check') ? __('saved_form') : '';
                     $this->content = $form->createFormModifyAdministrator();
@@ -235,7 +238,7 @@ abstract class Controller
                 $response = ['status' => StatusCode::NOK, 'message_error' => __('update_error')];
                 if ($this->checkLoginAdmin()) {
                     $this->object = (new $this->objectType)->read($this->id);
-                    if ($this->object->id() != '') {
+                    if ($this->object->id() != '' && $this->allowFilterByUser($this->object)) {
                         $form = new $this->object->formName($this->object->values);
                         $response = ['status' => StatusCode::OK, 'html' => $form->createFormModifyAdministrator()];
                     }
@@ -250,7 +253,7 @@ abstract class Controller
                 $primary = $this->object->primary;
                 $idPrimary = (isset($this->values[$primary])) ? $this->values[$primary] : '';
                 $this->object = $this->object->read($idPrimary);
-                if ($this->object->id() == '') {
+                if ($this->object->id() == '' || !$this->allowFilterByUser($this->object)) {
                     $this->message_error = __('item_does_not_exist');
                     return $this->ui->render();
                 } else {
@@ -277,7 +280,7 @@ abstract class Controller
                 if ($this->checkLoginAdmin()) {
                     $primary = $this->object->primary;
                     $this->object = $this->object->read($this->values[$primary]);
-                    if ($this->object->id() == '') {
+                    if ($this->object->id() == '' || !$this->allowFilterByUser($this->object)) {
                         $response = ['status' => StatusCode::NOK, 'message_error' => __('item_does_not_exist')];
                     } else {
                         $this->object->setValues($this->values);
@@ -321,7 +324,7 @@ abstract class Controller
                  */
                 $this->checkLoginAdmin();
                 $this->object->read($this->id);
-                if ($this->object->id() != '') {
+                if ($this->object->id() != '' && $this->allowFilterByUser($this->object)) {
                     $this->object->delete();
                 }
                 header('Location: ' . $this->object->urlListAdmin());
@@ -335,7 +338,7 @@ abstract class Controller
                 $response = ['status' => StatusCode::NOK, 'message_error' => __('delete_error')];
                 if ($this->checkLoginAdmin()) {
                     $this->object->read($this->id);
-                    if ($this->object->id() != '') {
+                    if ($this->object->id() != '' && $this->allowFilterByUser($this->object)) {
                         $response = $this->object->delete();
                     }
                 }
@@ -415,10 +418,10 @@ abstract class Controller
                  * This is the action that changes the order of the list.
                  */
                 $this->checkLoginAdmin();
-                $info = explode('_', $this->id);
-                if (isset($info[1]) && $this->object->attributeExists($info[1])) {
-                    $orderType = ($info[0] == 'asc') ? 'asc' : 'des';
-                    Session::set('ord_' . $this->type, $orderType . '_' . $info[1]);
+                $info = substr($this->id, 4);
+                if ($this->object->attributeExists($info)) {
+                    $orderType = (substr($this->id, 0, 3) == 'asc') ? 'asc' : 'des';
+                    Session::set('ord_' . $this->type, $orderType . '_' . $info);
                 }
                 header('Location: ' . $this->object->urlListAdmin());
                 exit();
@@ -432,42 +435,23 @@ abstract class Controller
                 if ($this->checkLoginAdmin() && isset($this->values['list_ids']) && count($this->values['list_ids']) > 0) {
                     foreach ($this->values['list_ids'] as $id) {
                         $object = $this->object->read($id);
-                        switch ($this->id) {
-                            case 'delete':
-                                $object->delete();
-                                break;
-                            case 'activate':
-                                $object->persistSimple('active', '1');
-                                break;
-                            case 'deactivate':
-                                $object->persistSimple('active', '0');
-                                break;
+                        if ($this->allowFilterByUser($object)) {
+                            switch ($this->id) {
+                                case 'delete':
+                                    $object->delete();
+                                    break;
+                                case 'activate':
+                                    $object->persistSimple('active', '1');
+                                    break;
+                                case 'deactivate':
+                                    $object->persistSimple('active', '0');
+                                    break;
+                            }
+                            $response = ['status' => StatusCode::OK];
                         }
-                        $response = ['status' => StatusCode::OK];
                     }
                 }
                 return json_encode($response);
-                break;
-            case 'multiple_activate':
-            case 'multiple_deactivate':
-                /**
-                 * This is the action that activates or deactivates multiple records at once.
-                 * It just works on records that have an attribute named "active",
-                 */
-                $this->checkLoginAdmin();
-                $this->mode = 'ajax';
-                if (isset($this->values['list_ids'])) {
-                    $object = new $this->objectType();
-                    $primary = (string) $this->object->info->info->sql->primary;
-                    $where = '';
-                    foreach ($this->values['list_ids'] as $id) {
-                        $where .= $primary . '="' . $id . '" OR ';
-                    }
-                    $where = substr($where, 0, -4);
-                    $active = ($this->action == 'multiple_activate') ? '1' : '0';
-                    $query = 'UPDATE ' . $object->tableName . ' SET active="' . $active . '" WHERE ' . $where;
-                    Db::execute($query);
-                }
                 break;
             case 'autocomplete':
                 /**
@@ -564,14 +548,17 @@ abstract class Controller
         $searchValue = urldecode($this->id);
         $searchValue = str_replace('"', "", $searchValue);
         $searchValue = str_replace("'", "", $searchValue);
+        $filterByUser = $this->object->infoFilterByUser();
         $sortableListClass = ($this->object->hasOrd()) ? 'sortable_list' : '';
-        $ordObject = explode('_', Session::get('ord_' . $this->type));
-        $ordObjectType = (isset($ordObject[0]) && $ordObject[0] == 'asc') ? 'ASC' : 'DESC';
+        $ordSession = Session::get('ord_' . $this->type);
+        $ordObject = substr($ordSession, 4);
+        $ordObjectType = (substr($ordSession, 0, 3) == 'asc') ? 'ASC' : 'DESC';
         $values = [];
         $options['order'] = $this->orderField();
-        if (isset($ordObject[1])) {
-            $orderInfo = $this->object->attributeInfo($ordObject[1]);
-            $orderInfoItem = (is_object($orderInfo) && (string) $orderInfo->language == "true") ? $ordObject[1] . '_' . Language::active() : $ordObject[1];
+        if ($ordObject!='') {
+            $orderInfo = $this->object->attributeInfo($ordObject);
+            $orderInfoItem = (is_object($orderInfo) && (string) $orderInfo->language == "true") ? $ordObject . '_' . Language::active() : $ordObject;
+            $orderInfoItem = ($orderInfoItem!='' && Db_ObjectType::isNumeric((string) $orderInfo->type)) ? 'ABS(' . $orderInfoItem . ')' : $orderInfoItem;
             $options['order'] = $orderInfoItem . ' ' . $ordObjectType;
         }
         $options['results'] = (int) $this->object->info->info->form->pager;
@@ -587,8 +574,19 @@ abstract class Controller
                 $options['where'] = ($options['where'] != '') ? ' AND ' . $showFieldWhere : $showFieldWhere;
             }
         }
-        $options['query'] = ($searchQuery != '' && $searchValue != '') ? str_replace('#TABLE', $this->object->tableName, str_replace('#SEARCH', $searchValue, $searchQuery)) : '';
-        $options['queryCount'] = ($searchQueryCount != '' && $searchValue != '') ? str_replace('#TABLE', $this->object->tableName, str_replace('#SEARCH', $searchValue, $searchQueryCount)) : '';
+        $filterByUserWhere = '1=1';
+        if ($filterByUser != '' && $this->login->isConnected()) {
+            $user = $this->login->user();
+            if (!$user->managesPermissions()) {
+                $filterByUserWhere = $filterByUser . '="' . $user->id() . '"';
+                $options['where'] = ($options['where'] != '') ? '( ' . $options['where'] . ') AND ' : $options['where'];
+                $options['where'] = $options['where'] . $filterByUserWhere;
+            }
+        }
+        $replaceSearch = ['#TABLE', '#SEARCH', '#FILTER_BY_USER'];
+        $replaceValues = [$this->object->tableName, $searchValue, $filterByUserWhere];
+        $options['query'] = ($searchQuery != '' && $searchValue != '') ? str_replace($replaceSearch, $replaceValues, $searchQuery) : '';
+        $options['queryCount'] = ($searchQueryCount != '' && $searchValue != '') ? str_replace($replaceSearch, $replaceValues, $searchQueryCount) : '';
         $list = new ListObjects($this->objectType, $options, $values);
         $multipleChoice = (count((array) $this->object->info->info->form->multipleActions->action) > 0);
         return '
@@ -722,6 +720,9 @@ abstract class Controller
         if (isset($multipleActions) && count($multipleActions) > 0) {
             $multipleActionsOptions = '';
             foreach ($multipleActions as $multipleAction) {
+                if (($multipleAction == 'activate' || $multipleAction == 'deactivate') && !$this->allowFilterByUser($this->object)) {
+                    continue;
+                }
                 $multipleActionLabel = (string) $multipleAction;
                 $icon = (isset($multipleAction['icon'])) ? $multipleAction['icon'] : '';
                 $multipleActionsOptions .= '
@@ -805,8 +806,7 @@ abstract class Controller
     {
         $this->login = UserAdmin_Login::getInstance();
         $this->login->checkLoginRedirect();
-        $userAdminType = (new UserAdminType)->read($this->login->user()->get('id_user_admin_type'));
-        if ($checkPermissions && $userAdminType->get('manages_permissions') != '1') {
+        if ($checkPermissions && !$this->login->user()->managesPermissions()) {
             $permissionsCheck = [
                 'list_items' => 'permission_list_items',
                 'upload_temp_image' => 'permission_list_items',
@@ -834,6 +834,7 @@ abstract class Controller
             if ($permissionCheck == '') {
                 return false;
             }
+            $userAdminType = (new UserAdminType)->read($this->login->user()->get('id_user_admin_type'));
             $permission = (new Permission)->readFirst(['where' => 'object_name="' . $this->type . '" AND id_user_admin_type="' . $userAdminType->id() . '" AND ' . $permissionCheck . '="1"']);
             if ($permission->id() == '') {
                 if ($this->mode == 'ajax' || $this->mode == 'json') {
@@ -855,6 +856,16 @@ abstract class Controller
         if (isset($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'application/json') {
             return 'json';
         }
+    }
+
+    /**
+     * Allow actions for specific object
+     */
+    public function allowFilterByUser($object)
+    {
+        $filterByUser = $object->infoFilterByUser();
+        $user = $this->login->user();
+        return ($filterByUser != '' && !$user->managesPermissions() && $user->id() != $object->get($filterByUser)) ? false : true;
     }
 
 }
