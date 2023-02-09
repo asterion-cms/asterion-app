@@ -716,6 +716,31 @@ class Db_Object extends Db_Sql
     }
 
     /**
+     * Gets the HTML image that the attribute points using the AMP version.
+     */
+    public function getImageAmpWebp($attributeName, $version = '', $layout = 'responsive', $attributes = '', $alternative = '')
+    {
+        $imageUrl = $this->getImageUrl($attributeName, $version);
+        $imageUrl = ($imageUrl != '') ? $imageUrl : $alternative;
+        if ($imageUrl != '') {
+            $imageUrlWebp = $imageUrl . '.webp';
+            $imageFileWebp = str_replace(ASTERION_BASE_URL, ASTERION_BASE_FILE, $imageUrl) . '.webp';
+            if (!is_file($imageFileWebp)) {
+                return $this->getImageAmp($attributeName, $version, $layout, $attributes, $alternative);
+            }
+            $imageFile = str_replace(ASTERION_BASE_URL, ASTERION_BASE_FILE, $imageUrl);
+            if (is_file($imageFile)) {
+                $imageSize = getimagesize($imageFile);
+                return '
+                    <amp-img ' . $attributes . ' src="' . $imageUrlWebp . '" alt="' . str_replace('"', '', $this->getBasicInfo()) . '" width="' . $imageSize[0] . '" height="' . $imageSize[1] . '" layout="' . $layout . '">
+                        <amp-img fallback ' . $attributes . ' src="' . $imageUrl . '" alt="' . str_replace('"', '', $this->getBasicInfo()) . '" width="' . $imageSize[0] . '" height="' . $imageSize[1] . '" layout="' . $layout . '">
+                        </amp-img>
+                    </amp-img>';
+            }
+        }
+    }
+
+    /**
      * Gets the HTML image that exists and fits to an icon.
      */
     public function getImageIcon($attributeName)
@@ -746,6 +771,19 @@ class Db_Object extends Db_Sql
         if (is_file($file)) {
             return str_replace(ASTERION_STOCK_FILE, ASTERION_STOCK_URL, $file) . ($modified && ($this->get('modified') != '') ? '?v=' . Date::sqlInt($this->get('modified')) : '');
         }
+    }
+
+    /**
+     * Gets the url of an image that the attribute points.
+     */
+    public function getImageUrlWebp($attributeName, $version = '', $modified = false)
+    {
+        $version = ($version != '') ? '_' . strtolower($version) : '';
+        $file = ASTERION_STOCK_FILE . $this->className . '/' . $this->get($attributeName) . '/' . $this->get($attributeName) . $version . '.jpg.webp';
+        if (is_file($file)) {
+            return str_replace(ASTERION_STOCK_FILE, ASTERION_STOCK_URL, $file) . ($modified && ($this->get('modified') != '') ? '?v=' . Date::sqlInt($this->get('modified')) : '');
+        }
+        return $this->getImageUrl($attributeName, $version, $modified);
     }
 
     /**
