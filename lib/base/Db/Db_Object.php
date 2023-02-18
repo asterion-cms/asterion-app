@@ -709,8 +709,10 @@ class Db_Object extends Db_Sql
         if ($imageUrl != '') {
             $imageFile = str_replace(ASTERION_BASE_URL, ASTERION_BASE_FILE, $imageUrl);
             if (is_file($imageFile)) {
-                $imageSize = getimagesize($imageFile);
-                return '<amp-img ' . $attributes . ' src="' . $imageUrl . '" alt="' . str_replace('"', '', $this->getBasicInfo()) . '" width="' . $imageSize[0] . '" height="' . $imageSize[1] . '" layout="' . $layout . '"/>';
+                $imageSize = @getimagesize($imageFile);
+                if (isset($imageSize[1])) {
+                    return '<amp-img ' . $attributes . ' src="' . $imageUrl . '" alt="' . str_replace('"', '', $this->getBasicInfo()) . '" width="' . $imageSize[0] . '" height="' . $imageSize[1] . '" layout="' . $layout . '"/>';
+                }
             }
         }
     }

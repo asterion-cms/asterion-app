@@ -209,7 +209,7 @@ class Ui
                 $attribute = str_replace('#', '', $attribute);
                 $info = $this->object->attributeInfo($attribute);
                 $infoType = (isset($info->type)) ? $info->type : '';
-                $managesPermissions = (boolean) $info->managesPermissions;
+                $managesPermissions = (isset($info->managesPermissions)) ? (boolean) $info->managesPermissions : false;
                 switch ($infoType) {
                     default:
                         $labelAttribute = $this->object->get($attribute);
