@@ -410,7 +410,7 @@ class Ui
                 case 'facebook':
                     $link = 'http://www.facebook.com/sharer/sharer.php?u=' . urlencode($this->object->url());
                     $content .= '
-                        <a href="' . $link . '" target="_blank" class="share_option share_option_facebook">
+                        <a href="' . $link . '" target="_blank" title="Facebook" class="share_option share_option_facebook">
                             ' . (($shareIcon != '') ? $shareIcon : '<i class="fa fa-facebook-f"></i>') . '
                             <span>Facebook</span>
                         </a>';
@@ -418,7 +418,7 @@ class Ui
                 case 'twitter':
                     $link = 'http://www.twitter.com/share?text=' . urlencode($this->object->getBasicInfo()) . '&url=' . urlencode($this->object->url());
                     $content .= '
-                        <a href="' . $link . '" target="_blank" class="share_option share_option_twitter">
+                        <a href="' . $link . '" target="_blank" title="Twitter" class="share_option share_option_twitter">
                             ' . (($shareIcon != '') ? $shareIcon : '<i class="fa fa-twitter"></i>') . '
                             <span>Twitter</span>
                         </a>';
@@ -426,7 +426,7 @@ class Ui
                 case 'linkedin':
                     $link = 'https://www.linkedin.com/cws/share?url=' . urlencode($this->object->url());
                     $content .= '
-                        <a href="' . $link . '" target="_blank" class="share_option share_option_linkedin">
+                        <a href="' . $link . '" target="_blank" title="LinkedIn" class="share_option share_option_linkedin">
                             ' . (($shareIcon != '') ? $shareIcon : '<i class="fa fa-linkedin"></i>') . '
                             <span>LinkedIn</span>
                         </a>';
@@ -434,7 +434,7 @@ class Ui
                 case 'email':
                     $link = 'mailto:?body=' . urlencode($this->object->url());
                     $content .= '
-                        <a href="' . $link . '" target="_blank" class="share_option share_option_email">
+                        <a href="' . $link . '" target="_blank" title="Email" class="share_option share_option_email">
                             ' . (($shareIcon != '') ? $shareIcon : '<i class="fa fa-envelope"></i>') . '
                             <span>Email</span>
                         </a>';
@@ -442,7 +442,7 @@ class Ui
                 case 'print':
                     $link = 'javascript:window.print()';
                     $content .= '
-                        <a href="' . $link . '" class="share_option share_option_print">
+                        <a href="' . $link . '" class="share_option share_option_print" title="Print">
                             ' . (($shareIcon != '') ? $shareIcon : '<i class="fa fa-print"></i>') . '
                             <span>' . __('print') . '</span>
                         </a>';

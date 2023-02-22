@@ -187,7 +187,7 @@ class Url
     {
         $url = (isset($_GET['url'])) ? $_GET['url'] : '';
         $pageUrl = (__('page_url_string') != 'page_url_string') ? __('page_url_string') : ASTERION_PAGER_URL_STRING;
-        return ASTERION_LOCAL_URL . $url . '?' . $pageUrl . '=' . $page;
+        return ($page>1) ? ASTERION_LOCAL_URL . $url . '?' . $pageUrl . '=' . $page : ASTERION_LOCAL_URL . $url;
     }
 
     /**
