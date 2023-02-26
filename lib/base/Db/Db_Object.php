@@ -708,7 +708,7 @@ class Db_Object extends Db_Sql
         $imageUrl = ($imageUrl != '') ? $imageUrl : $alternative;
         if ($imageUrl != '') {
             $imageFile = str_replace(ASTERION_BASE_URL, ASTERION_BASE_FILE, $imageUrl);
-            if (is_file($imageFile)) {
+            if (file_exists($imageFile)) {
                 $imageSize = @getimagesize($imageFile);
                 if (isset($imageSize[1])) {
                     return '<amp-img ' . $attributes . ' src="' . $imageUrl . '" alt="' . str_replace('"', '', $this->getBasicInfo()) . '" width="' . $imageSize[0] . '" height="' . $imageSize[1] . '" layout="' . $layout . '"/>';
@@ -727,11 +727,11 @@ class Db_Object extends Db_Sql
         if ($imageUrl != '') {
             $imageUrlWebp = $imageUrl . '.webp';
             $imageFileWebp = str_replace(ASTERION_BASE_URL, ASTERION_BASE_FILE, $imageUrl) . '.webp';
-            if (!is_file($imageFileWebp)) {
+            if (!file_exists($imageFileWebp)) {
                 return $this->getImageAmp($attributeName, $version, $layout, $attributes, $alternative);
             }
             $imageFile = str_replace(ASTERION_BASE_URL, ASTERION_BASE_FILE, $imageUrl);
-            if (is_file($imageFile)) {
+            if (file_exists($imageFile)) {
                 $imageSize = getimagesize($imageFile);
                 return '
                     <amp-img ' . $attributes . ' src="' . $imageUrlWebp . '" alt="' . str_replace('"', '', $this->getBasicInfo()) . '" width="' . $imageSize[0] . '" height="' . $imageSize[1] . '" layout="' . $layout . '">
