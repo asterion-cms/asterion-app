@@ -38,7 +38,9 @@ abstract class Controller
     public function getTitle()
     {
         $title_page = Parameter::code('meta_title_page');
-        $title_page = (isset($this->title_page) && $this->title_page != '') ? $this->title_page . (($title_page != '' && !isset($this->hide_title_page_appendix)) ? ' - ' . $title_page : '') : $title_page;
+        if (isset($this->title_page) && $this->title_page != '') {
+            $title_page = (strlen($this->title_page) <= 35) ? $this->title_page . ' - ' . $title_page : $this->title_page;
+        }
         return str_replace('"', '', $title_page);
     }
 
@@ -555,10 +557,10 @@ abstract class Controller
         $ordObjectType = (substr($ordSession, 0, 3) == 'asc') ? 'ASC' : 'DESC';
         $values = [];
         $options['order'] = $this->orderField();
-        if ($ordObject!='') {
+        if ($ordObject != '') {
             $orderInfo = $this->object->attributeInfo($ordObject);
             $orderInfoItem = (is_object($orderInfo) && (string) $orderInfo->language == "true") ? $ordObject . '_' . Language::active() : $ordObject;
-            $orderInfoItem = ($orderInfoItem!='' && Db_ObjectType::isNumeric((string) $orderInfo->type)) ? 'ABS(' . $orderInfoItem . ')' : $orderInfoItem;
+            $orderInfoItem = ($orderInfoItem != '' && Db_ObjectType::isNumeric((string) $orderInfo->type)) ? 'ABS(' . $orderInfoItem . ')' : $orderInfoItem;
             $options['order'] = $orderInfoItem . ' ' . $ordObjectType;
         }
         $options['results'] = (int) $this->object->info->info->form->pager;
