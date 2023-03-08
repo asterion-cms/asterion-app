@@ -46,6 +46,14 @@ class ListObjects
     }
 
     /**
+     * Get the number of items in the actual page.
+     */
+    public function count()
+    {
+        return (count($this->list));
+    }
+
+    /**
      * Count the total number of elements in the list.
      */
     public function countTotal()

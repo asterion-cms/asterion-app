@@ -39,7 +39,7 @@ abstract class Controller
     {
         $title_page = Parameter::code('meta_title_page');
         if (isset($this->title_page) && $this->title_page != '') {
-            $title_page = (strlen($this->title_page) <= 35) ? $this->title_page . ' - ' . $title_page : $this->title_page;
+            $title_page = (strlen($this->title_page) <= 35) ? $this->title_page . (isset($this->hide_title_page_appendix) ? '' : ' - ' . $title_page) : $this->title_page;
         }
         return str_replace('"', '', $title_page);
     }
