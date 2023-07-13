@@ -731,7 +731,6 @@ class Db_Sql
                 case 'date':
                 case 'date_complete':
                 case 'date_hour':
-                case 'date_text':
                 case 'date-checkbox':
                     if ($type == 'date-checkbox') {
                         $nameCheckbox = $name . '_checkbox';
@@ -770,11 +769,12 @@ class Db_Sql
                     if (isset($values[$name])) {
                         $valueDate = $values[$name];
                         $valueDateInfo = explode('-', $valueDate);
-                        $valueDate = '0000-00-00';
+                        $valueDate = null;
                         if (isset($valueDateInfo[2])) {
-                            $valueDate = intval($valueDateInfo[2]) . '-' . intval($valueDateInfo[1]) . '-' . intval($valueDateInfo[0]);
+                            $valueDate = intval($valueDateInfo[0]) . '-' . intval($valueDateInfo[1]) . '-' . intval($valueDateInfo[2]);
                         }
-                        $query .= '`' . $name . '`="' . $valueDate . '", ';
+                        $query .= '`' . $name . '` = :' . $name . ', ';
+                        $setValues[$name] = $valueDate;
                     }
                     break;
                 case 'datetime_local':

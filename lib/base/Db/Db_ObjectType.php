@@ -131,7 +131,7 @@ class Db_ObjectType
                 return '`' . $name . '` VARCHAR(255) NULL COLLATE utf8_unicode_ci';
                 break;
             case 'date':
-                return '`' . $name . '` DATETIME';
+                return '`' . $name . '` DATE';
                 break;
             case 'datetime':
                 return '`' . $name . '` DATETIME';

@@ -28,6 +28,22 @@ class Date
     }
 
     /**
+     * Return an array with the names of the days for the 'w' date format.
+     */
+    public static function arrayWeekDays()
+    {
+        return [
+            0 => __('sunday'),
+            1 => __('monday'),
+            2 => __('tuesday'),
+            3 => __('wednesday'),
+            4 => __('thursday'),
+            5 => __('friday'),
+            6 => __('saturday'),
+        ];
+    }
+
+    /**
      * Return an array with the names of the months.
      */
     public static function arrayMonths()
@@ -78,7 +94,7 @@ class Date
     public static function textMonth($month, $arrayMonths = [])
     {
         $months = (count($arrayMonths) > 0) ? $arrayMonths : Date::arrayMonths();
-        return $months[__(intval($month))];
+        return (isset($months[$month])) ? $months[$month] : '';
     }
 
     /**
@@ -103,6 +119,16 @@ class Date
             $months[$month] = substr(html_entity_decode(Date::textMonth($month)), 0, 3);
         }
         return $months;
+    }
+
+    /**
+     * Return the literal day of the week.
+     */
+    public static function textDay($date, $arrayDays = [])
+    {
+        $days = (count($arrayDays) > 0) ? $arrayDays : Date::arrayWeekDays();
+        $day = date('w', strtotime($date));
+        return (isset($days[$day])) ? $days[$day] : '';
     }
 
     /**

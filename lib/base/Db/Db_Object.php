@@ -693,10 +693,33 @@ class Db_Object extends Db_Sql
     {
         $imageUrl = $this->getImageUrl($attributeName, $version);
         if ($imageUrl != '') {
-            return '<img src="' . $imageUrl . '" alt="' . str_replace('"', '', $this->getBasicInfo()) . '"/>';
-        } else {
-            return $alternative;
+            $imageFile = str_replace(ASTERION_BASE_URL, ASTERION_BASE_FILE, $imageUrl);
+            if (file_exists($imageFile)) {
+                return '<img src="' . $imageUrl . '" alt="' . str_replace('"', '', $this->getBasicInfo()) . '"/>';
+            }
         }
+        return $alternative;
+    }
+
+    /**
+     * Gets the HTML image that the attribute points.
+     */
+    public function getImageWidth($attributeName, $version = '', $alternative = '', $modified = false)
+    {
+        $imageUrl = $this->getImageUrl($attributeName, $version);
+        if ($imageUrl != '') {
+            $imageUrlWebp = $imageUrl . '.webp';
+            $imageFileWebp = str_replace(ASTERION_BASE_URL, ASTERION_BASE_FILE, $imageUrl) . '.webp';
+            $imageFile = str_replace(ASTERION_BASE_URL, ASTERION_BASE_FILE, $imageUrl);
+            $imageSize = @getimagesize($imageFile);
+            if (isset($imageSize[1])) {
+                if (file_exists($imageFileWebp)) {
+                    return '<img src="' . $imageUrlWebp . '" alt="' . str_replace('"', '', $this->getBasicInfo()) . '" width="' . $imageSize[0] . '" height="' . $imageSize[1] . '"/>';
+                }
+                return '<img src="' . $imageUrl . '" alt="' . str_replace('"', '', $this->getBasicInfo()) . '" width="' . $imageSize[0] . '" height="' . $imageSize[1] . '"/>';
+            }
+        }
+        return $alternative;
     }
 
     /**
