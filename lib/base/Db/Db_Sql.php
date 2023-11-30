@@ -340,8 +340,8 @@ class Db_Sql
                             //If it's an array
                             if (is_array($itemMultiple)) {
                                 $itemMultipleObject = new $refObject($itemMultiple);
+                                $itemMultipleObject->set($linkAttribute, $this->id());
                                 $itemMultipleObject->persist();
-                                $itemMultipleObject->persistSimple($linkAttribute, $this->id());
                             }
                         }
                     }

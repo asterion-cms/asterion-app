@@ -205,9 +205,9 @@ class Url
     /**
      * Format an URL.
      */
-    public static function getUrl($url = '', $admin = false)
+    public static function getUrl($url = '', $admin = false, $language = true)
     {
-        if (count(Language::languages()) > 1) {
+        if ($language && count(Language::languages()) > 1) {
             return Url::getUrlLanguage($url, $admin);
         }
         if ($admin) {

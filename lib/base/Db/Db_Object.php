@@ -693,6 +693,11 @@ class Db_Object extends Db_Sql
     {
         $imageUrl = $this->getImageUrl($attributeName, $version);
         if ($imageUrl != '') {
+            $imageUrlWebp = $imageUrl . '.webp';
+            $imageFileWebp = str_replace(ASTERION_BASE_URL, ASTERION_BASE_FILE, $imageUrl) . '.webp';
+            if (file_exists($imageFileWebp)) {
+                return '<img src="' . $imageUrlWebp . '" alt="' . str_replace('"', '', $this->getBasicInfo()) . '"/>';
+            }
             $imageFile = str_replace(ASTERION_BASE_URL, ASTERION_BASE_FILE, $imageUrl);
             if (file_exists($imageFile)) {
                 return '<img src="' . $imageUrl . '" alt="' . str_replace('"', '', $this->getBasicInfo()) . '"/>';

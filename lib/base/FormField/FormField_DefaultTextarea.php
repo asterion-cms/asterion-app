@@ -33,8 +33,8 @@ class FormField_DefaultTextarea extends FormField_Base
                 $nameLanguage = $this->name . '_' . $language['id'];
                 $this->options['name'] = str_replace($this->name, $nameLanguage, $optionsName);
                 $this->options['labelLanguage'] = $language['name'];
-                $this->options['value'] = (isset($this->values[$this->options['name']])) ? $this->values[$this->options['name']] : '';
-                $this->options['error'] = (isset($this->errors[$this->options['error']])) ? $this->errors[$this->options['error']] : '';
+                $this->options['value'] = (isset($this->values[$nameLanguage])) ? $this->values[$nameLanguage] : '';
+                $this->options['error'] = (isset($this->errors[$nameLanguage])) ? $this->errors[$nameLanguage] : '';
                 $fields .= $this->create($this->options);
             }
             return '<div class="form_field_langs form_field_langs_'.count(Language::languages()).'">' . $fields . '</div>';

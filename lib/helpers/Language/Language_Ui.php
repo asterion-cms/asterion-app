@@ -23,11 +23,11 @@ class Language_Ui extends Ui
             $html = '';
             foreach ($languages as $language) {
                 $html .= '<div class="language language_' . $language['id'] . '">';
-                $name = ($simple) ? $language['id'] : $language['name'];
+                $name = ($simple) ? $language['id'] : '<em class="language_complete">' . $language['local_names'] . '</em><em class="language_id">' . $language['id'] . '</em>';
                 if ($language['id'] == $languageActive) {
-                    $html .= '<span title="' . $language['name'] . '">' . $name . '</span> ';
+                    $html .= '<span title="' . $language['local_names'] . '">' . $name . '</span> ';
                 } else {
-                    $html .= '<a href="' . Url::urlLanguageHome($language['id']) . '" title="' . $language['name'] . '">' . $name . '</a> ';
+                    $html .= '<a href="' . Url::urlLanguageHome($language['id']) . '" title="' . $language['local_names'] . '">' . $name . '</a> ';
                 }
                 $html .= '</div>';
             }

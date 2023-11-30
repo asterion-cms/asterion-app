@@ -141,12 +141,12 @@ function __($code)
  * echo url('about-us');
  * > http://localhost/asterion/about-us
  */
-function url($url = '', $admin = false)
+function url($url = '', $admin = false, $language = true)
 {
     if (!is_array($url)) {
-        return Url::getUrl($url, $admin);
+        return Url::getUrl($url, $admin, $language);
     } else {
-        return Url::getUrl($url[Language::active()], $admin);
+        return Url::getUrl($url[Language::active()], $admin, $language);
     }
 }
 

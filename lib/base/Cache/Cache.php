@@ -84,4 +84,27 @@ class Cache
         return $itemUi->$classMethod();
     }
 
+    /**
+     * Function to show the cached content from a file.
+     */
+    public static function showContent($filename)
+    {
+        $file = ASTERION_BASE_FILE . 'cache/all/' . $filename . '.htm';
+        if (is_file($file)) {
+            return file_get_contents($file);
+        }
+    }
+
+    /**
+     * Function to save cached content to a file.
+     */
+    public static function saveContent($filename, $content)
+    {
+        File::createDirectory(ASTERION_BASE_FILE . 'cache', false);
+        File::createDirectory(ASTERION_BASE_FILE . 'cache/all', false);
+        $file = ASTERION_BASE_FILE . 'cache/all/' . $filename . '.htm';
+        File::saveFile($file, $content);
+        return file_get_contents($file);
+    }
+
 }
