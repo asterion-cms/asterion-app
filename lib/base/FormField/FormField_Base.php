@@ -42,6 +42,7 @@ class FormField_Base
         $this->options['multiple'] = (isset($options['multiple'])) ? $options['multiple'] : (($this->item && (string) $this->item->multiple == 'true') ? true : false);
         $this->options['default'] = (isset($options['default'])) ? $options['default'] : (($this->item) ? (string) $this->item->default : '');
         $this->options['accept'] = (isset($options['accept'])) ? $options['accept'] : (($this->item) ? (string) $this->item->accept : '');
+        $this->options['countLength'] = (isset($options['countLength'])) ? $options['countLength'] : (($this->item && (string) $this->item->countLength == 'true') ? true : false);
         $this->options['typeField'] = (isset($options['typeField'])) ? $options['typeField'] : 'text';
         $this->options['class'] = (isset($options['class'])) ? $options['class'] : (($this->item) ? (string) $this->item->class : '');
         $this->options['firstSelect'] = (isset($options['firstSelect'])) ? $options['firstSelect'] : (($this->item) ? (string) $this->item->firstSelect : '');

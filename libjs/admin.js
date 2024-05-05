@@ -198,6 +198,17 @@ function activateBasicElements() {
     $(document).on('change', '.checkbox_icons_wrapper input', function(event) {
         checkCheckboxesIcons();
     });
+    /**
+     * COUNT LENGTH of some fields.
+     **/
+    $('.count_length').each(function(index, ele){
+        var textField = $(ele).parents('.form_field').find('textarea');
+        var counterText = $(ele).find('span');
+        counterText.html(textField.val().length);
+        textField.on('change keyup paste', function() {
+            counterText.html(textField.val().length);
+        });
+    });
 }
 /**
  * MULTIPLE actions in a list.

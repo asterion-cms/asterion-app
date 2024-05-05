@@ -18,6 +18,7 @@ class FormField_DefaultTextarea extends FormField_Base
     {
         parent::__construct($options);
         $this->options['typeField'] = (isset($options['typeField'])) ? $options['typeField'] : 'textarea';
+        $this->options['minlength'] = ($this->item) ? (string) $this->item->minlength : '';
         $this->options['maxlength'] = ($this->item) ? (string) $this->item->maxlength : '';
     }
 
@@ -67,7 +68,9 @@ class FormField_DefaultTextarea extends FormField_Base
         $placeholder = (isset($options['placeholder'])) ? 'placeholder="' . __($options['placeholder']) . '"' : '';
         $required = (isset($options['required']) && $options['required']) ? 'required' : '';
         $layout = (isset($options['layout'])) ? $options['layout'] : '';
-        $maxlength = (isset($options['maxlength']) && $options['maxlength'] != '') ? 'maxlength="' . $options['maxlength'] . '" ' : '';
+        $minlength = (isset($options['minlength']) && $options['minlength'] != '') ? 'minlength="' . $options['minlength'] . '"' : '';
+        $maxlength = (isset($options['maxlength']) && $options['maxlength'] != '') ? 'maxlength="' . $options['maxlength'] . '"' : '';
+        $countLength = (isset($options['countLength']) && $options['countLength'] == true) ? '<div class="count_length"><span></span>' . __('characters') . '</div>' : '';
         switch ($layout) {
             default:
                 return '<div class="' . $type . ' form_field ' . $class . ' ' . $required . ' ' . $classError . '">
@@ -75,13 +78,14 @@ class FormField_DefaultTextarea extends FormField_Base
                                 ' . $label . '
                                 ' . $error . '
                                 ' . $messageBefore . '
-                                <textarea ' . $name . ' ' . $cols . ' ' . $rows . ' ' . $id . ' ' . $placeholder . ' ' . $required . ' ' . $maxlength . '>' . $value . '</textarea>
+                                <textarea ' . $name . ' ' . $cols . ' ' . $rows . ' ' . $id . ' ' . $placeholder . ' ' . $required . ' ' . $maxlength . ' ' . $minlength . '>' . $value . '</textarea>
+                                ' . $countLength . '
                                 ' . $messageAfter . '
                             </div>
                         </div>';
                 break;
             case 'simple':
-                return '<textarea ' . $name . ' ' . $cols . ' ' . $rows . ' ' . $id . ' ' . $placeholder . ' ' . $maxlength . '>' . $value . '</textarea>';
+                return '<textarea ' . $name . ' ' . $cols . ' ' . $rows . ' ' . $id . ' ' . $placeholder . ' ' . $maxlength . ' ' . $minlength . '>' . $value . '</textarea>';
                 break;
         }
     }

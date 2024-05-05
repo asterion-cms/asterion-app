@@ -1078,7 +1078,10 @@
                 border: 1px solid $colorTextAlt;
                 color: $colorText;
             }
+            &:invalid {
+                border: 1px solid $colorError;
             }
+        }
         input[type=file] {
             border: 0;
             padding: 5px 0;
@@ -1197,6 +1200,15 @@
         font-style: italic;
         strong {
             font-weight: bold;
+        }
+    }
+    .count_length {
+        font-size: $fontSizeTiny;
+        color: rgba($black, 0.6);
+        span {
+            font-weight: bold;
+            display: inline-block;
+            padding: 0 5px 0 0;
         }
     }
     .error_message {

@@ -317,6 +317,27 @@ class Db_Object extends Db_Sql
     }
 
     /**
+     * Function to get an url for the object depending on the language.
+     * You need to overwrite it.
+     */
+    public function urlLanguage($language)
+    {
+        return '';
+    }
+
+    /**
+     * Function to get an array of the URLs of the object for each language.
+     */
+    public function urlsLanguage()
+    {
+        $urls = [];
+        foreach (Language::languages() as $language) {
+            $urls[$language['id']] .= $this->urlLanguage($language['id']);
+        }
+        return $urls;
+    }
+
+    /**
      * Gets the administration url list.
      */
     public function urlListAdmin()

@@ -32,7 +32,7 @@ class Cookie
      */
     public static function set($name, $value)
     {
-        $domain = ($_SERVER['HTTP_HOST'] != 'localhost') ? $_SERVER['HTTP_HOST'] : false;
+        $domain = ($_SERVER['HTTP_HOST'] != 'localhost' && $_SERVER['HTTP_HOST'] != 'localhost:8888') ? $_SERVER['HTTP_HOST'] : false;
         setcookie($name, $value, time() + ASTERION_COOKIE_TIME, '/', $domain, false);
     }
 
@@ -41,7 +41,7 @@ class Cookie
      */
     public static function delete($name)
     {
-        $domain = ($_SERVER['HTTP_HOST'] != 'localhost') ? $_SERVER['HTTP_HOST'] : false;
+        $domain = ($_SERVER['HTTP_HOST'] != 'localhost' && $_SERVER['HTTP_HOST'] != 'localhost:8888') ? $_SERVER['HTTP_HOST'] : false;
         setcookie($name, '', time() - ASTERION_COOKIE_TIME, '/', $domain, false);
         unset($_COOKIE[$name]);
     }

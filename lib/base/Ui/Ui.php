@@ -179,6 +179,17 @@ class Ui
     }
 
     /**
+    * Render the meta tag for the different languages.
+    */
+    public function renderHrefLanguages() {
+        $html = '';
+        foreach (Language::languages() as $language) {
+            $html .= '<link rel="alternate" href="' . $this->object->urlLanguage($language['id']) . '" hreflang="' . $language['id'] . '" />';
+        }
+        return $html;
+    }
+
+    /**
      * Function with the JsonLD header of an object.
      */
     public function renderJsonHeader()
@@ -212,7 +223,10 @@ class Ui
                 $managesPermissions = (isset($info->managesPermissions)) ? (boolean) $info->managesPermissions : false;
                 switch ($infoType) {
                     default:
-                        $labelAttribute = $this->object->get($attribute);
+                        $length = strlen($this->object->get($attribute));
+                        $countCharacters = (is_object($info) && (boolean) $info->showCountCharacters) ? '<strong>' . $length . '</strong> ' : '';
+                        $countCharacters = (is_object($info) && (boolean) $info->showCountCharactersMeta) ? '<strong class="' . (($length < 100 || $length > 160) ? 'error' : '') . '">' . $length . '</strong> ' : $countCharacters;
+                        $labelAttribute = $countCharacters . $this->object->get($attribute);
                         break;
                     case 'linkid_autoincrement':
                         $refObjectName = (string) $info->refObject;

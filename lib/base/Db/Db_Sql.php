@@ -289,9 +289,9 @@ class Db_Sql
      */
     public function persistSimple($attribute, $value)
     {
-        $query = 'UPDATE ' . $this->tableName . '
-                SET ' . $attribute . ' = :' . $attribute . '
-                WHERE ' . $this->primary . ' = :' . $this->primary;
+        $query = 'UPDATE `' . $this->tableName . '`
+                SET `' . $attribute . '` = :' . $attribute . '
+                WHERE `' . $this->primary . '` = :' . $this->primary;
         Db::execute($query, [$attribute => $value, $this->primary => $this->id()]);
         $this->set($attribute, $value);
         return ['status' => StatusCode::OK, 'object' => $this];

@@ -15,7 +15,7 @@ class Language_Ui extends Ui
      * @cache
      * Render the set of available languages.
      */
-    public static function showLanguages($simple = false)
+    public static function showLanguages($simple = false, $links = [])
     {
         $languageActive = Language::active();
         $languages = Language::languages();
@@ -27,7 +27,8 @@ class Language_Ui extends Ui
                 if ($language['id'] == $languageActive) {
                     $html .= '<span title="' . $language['local_names'] . '">' . $name . '</span> ';
                 } else {
-                    $html .= '<a href="' . Url::urlLanguageHome($language['id']) . '" title="' . $language['local_names'] . '">' . $name . '</a> ';
+                    $link = (isset($links[$language['id']])) ? $links[$language['id']] : Url::urlLanguageHome($language['id']);
+                    $html .= '<a href="' . $link . '" title="' . $language['local_names'] . '">' . $name . '</a> ';
                 }
                 $html .= '</div>';
             }
@@ -41,6 +42,19 @@ class Language_Ui extends Ui
     public static function showLanguagesSimple()
     {
         return Language::showLanguages(true);
+    }
+
+    /**
+     * Render the alternative metatag for the homepage.
+     */
+    public static function showHrefLanguages($suffixArray = [])
+    {
+        $html = '';
+        foreach (Language::languages() as $language) {
+            $suffix = (isset($suffixArray[$language['id']])) ? $suffixArray[$language['id']] : '';
+            $html .= '<link rel="alternate" href="' . url($language['id'] . '/' . $suffix, false, false) . '" hreflang="' . $language['id'] . '" />';
+        }
+        return $html;
     }
 
 }

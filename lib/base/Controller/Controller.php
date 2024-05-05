@@ -20,6 +20,7 @@ abstract class Controller
      */
     public function __construct($GET, $POST, $FILES)
     {
+        $this->mode = isset($GET['mode']) ? $GET['mode'] : 'public';
         $this->type = isset($GET['type']) ? $GET['type'] : '';
         $this->objectType = snakeToCamel($this->type);
         $this->action = isset($GET['action']) ? $GET['action'] : 'list';

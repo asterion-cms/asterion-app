@@ -42,26 +42,46 @@ class Image_File
                             $fileHuge = $folder . '/' . $image->getFileName() . '_huge.jpg';
                             $image->resize($fileHuge, ASTERION_WIDTH_HUGE, ASTERION_HEIGHT_MAX_HUGE, $image->get('mime'));
                             @chmod($fileHuge, 0777);
+                            if (ASTERION_SAVE_WEBP) {
+                                $image->toWebp($fileHuge, $fileHuge . '.webp');
+                                @chmod($fileHuge . '.webp');
+                            }
                         }
                         if (ASTERION_SAVE_IMAGE_WEB) {
                             $fileWeb = $folder . '/' . $image->getFileName() . '_web.jpg';
                             $image->resize($fileWeb, ASTERION_WIDTH_WEB, ASTERION_HEIGHT_MAX_WEB, $image->get('mime'));
                             @chmod($fileWeb, 0777);
+                            if (ASTERION_SAVE_WEBP) {
+                                $image->toWebp($fileWeb, $fileWeb . '.webp');
+                                @chmod($fileWeb . '.webp');
+                            }
                         }
                         if (ASTERION_SAVE_IMAGE_SMALL) {
                             $fileSmall = $folder . '/' . $image->getFileName() . '_small.jpg';
                             $image->resize($fileSmall, ASTERION_WIDTH_SMALL, ASTERION_HEIGHT_MAX_SMALL, $image->get('mime'));
                             @chmod($fileSmall, 0777);
+                            if (ASTERION_SAVE_WEBP) {
+                                $image->toWebp($fileSmall, $fileSmall . '.webp');
+                                @chmod($fileSmall . '.webp');
+                            }
                         }
                         if (ASTERION_SAVE_IMAGE_THUMB) {
                             $fileThumb = $folder . '/' . $image->getFileName() . '_thumb.jpg';
                             $image->resize($fileThumb, ASTERION_WIDTH_THUMB, ASTERION_HEIGHT_MAX_THUMB, $image->get('mime'));
                             @chmod($fileThumb, 0777);
+                            if (ASTERION_SAVE_WEBP) {
+                                $image->toWebp($fileThumb, $fileThumb . '.webp');
+                                @chmod($fileThumb . '.webp');
+                            }
                         }
                         if (ASTERION_SAVE_IMAGE_SQUARE) {
                             $fileSquare = $folder . '/' . $image->getFileName() . '_square.jpg';
                             $image->resizeSquare($fileSquare, ASTERION_WIDTH_SQUARE, $image->get('mime'));
                             @chmod($fileSquare, 0777);
+                            if (ASTERION_SAVE_WEBP) {
+                                $image->toWebp($fileSquare, $fileSquare . '.webp');
+                                @chmod($fileSquare . '.webp');
+                            }
                         }
                         if (!ASTERION_SAVE_IMAGE_ORIGINAL) {
                             @unlink($destination);

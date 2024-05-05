@@ -115,6 +115,35 @@ class Image
         return true;
     }
 
+    public function toWebp($inputFile, $outputFile, $quality = 100)
+    {
+        $fileType = exif_imagetype($inputFile);
+        switch ($fileType) {
+            case IMAGETYPE_GIF:
+                $image = imagecreatefromgif($inputFile);
+                imagepalettetotruecolor($image);
+                imagealphablending($image, true);
+                imagesavealpha($image, true);
+                break;
+            case IMAGETYPE_JPEG:
+                $image = imagecreatefromjpeg($inputFile);
+                break;
+            case IMAGETYPE_PNG:
+                $image = imagecreatefrompng($inputFile);
+                imagepalettetotruecolor($image);
+                imagealphablending($image, true);
+                imagesavealpha($image, true);
+                break;
+            case IMAGETYPE_WEBP:
+                rename($inputFile, $outputFile);
+                return;
+            default:
+                return;
+        }
+        imagewebp($image, $outputFile, $quality);
+        imagedestroy($image);
+    }
+
     /**
      * Resize an image.
      */

@@ -220,6 +220,11 @@ class User_Login_Interface extends Singleton
         $this->info['email'] = $user->get('email');
         $this->info['label'] = $user->getBasicInfo();
         $this->sessionAdjust($this->info);
+        if ($user->getAttribute('authorization')) {
+            $authorization = md5(rand() * rand());
+            $user->persistSimple('authorization', $authorization);
+            Cookie::set('authorization', $authorization);
+        }
     }
 
     /**

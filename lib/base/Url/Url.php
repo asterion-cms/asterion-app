@@ -218,6 +218,19 @@ class Url
     }
 
     /**
+     * Format an array of URLs.
+     */
+    public static function getAllUrls($suffixes)
+    {
+        $urls = [];
+        foreach (Language::languages() as $id => $language) {
+            $suffix = (isset($suffixes[$id])) ? $suffixes[$id] : '';
+            $urls[$id] = url($id . '/' . $suffix, false, false);
+        }
+        return $urls;
+    }
+
+    /**
      * Get the contents from an URL address using CURL.
      */
     public static function getContents($url)
@@ -230,6 +243,40 @@ class Url
         $content = curl_exec($ch);
         curl_close($ch);
         return $content;
+    }
+
+    /** 
+     * Get header Authorization
+     * */
+    public static function getAuthorizationHeader()
+    {
+        $headers = null;
+        if (isset($_SERVER['Authorization'])) {
+            $headers = trim($_SERVER["Authorization"]);
+        } else if (isset($_SERVER['HTTP_AUTHORIZATION'])) {
+            $headers = trim($_SERVER["HTTP_AUTHORIZATION"]);
+        } else if (function_exists('apache_request_headers')) {
+            $requestHeaders = apache_request_headers();
+            $requestHeaders = array_combine(array_map('ucwords', array_keys($requestHeaders)), array_values($requestHeaders));
+            if (isset($requestHeaders['Authorization'])) {
+                $headers = trim($requestHeaders['Authorization']);
+            }
+        }
+        return $headers;
+    }
+
+    /**
+     * Get access token from header
+     * */
+    public static function getBearerToken()
+    {
+        $headers = Url::getAuthorizationHeader();
+        if (!empty($headers)) {
+            if (preg_match('/Bearer\s(\S+)/', $headers, $matches)) {
+                return $matches[1];
+            }
+        }
+        return null;
     }
 
     /**
