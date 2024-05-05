@@ -625,18 +625,21 @@ abstract class Controller
                 'function' => 'Admin',
                 'order' => $this->orderField(),
             ]);
-            $listItems .= '
-                <div class="line_admin_block">
-                    <div class="line_admin_title">' . $item . '</div>
-                    <div class="line_adminItems">
-                        <div class="list_items ' . $sortableListClass . '"
-                            data-urlsort="' . url($this->type . '/sort_items/', true) . '">
-                            <div class="list_content">
-                                ' . $list->showList(['function' => 'Admin', 'message' => '<div class="message">' . __('no_items') . '</div>'], ['user_admin_type' => $this->login->get('type'), 'multipleChoice' => $multipleChoice]) . '
+            if (!$list->isEmpty() || !isset($this->object->info->info->form->groupHideEmpty) || (string)$this->object->info->info->form->groupHideEmpty != 'true') {
+                $listItems .= '
+                    <div class="line_admin_block">
+                        <div class="line_admin_title">' . $item . '</div>
+                        <div class="line_adminItems">
+                            <div class="list_items ' . $sortableListClass . '"
+                                data-urlsort="' . url($this->type . '/sort_items/', true) . '">
+                                <div class="list_content">
+                                    ' . $list->showList(['function' => 'Admin', 'message' => '<div class="message">' . __('no_items') . '</div>'], ['user_admin_type' => $this->login->get('type'), 'multipleChoice' => $multipleChoice]) . '
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>';
+                    </div>';
+            }
+
         }
         return '<div class="line_admin_blockWrapper">' . $listItems . '</div>';
     }
