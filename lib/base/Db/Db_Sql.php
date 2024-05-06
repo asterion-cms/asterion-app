@@ -843,6 +843,9 @@ class Db_Sql
             $uploadedUrl = (isset($values[$fieldName . '_uploaded']) && $values[$fieldName . '_uploaded'] != '') ? $values[$fieldName . '_uploaded'] : '';
             $uploadFile = ($uploadedUrl != '') ? $uploadedUrl : $values[$fieldName];
             $fileName = $this->id() . '_' . $fieldName . $originalName;
+            if (isset($field->fileFieldName)) {
+                $fileName = $this->get((string) $field->fileFieldName) . '.' . pathinfo($fileName, PATHINFO_EXTENSION);
+            }
             if ($layout == 'image') {
                 $fileName = Text::simpleUrlFileBase($fileName);
                 if (Image_File::saveImageObject($uploadFile, $this->className, $fileName)) {

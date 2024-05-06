@@ -852,10 +852,15 @@ class Db_Object extends Db_Sql
     /**
      * Function to save an image.
      */
-    public function saveImage($dataImage, $fieldName)
+    public function saveImage($fileImage, $fieldName)
     {
+        $info = $this->getAttribute($fieldName);
         $fileName = Text::simpleUrlFileBase($this->id() . '_' . $fieldName);
-        if (Image_File::saveImageObject($dataImage, $this->className, $fileName)) {
+        if (isset($info->fileFieldName)) {
+            $extension = pathinfo($fileImage, PATHINFO_EXTENSION);
+            $fileName = Text::simpleUrlFileBase($this->get((string) $info->fileFieldName) . '.' . $extension);
+        }
+        if (Image_File::saveImageObject($fileImage, $this->className, $fileName)) {
             $this->persistSimple($fieldName, $fileName);
         }
     }

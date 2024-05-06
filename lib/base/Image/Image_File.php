@@ -14,27 +14,27 @@ class Image_File
     /**
      * Save an image for an object.
      */
-    public static function saveImageObject($dataImage, $objectName, $fileName)
+    public static function saveImageObject($fileImage, $objectName, $fileName)
     {
-        return Image_File::saveImage($dataImage, ASTERION_STOCK_FILE . $objectName, $fileName);
+        return Image_File::saveImage($fileImage, ASTERION_STOCK_FILE . $objectName, $fileName);
     }
 
     /**
      * Save the image and create versions of itself.
      */
-    public static function saveImage($dataImage, $fileFolder, $fileName)
+    public static function saveImage($fileImage, $fileFolder, $fileName)
     {
-        if ($dataImage != '' && $fileFolder != '' && $fileName != '') {
+        if ($fileImage != '' && $fileFolder != '' && $fileName != '') {
             $fileName = Text::simpleUrlFileBase($fileName);
             $folder = $fileFolder . '/' . $fileName;
             File::deleteDirectory($folder);
             File::createDirectory($fileFolder);
             File::createDirectory($folder);
-            $dataImage = str_replace(ASTERION_STOCK_URL, ASTERION_STOCK_FILE, $dataImage);
-            $informationImage = getimagesize($dataImage);
+            $fileImage = str_replace(ASTERION_STOCK_URL, ASTERION_STOCK_FILE, $fileImage);
+            $informationImage = getimagesize($fileImage);
             if (isset($informationImage['mime']) && Image::extension($informationImage['mime']) != '') {
                 $destination = $folder . '/' . $fileName . '.' . Image::extension($informationImage['mime']);
-                if (@copy($dataImage, $destination)) {
+                if (@copy($fileImage, $destination)) {
                     @chmod($destination, 0777);
                     $image = new Image($destination);
                     if ($image->toJpg()) {

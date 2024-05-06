@@ -235,8 +235,10 @@ function dumpExit($variable)
 /**
  * Function to dump a variable and stop the application
  */
-function dd($variable)
+function dd()
 {
-    dump($variable);
+    foreach (func_get_args() as $variable) {
+        dump($variable);
+    }
     exit();
 }
