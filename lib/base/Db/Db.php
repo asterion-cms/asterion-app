@@ -136,7 +136,10 @@ class Db
     public static function tableExists($table)
     {
         try {
-            Db::describe($table);
+            $description = Db::describe($table);
+            if (count($description) == 0) {
+                return false;
+            }
         } catch (Exception $e) {
             return false;
         }
