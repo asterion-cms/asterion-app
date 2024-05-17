@@ -717,11 +717,11 @@ class Db_Object extends Db_Sql
             $imageUrlWebp = $imageUrl . '.webp';
             $imageFileWebp = str_replace(ASTERION_BASE_URL, ASTERION_BASE_FILE, $imageUrl) . '.webp';
             if (file_exists($imageFileWebp)) {
-                return '<img src="' . $imageUrlWebp . '" alt="' . str_replace('"', '', $this->getBasicInfo()) . '"/>';
+                return '<img src="' . $imageUrlWebp . '" alt="' . str_replace('"', '', $this->getBasicInfo()) . '" loading="lazy"/>';
             }
             $imageFile = str_replace(ASTERION_BASE_URL, ASTERION_BASE_FILE, $imageUrl);
             if (file_exists($imageFile)) {
-                return '<img src="' . $imageUrl . '" alt="' . str_replace('"', '', $this->getBasicInfo()) . '"/>';
+                return '<img src="' . $imageUrl . '" alt="' . str_replace('"', '', $this->getBasicInfo()) . '" loading="lazy"/>';
             }
         }
         return $alternative;
@@ -740,9 +740,9 @@ class Db_Object extends Db_Sql
             $imageSize = @getimagesize($imageFile);
             if (isset($imageSize[1])) {
                 if (file_exists($imageFileWebp)) {
-                    return '<img src="' . $imageUrlWebp . '" alt="' . str_replace('"', '', $this->getBasicInfo()) . '" width="' . $imageSize[0] . '" height="' . $imageSize[1] . '"/>';
+                    return '<img src="' . $imageUrlWebp . '" alt="' . str_replace('"', '', $this->getBasicInfo()) . '" width="' . $imageSize[0] . '" height="' . $imageSize[1] . '" loading="lazy"/>';
                 }
-                return '<img src="' . $imageUrl . '" alt="' . str_replace('"', '', $this->getBasicInfo()) . '" width="' . $imageSize[0] . '" height="' . $imageSize[1] . '"/>';
+                return '<img src="' . $imageUrl . '" alt="' . str_replace('"', '', $this->getBasicInfo()) . '" width="' . $imageSize[0] . '" height="' . $imageSize[1] . '" loading="lazy"/>';
             }
         }
         return $alternative;

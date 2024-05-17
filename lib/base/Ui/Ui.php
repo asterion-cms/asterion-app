@@ -384,11 +384,11 @@ class Ui
             </div>';
     }
 
-    public static function menuAdminInside($url, $icon, $label)
+    public static function menuAdminInside($url, $icon, $label, $urlExternal = false)
     {
         return '
             <div class="menu_simple_item menu_simple_item_' . $label . '">
-                <a href="' . url($url, true) . '" class="menu_simple_item_ins">
+                <a href="' . ((!$urlExternal) ? url($url, true) :  $url . '" target="_blank') . '" class="menu_simple_item_ins">
                     <i class="fa fa-' . $icon . '"></i>
                     <span>' . __($label) . '</span>
                 </a>

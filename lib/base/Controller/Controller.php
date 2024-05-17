@@ -222,6 +222,7 @@ abstract class Controller
                 $this->checkLoginAdmin();
                 $this->object = (new $this->objectType)->read($this->id);
                 if ($this->object->id() != '') {
+                    $this->menu_inside = $this->menuInside();
                     if (!$this->allowFilterByUser($this->object)) {
                         header('Location: ' . $this->object->urlListAdmin());
                     }
@@ -794,6 +795,10 @@ abstract class Controller
         if (in_array($this->action, $this->menuInsideItemsListElements())) {
             $items .= Ui::menuAdminInside($this->type . '/list_items', 'list', 'view_list');
         }
+        if ((string) $this->object->info->info->form->viewPublic == 'true') {
+            $items .= Ui::menuAdminInside($this->object->url(), 'eye', 'view', true);
+        }
+
         return $items;
     }
 
