@@ -27,7 +27,10 @@
  *       textarea
  *       textarea-small
  *       textarea_large
+ *       textarea_long
+ *       textarea_resizable
  *       textarea_ck
+ *       textarea_ck_simple
  *       textarea_code
  *       select
  *       select_varchar

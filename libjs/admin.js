@@ -17,6 +17,7 @@ $(function() {
 });
 $(window).on('load', function() {
     sameHeight();
+    resizableTextareas();
 });
 /**
  * Same height elements
@@ -29,6 +30,14 @@ function sameHeight() {
             maxHeight = ($(item).height() > maxHeight) ? $(item).height() : maxHeight;
         });
         $(ele).children().css('height', maxHeight);
+    });
+}
+/**
+ * Same height elements
+ **/
+function resizableTextareas() {
+    $('.textarea_resizable textarea').each(function(index, ele) {
+        this.style.height = (this.scrollHeight > 0) ? (this.scrollHeight) + 'px' : 'auto';
     });
 }
 /**
@@ -208,6 +217,13 @@ function activateBasicElements() {
         textField.on('change keyup paste', function() {
             counterText.html(textField.val().length);
         });
+    });
+    /**
+     * MAKE textareas resizable
+     */
+    $(document).on('input', '.textarea_resizable textarea', function(event) {
+        this.style.height = 'auto';
+        this.style.height = (this.scrollHeight) + 'px';
     });
 }
 /**
