@@ -842,19 +842,20 @@ class Db_Sql
             $layout = (string) $field->layout;
             $originalName = (isset($values[$fieldName . '_filename'])) ? '_' . $values[$fieldName . '_filename'] : '';
             $uploadedUrl = (isset($values[$fieldName . '_uploaded']) && $values[$fieldName . '_uploaded'] != '') ? $values[$fieldName . '_uploaded'] : '';
-            $uploadFile = ($uploadedUrl != '') ? $uploadedUrl : $values[$fieldName];
-            $fileName = $this->id() . '_' . $fieldName . $originalName;
-            if (isset($field->fileFieldName)) {
-                $fileName = $this->get((string) $field->fileFieldName) . '.' . pathinfo($originalName, PATHINFO_EXTENSION);
-            }
-            if ($layout == 'image') {
-                $fileName = Text::simpleUrlFileBase($fileName);
-                if (Image_File::saveImageObject($uploadFile, $this->className, $fileName)) {
-                    $this->persistSimple($fieldName, $fileName);
+            if ($uploadedUrl != '') {
+                $fileName = $this->id() . '_' . $fieldName . $originalName;
+                if (isset($field->fileFieldName)) {
+                    $fileName = $this->get((string) $field->fileFieldName) . '.' . pathinfo($originalName, PATHINFO_EXTENSION);
                 }
-            } else {
-                if (File::uploadUrl($uploadFile, $this->className, $fileName)) {
-                    $this->persistSimple($fieldName, $fileName);
+                if ($layout == 'image') {
+                    $fileName = Text::simpleUrlFileBase($fileName);
+                    if (Image_File::saveImageObject($uploadedUrl, $this->className, $fileName)) {
+                        $this->persistSimple($fieldName, $fileName);
+                    }
+                } else {
+                    if (File::uploadUrl($uploadedUrl, $this->className, $fileName)) {
+                        $this->persistSimple($fieldName, $fileName);
+                    }
                 }
             }
         }
