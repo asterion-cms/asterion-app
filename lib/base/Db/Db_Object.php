@@ -29,7 +29,7 @@ class Db_Object extends Db_Sql
      */
     public function reloadObject()
     {
-        $this->values = $this->readValues($this->id());
+        $this->values = array_merge($this->values, $this->readValues($this->id()));
         $this->setValues();
     }
 

@@ -248,7 +248,7 @@ class Db_Sql
     public function persist($persistMultiple = true)
     {
         $objectExists = ($this->id() != '' && (new $this->className)->read($this->id())->id() != '') ? true : false;
-        $mode = ($objectExists == 'true') ? 'modify' : 'insert';
+        $mode = ($objectExists) ? 'modify' : 'insert';
         $errors = $this->validate();
         if (count($errors) > 0) {
             return ['status' => StatusCode::NOK, 'object' => $this, 'values' => $this->values, 'errors' => $errors];
@@ -274,6 +274,7 @@ class Db_Sql
                 $result = Db::returnSingle('SELECT LAST_INSERT_ID() AS id;');
                 $this->setId(intval($result['id']));
             }
+            $this->reloadObject();
             $this->uploadFiles($this->values);
             if ($persistMultiple) {
                 $this->persistMultiple();
@@ -844,7 +845,7 @@ class Db_Sql
             $uploadFile = ($uploadedUrl != '') ? $uploadedUrl : $values[$fieldName];
             $fileName = $this->id() . '_' . $fieldName . $originalName;
             if (isset($field->fileFieldName)) {
-                $fileName = $this->get((string) $field->fileFieldName) . '.' . pathinfo($fileName, PATHINFO_EXTENSION);
+                $fileName = $this->get((string) $field->fileFieldName) . '.' . pathinfo($originalName, PATHINFO_EXTENSION);
             }
             if ($layout == 'image') {
                 $fileName = Text::simpleUrlFileBase($fileName);
