@@ -179,7 +179,7 @@ class Form
                                     $nestedFormField .= '
                                         <div class="nested_form_field_object" data-id="' . $object->id() . '">
                                             <div class="nested_form_field_options">
-                                                <div class="nested_form_field_delete" data-url="' . url($refObject . '/delete_item/' . $object->id(), true) . '" data-confirm="' . __('are_you_sure_delete') . '">
+                                                <div class="nested_form_field_delete" data-url="' . $object->urlDelete(true) . '" data-confirm="' . __('are_you_sure_delete') . '">
                                                     <i class="fa fa-times"></i>
                                                 </div>
                                                 ' . (($refObjectFormInstance->object->hasOrd()) ? '<div class="nested_form_field_order"><i class="fa fa-arrows-alt"></i></div>' : '') . '
