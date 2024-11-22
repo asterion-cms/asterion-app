@@ -219,7 +219,9 @@ function str_replace_n($search, $replace, $subject, $nth)
 function dump($variable)
 {
     echo '<pre>';
-    var_dump($variable);
+    foreach (func_get_args() as $variable) {
+        var_dump($variable);
+    }
     echo '<pre>';
 }
 

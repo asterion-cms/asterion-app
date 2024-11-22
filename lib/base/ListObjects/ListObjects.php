@@ -26,7 +26,20 @@ class ListObjects
         $this->queryValues = (isset($options['queryValues'])) ? $options['queryValues'] : [];
         $this->results = (isset($this->options['results']) && $this->options['results'] > 0) ? intval($this->options['results']) : '';
         $this->page = (isset($options['page'])) ? $options['page'] : null;
-        $this->populate();
+        if (!isset($this->options['dontPopulate'])) {
+            $this->populate();
+        }
+    }
+
+    /**
+     * Create a list of objects from an array.
+     */
+    static public function createFromArray($objectName, $array)
+    {
+        $list = new ListObjects($objectName, ['dontPopulate' => true]);
+        $list->list = $array;
+        $list->results = count($array);
+        return $list;
     }
 
     /**
