@@ -11,6 +11,20 @@
 class ListObjects
 {
 
+    public $object;
+    public $object_name;
+    public $options;
+    public $values;
+    public $message;
+    public $query;
+    public $queryCount;
+    public $queryValues;
+    public $results;
+    public $list;
+    public $page;
+    public $pagerHtml;
+    public $countTotal;
+
     /**
      * The constructor of the object.
      */

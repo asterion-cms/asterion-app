@@ -11,6 +11,13 @@
 class FormField_Base
 {
 
+    public $options;
+    public $item;
+    public $object;
+    public $values;
+    public $errors;
+    public $name;
+
     /**
      * The constructor of the object.
      */

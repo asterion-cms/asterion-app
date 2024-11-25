@@ -12,6 +12,8 @@
 class Ui
 {
 
+    public $object;
+
     /**
      * The constructor of the object.
      */

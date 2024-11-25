@@ -12,6 +12,35 @@
 abstract class Controller
 {
 
+    public $object;
+    public $mode;
+    public $type;
+    public $objectType;
+    public $action;
+    public $id;
+    public $extraId;
+    public $addId;
+    public $parameters;
+    public $values;
+    public $files;
+    public $ui;
+    public $title_page;
+    public $meta_description;
+    public $meta_keywords;
+    public $meta_image;
+    public $meta_url;
+    public $head;
+    public $layout;
+    public $layout_page;
+    public $content;
+    public $content_top;
+    public $content_bottom;
+    public $bread_crumbs;
+    public $login;
+    public $message;
+    public $message_error;
+    public $menu_inside;
+
     /**
      * The general constructor for the controllers.
      * $GET : Array with the loaded $_GET values.
@@ -81,13 +110,15 @@ abstract class Controller
     public function getMetaImage()
     {
         $image = (isset($this->meta_image) && $this->meta_image != '') ? $this->meta_image : Parameter::getImageUrlFromCode('meta_image');
-        $imageFile = str_replace(ASTERION_BASE_URL, ASTERION_BASE_FILE, $image);
-        if (is_file($imageFile)) {
-            $imageSize = getimagesize($imageFile);
-            return '
-                <meta property="og:image" content="' . $image . '" />
-                <meta property="og:image:width" content="' . $imageSize[0] . '" />
-                <meta property="og:image:height" content="' . $imageSize[1] . '" />';
+        if ($image != '') {
+            $imageFile = str_replace(ASTERION_BASE_URL, ASTERION_BASE_FILE, $image);
+            if (is_file($imageFile)) {
+                $imageSize = getimagesize($imageFile);
+                return '
+                    <meta property="og:image" content="' . $image . '" />
+                    <meta property="og:image:width" content="' . $imageSize[0] . '" />
+                    <meta property="og:image:height" content="' . $imageSize[1] . '" />';
+            }
         }
     }
 

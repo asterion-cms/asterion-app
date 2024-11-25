@@ -13,6 +13,7 @@ class User_Login_Interface extends Singleton
 {
 
     protected $info;
+    public $user;
 
     protected function initialize()
     {

@@ -14,6 +14,19 @@ class UserAdmin extends User_Interface
     public $userClassName = 'UserAdmin';
     public $userLoginClassName = 'UserAdmin_Login';
     public $userFormClassName = 'UserAdmin_Form';
+    public $urlLogin;
+    public $urlLoginFacebook;
+    public $urlRegister;
+    public $urlActivate;
+    public $urlForgot;
+    public $urlUpdateDefaultPassword;
+    public $urlUpdatePassword;
+    public $urlUpdateEmail;
+    public $urlUpdateEmailConfirm;
+    public $urlProfile;
+    public $urlLogout;
+    public $urlHome;
+    public $urlConnected;
 
     public function __construct($values = [])
     {

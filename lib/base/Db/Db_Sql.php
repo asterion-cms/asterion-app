@@ -11,6 +11,14 @@
 class Db_Sql
 {
 
+    public $className;
+    public $snakeName;
+    public $formName;
+    public $info;
+    public $tableName;
+    public $primary;
+    public $values;
+
     /**
      * Construct the object.
      */

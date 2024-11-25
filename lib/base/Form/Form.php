@@ -11,6 +11,11 @@
 class Form
 {
 
+    public $object;
+    public $values;
+    public $errors;
+    public $className;
+
     /**
      * A form is created using an XML model, it uses values and errors with the same names as the object properties.
      */

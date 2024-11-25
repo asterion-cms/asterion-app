@@ -12,6 +12,10 @@
 class Db_Object extends Db_Sql
 {
 
+    public $values = [];
+    public $errors = [];
+    public $loadedMultiple = false;
+
     /**
      * Construct the object.
      */

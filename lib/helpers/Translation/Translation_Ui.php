@@ -74,28 +74,30 @@ class Translation_Ui extends Ui
                     </div>
                 </div>';
         }
-        return '<div class="administration_block">
-                    <div class="administration_block_title">' . __('statistics') . '</div>
-                    <div class="administration_block_content">
-                        ' . $completeTranslationsHtml . '
-                    </div>
-                </div>';
+        return '
+            <div class="administration_block">
+                <div class="administration_block_title">' . __('statistics') . '</div>
+                <div class="administration_block_content">
+                    ' . $completeTranslationsHtml . '
+                </div>
+            </div>';
     }
 
     public static function importTranslations()
     {
         $fields = FormField::show('text_url', ['name' => 'import_translations_url', 'placeholder' => __('url_placeholder')]);
-        return '<div class="administration_block">
-                    <div class="administration_block_title">' . __('import_translations') . '</div>
-                    <div class="administration_block_subtitle">' . __('import_translations_message') . '</div>
-                    <div class="administration_block_content">
-                        ' . Form::createForm($fields, ['action' => url('translation/import', true), 'submit' => __('import'), 'class'=>'form_admin_simple_line form_admin_import_translations']) . '
-                        <div class="translation_statistic_results">
-                            <div class="translation_statistic_result_created"><span></span> ' . __('terms_created') . '</div>
-                            <div class="translation_statistic_result_updated"><span></span> ' . __('terms_updated') . '</div>
-                        </div>
+        return '
+            <div class="administration_block">
+                <div class="administration_block_title">' . __('import_translations') . '</div>
+                <div class="administration_block_subtitle">' . __('import_translations_message') . '</div>
+                <div class="administration_block_content">
+                    ' . Form::createForm($fields, ['action' => url('translation/import', true), 'submit' => __('import'), 'class'=>'form_admin_simple_line form_admin_import_translations']) . '
+                    <div class="translation_statistic_results">
+                        <div class="translation_statistic_result_created"><span></span> ' . __('terms_created') . '</div>
+                        <div class="translation_statistic_result_updated"><span></span> ' . __('terms_updated') . '</div>
                     </div>
-                </div>';
+                </div>
+            </div>';
     }
 
 }

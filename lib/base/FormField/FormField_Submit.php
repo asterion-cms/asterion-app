@@ -11,6 +11,8 @@
 class FormField_Submit
 {
 
+    public $options;
+
     /**
      * The constructor of the object.
      */
