@@ -226,6 +226,7 @@ class ListObjects
                 if ($counter > 0 && $middleRepetitions > 0 && $middle != '' && $sizeList > $middleRepetitions && ($counter % $middleRepetitions) == 0) {
                     $html .= $middle;
                 }
+                $parameters['counter'] = $counter + 1;
                 $html .= $itemUi->$functionName($parameters);
                 $counter++;
             }
