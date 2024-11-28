@@ -101,4 +101,34 @@ class Translation extends Db_Object
         return $response;
     }
 
+    /**
+     * Import translations from a JSON file.
+     */
+    public static function import($contents)
+    {
+        $response = ['status' => StatusCode::NOK, 'message_error' => __('connexion_error')];
+        if (isset($contents['status']) && $contents['status'] == StatusCode::OK) {
+            $contentsTerms = (isset($contents['language'])) ? [$contents['language'] => $contents['content']] : $contents['content'];
+            $statistics = ['translations_updated' => 0, 'translations_created' => 0];
+            foreach ($contentsTerms as $languageCode => $terms) {
+                $languageExists = (new Language)->read($languageCode);
+                if ($languageExists->id() != '' || (defined('ASTERION_LANGUAGE_ID') && ASTERION_LANGUAGE_ID == $languageCode)) {
+                    foreach ($terms as $termCode => $termTranslation) {
+                        $translation = (new Translation)->readFirst(['where' => 'code=:code'], ['code' => $termCode]);
+                        if ($translation->id() == '') {
+                            $translation = new Translation(['code' => $termCode, 'translation_' . $languageCode => $termTranslation]);
+                            $statistics['translations_created']++;
+                        } else {
+                            $translation->persistSimple('translation_' . $languageCode, $termTranslation);
+                            $statistics['translations_updated']++;
+                        }
+                        $translation->persist();
+                    }
+                }
+            }
+            $response = ['status' => StatusCode::OK, 'statistics' => $statistics];
+        }
+        return $response;
+    }
+
 }

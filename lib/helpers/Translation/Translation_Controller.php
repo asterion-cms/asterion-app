@@ -41,27 +41,7 @@ class Translation_Controller extends Controller
                 $response = ['status' => StatusCode::NOK, 'message_error' => __('connexion_error')];
                 if ($this->checkLoginAdmin() && isset($this->values['import_translations_url'])) {
                     $contents = json_decode(Url::getContents($this->values['import_translations_url']), true);
-                    if (isset($contents['status']) && $contents['status'] == StatusCode::OK) {
-                        $contentsTerms = (isset($contents['language'])) ? [$contents['language'] => $contents['content']] : $contents['content'];
-                        $statistics = ['translations_updated' => 0, 'translations_created' => 0];
-                        foreach ($contentsTerms as $languageCode => $terms) {
-                            $languageExists = (new Language)->read($languageCode);
-                            if ($languageExists->id() != '' || (defined('ASTERION_LANGUAGE_ID') && ASTERION_LANGUAGE_ID == $languageCode)) {
-                                foreach ($terms as $termCode => $termTranslation) {
-                                    $translation = (new Translation)->readFirst(['where' => 'code=:code'], ['code' => $termCode]);
-                                    if ($translation->id() == '') {
-                                        $translation = new Translation(['code' => $termCode, 'translation_' . $languageCode => $termTranslation]);
-                                        $statistics['translations_created']++;
-                                    } else {
-                                        $translation->persistSimple('translation_' . $languageCode, $termTranslation);
-                                        $statistics['translations_updated']++;
-                                    }
-                                    $translation->persist();
-                                }
-                            }
-                        }
-                        $response = ['status' => StatusCode::OK, 'statistics' => $statistics];
-                    }
+                    $response = Translation::import($contents);
                 }
                 return json_encode($response);
                 break;
