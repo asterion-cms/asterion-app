@@ -191,6 +191,12 @@ class NavigationAdmin_Ui extends Ui
                                 </a>
                             </div>
                             <div class="menu_side_item menu_side_item_admin">
+                                <a href="' . url('installation/database_check', true) . '">
+                                    <i class="fa fa-download"></i>
+                                    <span>' . __('database') . '</span>
+                                </a>
+                            </div>
+                            <div class="menu_side_item menu_side_item_admin">
                                 <a href="' . (new LogAdmin)->urlListAdmin() . '">
                                     <i class="fa fa-laptop"></i>
                                     <span>' . __('logs') . '</span>

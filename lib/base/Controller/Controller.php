@@ -494,7 +494,7 @@ abstract class Controller
                  * It is used for the autocomplete text input.
                  */
                 $this->mode = 'json';
-                $response = ['status' => StatusCode::NOK, 'message_error' => __('delete_error')];
+                $response = ['status' => StatusCode::NOK];
                 if ($this->checkLoginAdmin()) {
                     $term = (isset($_GET['term'])) ? $_GET['term'] : '';
                     if ($term != '') {
@@ -593,7 +593,7 @@ abstract class Controller
         if ($ordObject != '') {
             $orderInfo = $this->object->attributeInfo($ordObject);
             $orderInfoItem = (is_object($orderInfo) && (string) $orderInfo->language == "true") ? $ordObject . '_' . Language::active() : $ordObject;
-            $orderInfoItem = ($orderInfoItem != '' && Db_ObjectType::isNumeric((string) $orderInfo->type)) ? 'ABS(' . $orderInfoItem . ')' : $orderInfoItem;
+            $orderInfoItem = ($orderInfoItem != '' && (is_object($orderInfo) && Db_ObjectType::isNumeric((string) $orderInfo->type))) ? 'ABS(' . $orderInfoItem . ')' : $orderInfoItem;
             $options['order'] = $orderInfoItem . ' ' . $ordObjectType;
         }
         $options['results'] = (int) $this->object->info->info->form->pager;

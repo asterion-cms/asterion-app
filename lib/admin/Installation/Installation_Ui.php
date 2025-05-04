@@ -85,7 +85,7 @@ class Installation_Ui extends Ui
     /**
      * Render the database actions.
      */
-    public static function renderDatabase()
+    public static function renderDatabase($public = false)
     {
         $errors = Init::errorsDatabase();
         if (count($errors) > 0) {
@@ -102,13 +102,14 @@ class Installation_Ui extends Ui
                 $content .= '<p>' . $label . '</p>';
                 $queries .= '<pre>' . $error['query'] . '</pre>';
             }
+            $url = ($public) ? 'installation/update_database_public' : 'installation/update_database';
             return '<div class="configuration">
                         <div class="message message_error">
                             <p>The database model is not updated with the information of your website.</p>
                             <p>Please take caution because you might loose information, so backup all your information.</p>
                         </div>
                         <div class="buttons_center">
-                            <a href="' . url('installation/update_database', true) . '" class="button">Update database</a>
+                            <a href="' . url($url, true) . '" class="button">Update database</a>
                         </div>
                         <p>Here are the actions that the system will perform:</p>
                         <div class="list">' . $content . '</div>

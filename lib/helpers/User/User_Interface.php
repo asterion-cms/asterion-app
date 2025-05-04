@@ -53,6 +53,7 @@ class User_Interface extends Db_Object
                 $user->set('password', $salt . $values['password']);
                 $persist = $user->persist();
                 if ($persist['status'] == StatusCode::OK) {
+                    $user->persistSimple('verify_code', Text::generateRandomString());
                     $user->sendEmailCreation();
                     $status = StatusCode::OK;
                 } else {
@@ -73,9 +74,10 @@ class User_Interface extends Db_Object
      */
     public function activate($hash)
     {
-        $user = (new $this->userClassName)->readFirst(['where' => 'SHA2(CONCAT(id, email), 256)=:hash'], ['hash' => $hash]);
+        $user = (new $this->userClassName)->readFirst(['where' => 'verify_code=:hash'], ['hash' => $hash]);
         $response = ['status' => StatusCode::NOK];
         if ($user->id() != '') {
+            $user->persistSimple('verify_code', '');
             $user->persistSimple('active', true);
             $user->sendEmailActivation();
             $userLoginClassName = $this->userLoginClassName;
@@ -320,10 +322,12 @@ class User_Interface extends Db_Object
     public function sendEmailCreation()
     {
         $userClass = new $this->userClassName;
-        $hash = hash('sha256', $this->id() . $this->get('email'));
-        $activationLink = $userClass->urlActivate . '?code=' . $hash;
+        $activationLink = $userClass->urlActivate . '?code=' . $this->get('verify_code');
+        $sendEmailAdministrator = (Parameter::code('user_send_email_administrator') == 'true') ? true : false;
         HtmlMail::send($this->get('email'), 'user_registration', ['USER_NAME' => $this->get('name'), 'EMAIL' => $this->get('email'), 'ACTIVATION_LINK' => $activationLink]);
-        HtmlMail::send(Parameter::code('email'), 'user_registration_admin', ['USER_NAME' => $this->get('name'), 'EMAIL' => $this->get('email'), 'ACTIVATION_LINK' => $activationLink]);
+        if ($sendEmailAdministrator) {
+            HtmlMail::send(Parameter::code('user_email_admin'), 'user_registration_admin', ['USER_NAME' => $this->get('name'), 'EMAIL' => $this->get('email'), 'ACTIVATION_LINK' => $activationLink]);
+        }
     }
 
     /**
@@ -331,8 +335,14 @@ class User_Interface extends Db_Object
      */
     public function sendEmailActivation()
     {
-        HtmlMail::send($this->get('email'), 'user_activation', ['USER_NAME' => $this->get('name'), 'EMAIL' => $this->get('email')]);
-        HtmlMail::send(Parameter::code('email'), 'user_activation_admin', ['USER_NAME' => $this->get('name'), 'EMAIL' => $this->get('email')]);
+        $sendEmailActivation = (Parameter::code('user_send_email_activation') == 'true') ? true : false;
+        if ($sendEmailActivation) {
+            HtmlMail::send($this->get('email'), 'user_activation', ['USER_NAME' => $this->get('name'), 'EMAIL' => $this->get('email')]);
+            $sendEmailAdministrator = (Parameter::code('user_send_email_administrator') == 'true') ? true : false;
+            if ($sendEmailAdministrator) {
+                HtmlMail::send(Parameter::code('user_email_admin'), 'user_activation_admin', ['USER_NAME' => $this->get('name'), 'EMAIL' => $this->get('email')]);
+            }
+        }
     }
 
     /**
@@ -341,7 +351,9 @@ class User_Interface extends Db_Object
     public function sendEmailUpdateEmail()
     {
         HtmlMail::send($this->get('new_email'), 'user_change_email', ['USER_NAME' => $this->get('name'), 'USER_EMAIL' => $this->get('email'), 'CODE' => $this->get('new_email_code')]);
-        HtmlMail::send(Parameter::code('email'), 'user_change_email_admin', ['USER_NAME' => $this->get('name'), 'USER_EMAIL' => $this->get('email'), 'CODE' => $this->get('new_email_code')]);
+        if ($sendEmailAdministrator) {
+            HtmlMail::send(Parameter::code('user_email_admin'), 'user_change_email_admin', ['USER_NAME' => $this->get('name'), 'USER_EMAIL' => $this->get('email'), 'CODE' => $this->get('new_email_code')]);
+        }
     }
 
     /**

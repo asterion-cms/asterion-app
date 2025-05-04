@@ -32,6 +32,10 @@ class Parameter_Controller extends Controller
                 'title' => __('links'),
                 'description' => __('links_parameters_description'),
             ],
+            'user' => [
+                'title' => __('users'),
+                'description' => __('users_parameters_description'),
+            ],
             'map' => [
                 'title' => __('maps_information'),
                 'description' => __('maps_information_parameters_description'),

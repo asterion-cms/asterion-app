@@ -518,6 +518,14 @@ class Db_Object extends Db_Sql
     }
 
     /**
+     * Returns the values of the object in JSON format.
+     */
+    public function toJson()
+    {
+        return json_encode((array)$this->values);
+    }
+
+    /**
      * Gets all the values of the object.
      */
     public function getValues($attribute, $admin = false)

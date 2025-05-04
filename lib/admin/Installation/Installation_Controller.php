@@ -20,7 +20,7 @@ class Installation_Controller extends Controller
         $this->mode = 'admin';
         $this->layout_page = 'clear';
         $this->meta_image = '';
-        if (!ASTERION_DEBUG) {
+        if (!ASTERION_DEBUG && $this->action != 'database_check' && $this->action != 'update_database_public') {
             header('Location: ' . url(''));
             exit();
         }
@@ -35,7 +35,14 @@ class Installation_Controller extends Controller
                 $this->content = Installation_Ui::renderDatabase();
                 return $ui->render();
                 break;
+            case 'database_check':
+                $this->layout_page = '';
+                $this->title_page = __('database');
+                $this->content = Installation_Ui::renderDatabase(true);
+                return $ui->render();
+                break;
             case 'update_database':
+            case 'update_database_public':
                 foreach (Init::errorsDatabase() as $item) {
                     Db::execute($item['query']);
                 }

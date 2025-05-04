@@ -824,6 +824,7 @@
     p {
         margin: 0 0 2px;
         padding: 0;
+        word-break: break-all;
         &:last-child {
             margin: 0;
         }

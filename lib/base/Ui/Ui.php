@@ -289,6 +289,17 @@ class Ui
                             $labelAttribute = str_replace('#RESULTS', '<strong>' . $count . '</strong>', __('list_total'));
                         }
                         break;
+                    case 'multiple_autocomplete':
+                        $refObject = (string) $info->refObject;
+                        $linkAttribute = (string) $info->linkAttribute;
+                        $refObjectInstance = new $refObject();
+                        $multipleItems = $refObjectInstance->readList(['where' => $linkAttribute . '=:id'], ['id' => $this->object->id()]);
+                        $labelAttributes = [];
+                        foreach ($multipleItems as $multipleItem) {
+                            $labelAttributes[] = $multipleItem->getBasicInfoAdmin();
+                        }
+                        $labelAttribute = implode(', ', $labelAttributes);
+                        break;
                 }
                 $html = str_replace('#' . $attribute, $labelAttribute, $html);
             }

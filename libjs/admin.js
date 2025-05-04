@@ -1,5 +1,5 @@
 $(function() {
-    sameHeight();
+    activateSameHeight();
     activateBasicElements();
     activateSortable();
     activateTranslations();
@@ -16,13 +16,13 @@ $(function() {
     activatePaste();
 });
 $(window).on('load', function() {
-    sameHeight();
+    activateSameHeight();
     resizableTextareas();
 });
 /**
  * Same height elements
  **/
-function sameHeight() {
+function activateSameHeight() {
     $('.same_height').each(function(index, ele) {
         $(ele).children().css('height', 'auto');
         var maxHeight = 0;
@@ -198,7 +198,8 @@ function activateBasicElements() {
     var checkCheckboxesIcons = function() {
         $('.checkbox_icons_wrapper').removeClass('checkbox_icons_wrapper_selected');
         $('.checkbox_icons_wrapper').each(function(index, ele) {
-            if ($(ele).find('input').is(':checked')) {
+            // console.log(ele, $(ele).find('input[type=checkbox]').is(':checked'));
+            if ($(ele).find('input[type=checkbox]').is(':checked')) {
                 $(this).addClass('checkbox_icons_wrapper_selected');
             }
         });

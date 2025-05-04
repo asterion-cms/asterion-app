@@ -316,6 +316,14 @@ class Text
     }
 
     /**
+     * Function to generate a random string with numbers and letters only.
+     */
+    public static function generateRandomString()
+    {
+        return preg_replace('/[^a-zA-Z0-9]/', '', base64_encode(random_bytes(32)));
+    }
+    
+    /**
      * Function to generate a salt string for passwords.
      */
     public static function generateSalt()
