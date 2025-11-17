@@ -600,13 +600,13 @@ class Db_Sql
                         $name = (string) $index->name . '_' . $language['id'];
                         $query = 'SHOW INDEX FROM ' . $this->tableName . ' WHERE KEY_NAME="' . $name . '"';
                         if (count(Db::returnAll($query, [], false)) == 0) {
-                            $queries[] = 'CREATE ' . $type . ' INDEX `' . $name . '` ON ' . $this->tableName . ' (`' . $name . '`)';
+                            $queries[] = 'CREATE ' . $type . ' INDEX `' . $name . '` ON ' . $this->tableName . ' (`' . $name . '`);';
                         }
                     }
                 } else {
                     $query = 'SHOW INDEX FROM ' . $this->tableName . ' WHERE KEY_NAME="' . $name . '"';
                     if (count(Db::returnAll($query, [], false)) == 0) {
-                        $queries[] = 'CREATE ' . $type . ' INDEX `' . $name . '` ON ' . $this->tableName . ' (' . $fields . ')';
+                        $queries[] = 'CREATE ' . $type . ' INDEX `' . $name . '` ON ' . $this->tableName . ' (' . $fields . ');';
                     }
                 }
             }

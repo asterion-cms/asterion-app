@@ -156,10 +156,13 @@ class User_Login_Interface extends Singleton
                 return true;
             } else {
                 $salt = Text::generateSalt();
+                $email = (isset($response['email'])) ? $response['email'] : $response['id'] . '@google.com';
+                $givenName = (isset($response['given_name'])) ? $response['given_name'] : '';
+                $familyName = (isset($response['family_name'])) ? $response['family_name'] : '';
                 $user = new User([
-                    'email' => $response['email'],
-                    'name' => $response['given_name'],
-                    'last_name' => $response['family_name'],
+                    'email' => $email,
+                    'name' => $givenName,
+                    'last_name' => $familyName,
                     'password_salt' => $salt,
                     'password' => $salt . Text::generateSalt(),
                     'active' => '1',

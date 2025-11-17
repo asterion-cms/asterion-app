@@ -14,9 +14,13 @@ class Translation extends Db_Object
     /**
      * Get the translation of a phrase or a word using its code.
      */
-    public static function translate($code)
+    public static function translate($code, $parameters)
     {
-        return (isset($GLOBALS['translations'][$code]) && $GLOBALS['translations'][$code] != '') ? $GLOBALS['translations'][$code] : $code;
+        $translation = (isset($GLOBALS['translations'][$code]) && $GLOBALS['translations'][$code] != '') ? $GLOBALS['translations'][$code] : $code;
+        foreach ($parameters as $key => $value) {
+            $translation = str_replace('#' . $key . '#', $value, $translation);
+        }
+        return $translation;
     }
 
     /**

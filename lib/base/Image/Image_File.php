@@ -44,7 +44,7 @@ class Image_File
                             @chmod($fileHuge, 0777);
                             if (ASTERION_SAVE_WEBP) {
                                 $image->toWebp($fileHuge, $fileHuge . '.webp');
-                                @chmod($fileHuge . '.webp');
+                                @chmod($fileHuge . '.webp', 0777);
                             }
                         }
                         if (ASTERION_SAVE_IMAGE_WEB) {
@@ -53,7 +53,7 @@ class Image_File
                             @chmod($fileWeb, 0777);
                             if (ASTERION_SAVE_WEBP) {
                                 $image->toWebp($fileWeb, $fileWeb . '.webp');
-                                @chmod($fileWeb . '.webp');
+                                @chmod($fileWeb . '.webp', 0777);
                             }
                         }
                         if (ASTERION_SAVE_IMAGE_SMALL) {
@@ -62,7 +62,7 @@ class Image_File
                             @chmod($fileSmall, 0777);
                             if (ASTERION_SAVE_WEBP) {
                                 $image->toWebp($fileSmall, $fileSmall . '.webp');
-                                @chmod($fileSmall . '.webp');
+                                @chmod($fileSmall . '.webp', 0777);
                             }
                         }
                         if (ASTERION_SAVE_IMAGE_THUMB) {
@@ -71,7 +71,7 @@ class Image_File
                             @chmod($fileThumb, 0777);
                             if (ASTERION_SAVE_WEBP) {
                                 $image->toWebp($fileThumb, $fileThumb . '.webp');
-                                @chmod($fileThumb . '.webp');
+                                @chmod($fileThumb . '.webp', 0777);
                             }
                         }
                         if (ASTERION_SAVE_IMAGE_SQUARE) {
@@ -80,7 +80,7 @@ class Image_File
                             @chmod($fileSquare, 0777);
                             if (ASTERION_SAVE_WEBP) {
                                 $image->toWebp($fileSquare, $fileSquare . '.webp');
-                                @chmod($fileSquare . '.webp');
+                                @chmod($fileSquare . '.webp', 0777);
                             }
                         }
                         if (!ASTERION_SAVE_IMAGE_ORIGINAL) {

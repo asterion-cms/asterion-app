@@ -134,6 +134,9 @@ class Form
                     default:
                         return FormField::show('hidden', $options);
                         break;
+                    case 'hidden_total':
+                        return '';
+                        break;
                     case 'hidden_login':
                         $login = UserAdmin_Login::getInstance();
                         $options['values'][$name] = $login->id();

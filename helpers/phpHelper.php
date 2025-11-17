@@ -126,9 +126,9 @@ function rrmdir($dir)
 /**
  * Function to translate using the translation "code" of the Translation object.
  */
-function __($code)
+function __($code, $parameters = [])
 {
-    return Translation::translate($code);
+    return Translation::translate($code, $parameters);
 }
 
 /**

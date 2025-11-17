@@ -11,6 +11,11 @@
 class Image
 {
 
+    protected $url;
+    protected $width;
+    protected $height;
+    protected $mime;
+
     /**
      * The constructor of the object.
      */
