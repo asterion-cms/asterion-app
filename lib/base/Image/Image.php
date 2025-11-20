@@ -238,4 +238,152 @@ class Image
         imagedestroy($image);
     }
 
+    /**
+     * Add a PNG with transparency over an image, both images are the same size and need no margins.
+     */
+    public function addPngOverImage($pngFile, $fileDestination, $mime)
+    {
+        $fileOrigin = $this->get('url');
+        $type = $this->getType($mime);
+        $function = "imagecreatefrom" . $type;
+        $image = $function($fileOrigin);
+        
+        $overlay = imagecreatefrompng($pngFile);
+        imagealphablending($overlay, true);
+        imagesavealpha($overlay, true);
+        
+        $width = imagesx($image);
+        $height = imagesy($image);
+        
+        imagecopy($image, $overlay, 0, 0, 0, 0, $width, $height);
+        
+        $function = "image" . $type;
+        $function($image, $fileDestination, 100);
+        
+        imagedestroy($overlay);
+        imagedestroy($image);
+    }
+    
+    /**
+     * Write a text over an image.
+     * The text is centered both horizontally and vertically with a 20% margin on all sides.
+     * It uses white text with a black shadow (15% of font size) for better visibility.
+     */
+    public function addTextOverImage($text, $fileDestination, $mime, $fontSize = 100, $fontFile = null)
+    {
+        $fileOrigin = $this->get('url');
+        $type = $this->getType($mime);
+        $function = "imagecreatefrom" . $type;
+        $image = $function($fileOrigin);
+        
+        $width = imagesx($image);
+        $height = imagesy($image);
+        
+        // Calculate margins (20% on all sides)
+        $marginX = $width * 0.2;
+        $marginY = $height * 0.2;
+        $textAreaWidth = $width - ($marginX * 2);
+        $textAreaHeight = $height - ($marginY * 2);
+        
+        // Calculate shadow offset (15% of font size)
+        $shadowOffset = $fontSize * 0.08;
+                
+        // Allocate colors
+        $white = imagecolorallocate($image, 255, 255, 255);
+        $black = imagecolorallocate($image, 0, 0, 0);
+        
+        if ($fontFile && is_file($fontFile)) {
+            // Use TrueType font - wrap text to fit width
+            $words = explode(' ', $text);
+            $lines = [];
+            $currentLine = '';
+            
+            foreach ($words as $word) {
+                $testLine = $currentLine . ($currentLine ? ' ' : '') . $word;
+                $bbox = imagettfbbox($fontSize, 0, $fontFile, $testLine);
+                $testWidth = abs($bbox[4] - $bbox[0]);
+                
+                if ($testWidth > $textAreaWidth && $currentLine !== '') {
+                    $lines[] = $currentLine;
+                    $currentLine = $word;
+                } else {
+                    $currentLine = $testLine;
+                }
+            }
+            if ($currentLine !== '') {
+                $lines[] = $currentLine;
+            }
+            
+            // Calculate line height and total text height
+            $bbox = imagettfbbox($fontSize, 0, $fontFile, 'Ay');
+            $lineHeight = $fontSize * 1.1; // 10% line spacing
+            $totalTextHeight = count($lines) * $lineHeight;
+            
+            // Start Y position (aligned at top with margin)
+            $startY = $marginY + abs($bbox[5] - $bbox[1]);
+            
+            // Draw each line
+            foreach ($lines as $i => $line) {
+                $bbox = imagettfbbox($fontSize, 0, $fontFile, $line);
+                $textWidth = abs($bbox[4] - $bbox[0]);
+                $x = ($width - $textWidth) / 2;
+                $y = $startY + ($i * $lineHeight);
+                
+                // Draw shadow
+                imagettftext($image, $fontSize, 0, $x + $shadowOffset, $y + $shadowOffset, $black, $fontFile, $line);
+                // Draw white text
+                imagettftext($image, $fontSize, 0, $x, $y, $white, $fontFile, $line);
+            }
+        } else {
+            // Use built-in font (font 5 is the largest)
+            $fontWidth = imagefontwidth(5);
+            $fontHeight = imagefontheight(5);
+            
+            // Wrap text to fit width
+            $words = explode(' ', $text);
+            $lines = [];
+            $currentLine = '';
+            
+            foreach ($words as $word) {
+                $testLine = $currentLine . ($currentLine ? ' ' : '') . $word;
+                $testWidth = $fontWidth * strlen($testLine);
+                
+                if ($testWidth > $textAreaWidth && $currentLine !== '') {
+                    $lines[] = $currentLine;
+                    $currentLine = $word;
+                } else {
+                    $currentLine = $testLine;
+                }
+            }
+            if ($currentLine !== '') {
+                $lines[] = $currentLine;
+            }
+            
+            // Calculate total text height with line spacing
+            $lineHeight = $fontSize * 1.1;
+            $totalTextHeight = count($lines) * $lineHeight;
+            
+            // Start Y position (aligned at top with margin)
+            $startY = $marginY;
+            
+            // Draw each line
+            $builtInShadowOffset = max(1, round($fontHeight * 0.15));
+            foreach ($lines as $i => $line) {
+                $textWidth = $fontWidth * strlen($line);
+                $x = ($width - $textWidth) / 2;
+                $y = $startY + ($i * $lineHeight);
+                
+                // Draw shadow
+                imagestring($image, 5, $x + $builtInShadowOffset, $y + $builtInShadowOffset, $line, $black);
+                // Draw white text
+                imagestring($image, 5, $x, $y, $line, $white);
+            }
+        }
+        
+        $function = "image" . $type;
+        $function($image, $fileDestination, 100);
+        
+        imagedestroy($image);
+    }
+
 }
