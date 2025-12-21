@@ -27,6 +27,13 @@ class VideoHelper
         }
     }
 
+    public static function idYoutube($url)
+    {
+        if (strpos($url, 'youtube') !== false) {
+            return substr($url, strpos($url, "v=") + 2, 11);
+        }
+    }
+
     public static function showAmp($link, $options = [])
     {
         if (strpos($link, 'youtube') !== false) {
