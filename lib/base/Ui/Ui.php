@@ -458,6 +458,22 @@ class Ui
                             <span>LinkedIn</span>
                         </a>';
                     break;
+                case 'pinterest':
+                    $link = 'https://pinterest.com/pin/create/button/?url=' . urlencode($this->object->url()) . '&media=' . urlencode($this->object->getImageUrl('image', 'web')) . '&description=' . urlencode($this->object->getBasicInfo());
+                    $content .= '
+                        <a href="' . $link . '" target="_blank" title="Pinterest" class="share_option share_option_pinterest">
+                            ' . (($shareIcon != '') ? $shareIcon : '<i class="fa fa-pinterest"></i>') . '
+                            <span>Pinterest</span>
+                        </a>';
+                    break;
+                case 'whatsapp':
+                    $link = 'https://api.whatsapp.com/send?text=' . urlencode($this->object->getBasicInfo()) . '%20' . urlencode($this->object->url());
+                    $content .= '
+                        <a href="' . $link . '" target="_blank" title="WhatsApp" class="share_option share_option_whatsapp">
+                            ' . (($shareIcon != '') ? $shareIcon : '<i class="fa fa-whatsapp"></i>') . '
+                            <span>WhatsApp</span>
+                        </a>';
+                    break;
                 case 'email':
                     $link = 'mailto:?body=' . urlencode($this->object->url());
                     $content .= '
