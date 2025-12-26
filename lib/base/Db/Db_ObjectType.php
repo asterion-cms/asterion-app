@@ -84,7 +84,8 @@ class Db_ObjectType
     {
         $name = (string) $attribute->name;
         $type = (string) $attribute->type;
-        switch (Db_ObjectType::baseType($type)) {
+        $baseType = ((string) $attribute->baseType != '') ? (string) $attribute->baseType : Db_ObjectType::baseType($type); 
+        switch ($baseType) {
             default:
                 if ($language != '') {
                     return '`' . $name . '_' . $language . '` VARCHAR(255) COLLATE utf8_unicode_ci';
@@ -125,6 +126,12 @@ class Db_ObjectType
                 } else {
                     return '`' . $name . '` TEXT COLLATE utf8_unicode_ci';
                 }
+                break;
+            case 'integer':
+                return '`' . $name . '` INT';
+                break;
+            case 'double':
+                return '`' . $name . '` DOUBLE';
                 break;
             case 'checkbox':
             case 'radio':
