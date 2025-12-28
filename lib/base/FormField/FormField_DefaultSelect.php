@@ -49,7 +49,8 @@ class FormField_DefaultSelect extends FormField_Base
         $name = (isset($options['name'])) ? 'name="' . $options['name'] . '" ' : '';
         $nameSelect = (isset($options['name'])) ? $options['name'] : '';
         $id = (isset($options['id'])) ? 'id="' . $options['id'] . '"' : '';
-        $label = (isset($options['label']) && $options['label'] != '') ? '<label>' . __($options['label']) . '</label>' : '';
+        $labelFor = (isset($options['id'])) ? ' for="' . $options['id'] . '"' : '';
+        $label = (isset($options['label']) && $options['label'] != '') ? '<label' . $labelFor . '>' . __($options['label']) . '</label>' : '';
         $value = (isset($options['value'])) ? $options['value'] : '';
         $selected = (isset($options['selected'])) ? $options['selected'] : '';
         $selected = (isset($options['multiple']) && $options['multiple'] == true && isset($options['class']) && $options['class'] == 'select2' && $selected != '') ? json_decode($selected, true) : $selected;

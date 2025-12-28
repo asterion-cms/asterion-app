@@ -742,7 +742,7 @@ class Db_Object extends Db_Sql
     /**
      * Gets the HTML image that the attribute points.
      */
-    public function getImageWidth($attributeName, $version = '', $alternative = '', $modified = false)
+    public function getImageWidth($attributeName, $version = '', $alternative = '', $modified = false, $altText = '')
     {
         $imageUrl = $this->getImageUrl($attributeName, $version);
         if ($imageUrl != '') {
@@ -750,11 +750,13 @@ class Db_Object extends Db_Sql
             $imageFileWebp = str_replace(ASTERION_BASE_URL, ASTERION_BASE_FILE, $imageUrl) . '.webp';
             $imageFile = str_replace(ASTERION_BASE_URL, ASTERION_BASE_FILE, $imageUrl);
             $imageSize = @getimagesize($imageFile);
+            $altTextFinal = ($altText != '') ? $altText : $this->getBasicInfo();
+            $altTextFinal = str_replace('"', '', $altTextFinal);
             if (isset($imageSize[1])) {
                 if (file_exists($imageFileWebp)) {
-                    return '<img src="' . $imageUrlWebp . '" alt="' . str_replace('"', '', $this->getBasicInfo()) . '" width="' . $imageSize[0] . '" height="' . $imageSize[1] . '" loading="lazy"/>';
+                    return '<img src="' . $imageUrlWebp . '" alt="' . $altTextFinal . '" width="' . $imageSize[0] . '" height="' . $imageSize[1] . '" loading="lazy"/>';
                 }
-                return '<img src="' . $imageUrl . '" alt="' . str_replace('"', '', $this->getBasicInfo()) . '" width="' . $imageSize[0] . '" height="' . $imageSize[1] . '" loading="lazy"/>';
+                return '<img src="' . $imageUrl . '" alt="' . $altTextFinal . '" width="' . $imageSize[0] . '" height="' . $imageSize[1] . '" loading="lazy"/>';
             }
         }
         return $alternative;

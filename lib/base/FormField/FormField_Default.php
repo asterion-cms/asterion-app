@@ -44,8 +44,9 @@ class FormField_Default extends FormField_Base
         $typeField = 'type="' . $type . '"';
         $name = (isset($options['name'])) ? 'name="' . $options['name'] . '" ' : '';
         $id = (isset($options['id'])) ? 'id="' . $options['id'] . '"' : '';
+        $labelFor = (isset($options['id'])) ? ' for="' . $options['id'] . '"' : '';
         $labelLanguage = (isset($options['labelLanguage']) && $options['labelLanguage'] != '') ? ' <span>(' . $options['labelLanguage'] . ')</span>' : '';
-        $label = (isset($options['label']) && $options['label'] != '') ? '<label>' . __($options['label']) . $labelLanguage . '</label>' : '';
+        $label = (isset($options['label']) && $options['label'] != '') ? '<label' . $labelFor . '>' . __($options['label']) . $labelLanguage . '</label>' : '';
         $messageBefore = (isset($options['messageBefore']) && $options['messageBefore'] != '') ? '<div class="formfield_message_before">' . __($options['messageBefore']) . '</div>' : '';
         $messageAfter = (isset($options['messageAfter']) && $options['messageAfter'] != '') ? '<div class="formfield_message_after">' . __($options['messageAfter']) . '</div>' : '';
         $value = (isset($options['value'])) ? 'value="' . $options['value'] . '" ' : '';

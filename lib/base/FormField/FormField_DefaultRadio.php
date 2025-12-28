@@ -49,7 +49,8 @@ class FormField_DefaultRadio extends FormField_Base
         $name = (isset($options['name'])) ? 'name="' . $options['name'] . '" ' : '';
         $nameRadio = (isset($options['name'])) ? $options['name'] : '';
         $id = (isset($options['id'])) ? 'id="' . $options['id'] . '"' : '';
-        $label = (isset($options['label']) && $options['label'] != '') ? '<label>' . __($options['label']) . '</label>' : '';
+        $labelFor = (isset($options['id'])) ? ' for="' . $options['id'] . '"' : '';
+        $label = (isset($options['label']) && $options['label'] != '') ? '<label' . $labelFor . '>' . __($options['label']) . '</label>' : '';
         $value = (isset($options['value'])) ? $options['value'] : '';
         $selected = (isset($options['selected'])) ? $options['selected'] : '';
         $disabled = (isset($options['disabled']) && $options['disabled'] != false) ? 'disabled="disabled"' : '';

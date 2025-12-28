@@ -29,6 +29,7 @@ class FormField_Base
         $this->values = isset($options['values']) ? $options['values'] : [];
         $this->errors = isset($options['errors']) ? $options['errors'] : [];
         $this->name = (isset($options['name'])) ? $options['name'] : (($this->item) ? (string) $this->item->name : '');
+        $this->options['id'] = (isset($options['id'])) ? $options['id'] : null;
         $this->options['hasNameMultiple'] = (isset($options['nameMultiple']) && isset($options['idMultiple']) && $options['nameMultiple'] != '' && $options['idMultiple'] != '');
         $this->options['nameSimple'] = $this->name;
         $this->options['nameMultiple'] = (isset($this->options['nameMultiple'])) ? $this->options['nameMultiple'] : '';;
