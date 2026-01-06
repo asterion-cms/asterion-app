@@ -302,10 +302,11 @@ class Form
         $id = (isset($options['id'])) ? 'id="' . $options['id'] . '"' : '';
         $class .= ($recaptchav3) ? ' recaptchav3_form ' : '';
         $recaptchaKey = (defined('ASTERION_RECAPTCHAV3_SITE_KEY') && ASTERION_RECAPTCHAV3_SITE_KEY != '') ? ASTERION_RECAPTCHAV3_SITE_KEY : Parameter::code('recaptchav3_site_key');
+        $callback = (isset($options['id'])) ? 'onSubmitRecaptchaV3_' . $options['id'] : 'onSubmitRecaptchaV3Main';
         if ($recaptchav3) {
             $submitButton = '
                 <div class="form_submit_wrapper">
-                    <button class="g-recaptcha button form_submit" data-sitekey="' . $recaptchaKey . '" data-callback="onSubmitRecaptchaV3" data-action="submit">' . $submit . '</button>
+                    <button class="g-recaptcha button form_submit" data-sitekey="' . $recaptchaKey . '" data-callback="' . $callback . '" data-action="submit">' . $submit . '</button>
                 </div>';
         } else if ($submit == 'ajax') {
             $submitButton = '
@@ -322,7 +323,7 @@ class Form
             $submitButton = FormField::show('submit', ['name' => $submitName, 'class' => 'form_submit', 'value' => $submit]);
             if ($recaptchav3Amp) {
                 $submitButton = '
-                    <amp-recaptcha-input layout="nodisplay" name="g-recaptcha-response" data-sitekey="' . $recaptchaKey . '" data-action="onSubmitRecaptchaV3"></amp-recaptcha-input>
+                    <amp-recaptcha-input layout="nodisplay" name="g-recaptcha-response" data-sitekey="' . $recaptchaKey . '" data-action="' . $callback . '"></amp-recaptcha-input>
                     ' . $submitButton;
             }
         }
