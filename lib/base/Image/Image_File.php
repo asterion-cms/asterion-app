@@ -95,6 +95,16 @@ class Image_File
     }
 
     /**
+     * Save a PNG image for a base64
+     */
+    public static function savePngBase64Image($base64Image, $objectName, $fileName)
+    {
+        $tempFile = ASTERION_STOCK_FILE . 'temp_base64.png';
+        file_put_contents($tempFile, base64_decode($base64Image));
+        return Image_File::saveImage($tempFile, ASTERION_STOCK_FILE . $objectName, $fileName);
+    }
+
+    /**
      * Delete an entire image folder.
      */
     public static function deleteImage($objectName, $name)
