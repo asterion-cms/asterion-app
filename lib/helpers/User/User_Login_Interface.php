@@ -240,4 +240,21 @@ class User_Login_Interface extends Singleton
         $this->sessionAdjust();
     }
 
+    /**
+     * Prevent serialization of User object which contains SimpleXMLElement
+     */
+    public function __sleep()
+    {
+        return ['info', 'userClassName'];
+    }
+
+    /**
+     * Re-initialize after unserialization
+     */
+    public function __wakeup()
+    {
+        // User object will be recreated on demand via user() method
+        unset($this->user);
+    }
+
 }

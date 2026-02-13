@@ -12,6 +12,33 @@ class Debug
 {
 
     /**
+     * Convert complex values into session-serializable values.
+     */
+    private static function sanitizeForSession($value)
+    {
+        if (is_null($value) || is_scalar($value)) {
+            return $value;
+        }
+        if ($value instanceof SimpleXMLElement) {
+            return (string) $value;
+        }
+        if (is_array($value)) {
+            $sanitized = [];
+            foreach ($value as $key => $item) {
+                $sanitized[$key] = self::sanitizeForSession($item);
+            }
+            return $sanitized;
+        }
+        if (is_object($value)) {
+            if (method_exists($value, '__toString')) {
+                return (string) $value;
+            }
+            return '[object ' . get_class($value) . ']';
+        }
+        return '[resource]';
+    }
+
+    /**
      * Initialize the session.
      */
     public static function intializeSession()
@@ -31,11 +58,22 @@ class Debug
             $debugCurrentQuery = intval(Session::get('debugCurrentQuery'));
             $debugQueries = Session::get('debugQueries');
             $debugQueries = (is_array($debugQueries)) ? $debugQueries : [];
+            $debugQueries = self::sanitizeForSession($debugQueries);
+            $backtraceRaw = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+            $backtrace = [];
+            foreach ($backtraceRaw as $traceItem) {
+                $backtrace[] = [
+                    'file' => (isset($traceItem['file'])) ? $traceItem['file'] : '',
+                    'line' => (isset($traceItem['line'])) ? $traceItem['line'] : '',
+                    'function' => (isset($traceItem['function'])) ? $traceItem['function'] : '',
+                ];
+            }
             $debugQueries[$debugCurrentQuery] = [
                 'query' => $query,
-                'values' => $values,
+                'values' => self::sanitizeForSession($values),
                 'microtime_start' => microtime(true),
                 'microtime' => microtime(true),
+                'backtrace' => $backtrace,
             ];
             Session::set('debugCurrentQuery', $debugCurrentQuery);
             Session::set('debugQueries', $debugQueries);
@@ -50,6 +88,7 @@ class Debug
         if (ASTERION_DEBUG) {
             $debugCurrentQuery = intval(Session::get('debugCurrentQuery'));
             $debugQueries = Session::get('debugQueries');
+            $debugQueries = self::sanitizeForSession($debugQueries);
             if (isset($debugQueries[$debugCurrentQuery])) {
                 $debugQueries[$debugCurrentQuery]['microtime'] = microtime(true) - $debugQueries[$debugCurrentQuery]['microtime'];
             }

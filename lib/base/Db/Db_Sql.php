@@ -1031,4 +1031,20 @@ class Db_Sql
         return implode(', ', $alias);
     }
 
+    /**
+     * Prevent serialization of SimpleXMLElement
+     */
+    public function __sleep()
+    {
+        return ['className', 'snakeName', 'formName', 'tableName', 'primary', 'values'];
+    }
+
+    /**
+     * Re-initialize SimpleXMLElement after unserialization
+     */
+    public function __wakeup()
+    {
+        $this->info = XML::readClass($this->className);
+    }
+
 }

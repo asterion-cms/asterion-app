@@ -78,4 +78,20 @@ class Db_Connection extends Singleton
         }
     }
 
+    /**
+     * Prevent serialization of PDO connection
+     */
+    public function __sleep()
+    {
+        return [];
+    }
+
+    /**
+     * Re-initialize PDO connection after unserialization
+     */
+    public function __wakeup()
+    {
+        $this->initialize();
+    }
+
 }

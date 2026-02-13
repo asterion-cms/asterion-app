@@ -24,6 +24,16 @@ abstract class Singleton
     final function __clone()
     {}
 
+    public function __sleep()
+    {
+        return [];
+    }
+
+    public function __wakeup()
+    {
+        $this->initialize();
+    }
+
     abstract protected function initialize();
 
     /**

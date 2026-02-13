@@ -314,18 +314,20 @@ abstract class Controller
                 $response = ['status' => StatusCode::NOK, 'message_error' => __('update_error')];
                 if ($this->checkLoginAdmin()) {
                     $primary = $this->object->primary;
-                    $this->object = $this->object->read($this->values[$primary]);
-                    if ($this->object->id() == '' || !$this->allowFilterByUser($this->object)) {
-                        $response = ['status' => StatusCode::NOK, 'message_error' => __('item_does_not_exist')];
-                    } else {
-                        $this->object->setValues($this->values);
-                        $this->object->checkBeforeModify();
-                        $persist = $this->object->persist();
-                        if ($persist['status'] == StatusCode::OK) {
-                            $response = ['status' => StatusCode::OK];
+                    if (isset($this->values[$primary])) {
+                        $this->object = $this->object->read($this->values[$primary]);
+                        if ($this->object->id() == '' || !$this->allowFilterByUser($this->object)) {
+                            $response = ['status' => StatusCode::NOK, 'message_error' => __('item_does_not_exist')];
                         } else {
-                            $form = new $this->object->formName($persist['values'], $persist['errors']);
-                            $response = ['status' => StatusCode::OK, 'form' => $form->createFormModifyAdministrator()];
+                            $this->object->setValues($this->values);
+                            $this->object->checkBeforeModify();
+                            $persist = $this->object->persist();
+                            if ($persist['status'] == StatusCode::OK) {
+                                $response = ['status' => StatusCode::OK];
+                            } else {
+                                $form = new $this->object->formName($persist['values'], $persist['errors']);
+                                $response = ['status' => StatusCode::OK, 'form' => $form->createFormModifyAdministrator()];
+                            }
                         }
                     }
                 }

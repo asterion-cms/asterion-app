@@ -20,7 +20,7 @@ class Db
         $db = Db_Connection::getInstance();
         Debug::startRecordingQuery($query, $values);
         $db->execute($query, $values);
-        Debug::stopRecordingQuery($query, $values);
+        Debug::stopRecordingQuery();
     }
 
     /**
@@ -31,7 +31,7 @@ class Db
         foreach ($queries as $query) {
             Debug::startRecordingQuery($query);
             Db::execute($query);
-            Debug::stopRecordingQuery($query);
+            Debug::stopRecordingQuery();
         }
     }
 
@@ -43,7 +43,7 @@ class Db
         $db = Db_Connection::getInstance();
         Debug::startRecordingQuery($query, $values);
         $db->execute($query, $values);
-        Debug::stopRecordingQuery($query, $values);
+        Debug::stopRecordingQuery();
     }
 
     /**
@@ -58,7 +58,7 @@ class Db
             $prepare_execute = $db->getPDOStatement($query);
             $prepare_execute->execute($values);
             $fetch = $prepare_execute->fetch(PDO::FETCH_ASSOC);
-            Debug::stopRecordingQuery($query, $values);
+            Debug::stopRecordingQuery();
             return (is_array($fetch)) ? $fetch : [];
         } catch (Exception $error) {
             if (!$exception) {
@@ -82,7 +82,7 @@ class Db
             $prepare_execute = $db->getPDOStatement($query);
             $prepare_execute->execute($values);
             $fetch = $prepare_execute->fetchAll(PDO::FETCH_ASSOC);
-            Debug::stopRecordingQuery($query, $values);
+            Debug::stopRecordingQuery();
             return (is_array($fetch)) ? $fetch : [];
         } catch (Exception $error) {
             if (!$exception) {
@@ -106,7 +106,7 @@ class Db
             $prepare_execute = $db->getPDOStatement($query);
             $prepare_execute->execute();
             $fetch = $prepare_execute->fetchAll(PDO::FETCH_COLUMN);
-            Debug::stopRecordingQuery($query, $values);
+            Debug::stopRecordingQuery();
             return (is_array($fetch)) ? $fetch : [];
         } catch (Exception $error) {
             if (!$exception) {

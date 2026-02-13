@@ -12,6 +12,33 @@ class Session
 {
 
     /**
+     * Convert values to session-safe values.
+     */
+    private static function sanitize($value)
+    {
+        if (is_null($value) || is_scalar($value)) {
+            return $value;
+        }
+        if ($value instanceof SimpleXMLElement) {
+            return (string) $value;
+        }
+        if (is_array($value)) {
+            $sanitized = [];
+            foreach ($value as $key => $item) {
+                $sanitized[$key] = self::sanitize($item);
+            }
+            return $sanitized;
+        }
+        if (is_object($value)) {
+            if (method_exists($value, '__toString')) {
+                return (string) $value;
+            }
+            return '[object ' . get_class($value) . ']';
+        }
+        return '[resource]';
+    }
+
+    /**
      * Get a session element.
      */
     public static function get($name)
@@ -32,7 +59,7 @@ class Session
      */
     public static function set($name, $value)
     {
-        $_SESSION[ASTERION_SESSION_NAME][$name] = $value;
+        $_SESSION[ASTERION_SESSION_NAME][$name] = self::sanitize($value);
     }
 
     /**

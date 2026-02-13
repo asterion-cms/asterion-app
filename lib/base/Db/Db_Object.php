@@ -1094,4 +1094,20 @@ class Db_Object extends Db_Sql
         return $this->errors;
     }
 
+    /**
+     * Prevent serialization of SimpleXMLElement from parent class
+     */
+    public function __sleep()
+    {
+        return ['className', 'snakeName', 'formName', 'tableName', 'primary', 'values', 'errors', 'loadedMultiple'];
+    }
+
+    /**
+     * Re-initialize SimpleXMLElement after unserialization
+     */
+    public function __wakeup()
+    {
+        $this->info = XML::readClass($this->className);
+    }
+
 }
