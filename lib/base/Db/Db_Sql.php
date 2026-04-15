@@ -704,6 +704,12 @@ class Db_Sql
                         $query .= $name . ' = :' . $name . ', ';
                     }
                     break;
+                case 'hidden_language':
+                    if (!isset($values[$name]) || $values[$name] == '') {
+                        $setValues[$name] = Language::active();
+                        $query .= $name . ' = :' . $name . ', ';
+                    }
+                    break;
                 case 'point':
                     $pointLat = (isset($values[$name . '_lat'])) ? floatval($values[$name . '_lat']) : 0;
                     $pointLng = (isset($values[$name . '_lng'])) ? floatval($values[$name . '_lng']) : 0;

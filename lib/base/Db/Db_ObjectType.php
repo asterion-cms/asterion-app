@@ -23,6 +23,7 @@
  *       hidden_login
  *       hidden_integer
  *       hidden_user_admin
+ *       hidden_language
  *       password
  *       textarea
  *       textarea-small

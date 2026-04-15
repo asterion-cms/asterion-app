@@ -310,8 +310,7 @@ class Text
         $minutes = floor($wordCount / 200);
         $seconds = floor($wordCount % 200 / (200 / 60));
         $timeHtml = ($minutes > 0) ? ($minutes . ' ' . ($minutes == 1 ? __('minute') : __('minutes'))) : '';
-        $timeHtml .= ($timeHtml != '') ? ', ' : '';
-        $timeHtml .= ($seconds > 0) ? $seconds . ' ' . ($seconds == 1 ? __('second') : __('seconds')) : '';
+        $timeHtml .= ($minutes == 1 && $seconds > 0) ? ', ' . $seconds . ' ' . ($seconds == 1 ? __('second') : __('seconds')) : '';
         return ($timeHtml != '') ? '<span>' . __('estimated_reading_time') . ' :</span> ' . $timeHtml : '';
     }
 
